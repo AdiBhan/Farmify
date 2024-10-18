@@ -33,3 +33,5 @@ C:\Users\adity\Downloads\Fall2024\auction-app\server\obj\Debug\net8.0\server.pdb
 C:\Users\adity\Downloads\Fall2024\auction-app\server\obj\Debug\net8.0\server.genruntimeconfig.cache
 C:\Users\adity\Downloads\Fall2024\auction-app\server\obj\Debug\net8.0\ref\server.dll
 C:\Users\adity\Downloads\Fall2024\auction-app\server\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
+C:\Users\adity\Downloads\Fall2024\auction-app\server\bin\Debug\net8.0\DotNetEnv.dll
+C:\Users\adity\Downloads\Fall2024\auction-app\server\bin\Debug\net8.0\Sprache.dll
