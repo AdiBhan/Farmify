@@ -1,0 +1,114 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "PayPalServerSDK/0.5.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/PayPalServerSDK.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/PayPalServerSDK.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PayPalServerSDK/0.5.2": {
+      "sha512": "NJnHrc3Ww3IP4m/g0vC7+ots29saNFljjAb/DoZz05ryuYabzkre8jXez9vlDnrdEO0uN0e3lClgboe07WgmXw==",
+      "type": "package",
+      "path": "paypalserversdk/0.5.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net6.0/PayPalServerSDK.dll",
+        "paypalserversdk.0.5.2.nupkg.sha512",
+        "paypalserversdk.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "PayPalServerSDK >= 0.5.1"
+    ]
+  },
+  "packageFolders": {
+    "/Users/simeongluzman/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/simeongluzman/Documents/GitHub/Farmify/PaypalTest/PaypalTest.csproj",
+      "projectName": "PaypalTest",
+      "projectPath": "/Users/simeongluzman/Documents/GitHub/Farmify/PaypalTest/PaypalTest.csproj",
+      "packagesPath": "/Users/simeongluzman/.nuget/packages/",
+      "outputPath": "/Users/simeongluzman/Documents/GitHub/Farmify/PaypalTest/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/simeongluzman/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "PayPalServerSDK": {
+            "target": "Package",
+            "version": "[0.5.1, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "PaypalTest depends on PayPalServerSDK (>= 0.5.1) but PayPalServerSDK 0.5.1 was not found. An approximate best match of PayPalServerSDK 0.5.2 was resolved.",
+      "libraryId": "PayPalServerSDK",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}

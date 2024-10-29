@@ -1,0 +1,41 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "PaypalTest/1.0.0": {
+        "dependencies": {
+          "PayPalServerSDK": "0.5.2"
+        },
+        "runtime": {
+          "PaypalTest.dll": {}
+        }
+      },
+      "PayPalServerSDK/0.5.2": {
+        "runtime": {
+          "lib/net6.0/PayPalServerSDK.dll": {
+            "assemblyVersion": "0.5.2.0",
+            "fileVersion": "0.5.2.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PaypalTest/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PayPalServerSDK/0.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NJnHrc3Ww3IP4m/g0vC7+ots29saNFljjAb/DoZz05ryuYabzkre8jXez9vlDnrdEO0uN0e3lClgboe07WgmXw==",
+      "path": "paypalserversdk/0.5.2",
+      "hashPath": "paypalserversdk.0.5.2.nupkg.sha512"
+    }
+  }
+}
