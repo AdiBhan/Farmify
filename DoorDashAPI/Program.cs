@@ -13,13 +13,19 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        // run this line first for testing: dotnet add package System.IdentityModel.Tokens.Jwt
         // Generate the JWT token
         string token = GenerateJwt();
         Console.WriteLine("Generated JWT:");
         Console.WriteLine(token);
 
+        //if access for the doordash simulator is need, please email me at tommyxu@bu.edu 
+        //for access to our developer account
+        
         // Make the delivery request
-        //await CreateDeliveryAsync(token);
+        //When testing the get status method, comment this create delivery method out 
+        //otherwise it's going to create a conflict
+        await CreateDeliveryAsync(token);
 
         // Check the status of the delivery
         await GetDeliveryStatusAsync(token, "D-12345");
