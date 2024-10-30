@@ -81,3 +81,4 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 |----------|-------------|
 |  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 | Secret key for Google OAuth |
 |  843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleusercontent.com Client ID for Google OAuth |
+
