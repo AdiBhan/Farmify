@@ -58,7 +58,8 @@ The backend runs on port 4000.
 1. Navigate to the server directory: `cd server`
 2. Create a .env file in the server directory and add the following configurations:
 ```javascript
-
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleusercontent.com
 ```
 3. Start the backend server: `dotnet run`
 
@@ -76,3 +77,7 @@ The backend runs on port 4000.
 
 ## Environment Variables
 
+| Variable | Description |
+|----------|-------------|
+|  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 | Secret key for Google OAuth |
+|  843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleusercontent.com Client ID for Google OAuth |
