@@ -1,21 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace server.models
+namespace FarmifyService.models
 {
     public class Auction
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public decimal StartPrice { get; set; }
-        public decimal EndPrice { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public int ProductId { get; set; }
+        public int ID { get; set; }
 
-        public Product product { get; set; }
+        [Required]
+        public string Title { get; set; } = string.Empty;
+
+        public decimal StartingPrice { get; set; }
+        public decimal CurrentPrice { get; set; }
+        public DateTime EndTime { get; set; }
         
+        [Required]
+        public virtual Product product { get; set; } = null!;
     }
 }

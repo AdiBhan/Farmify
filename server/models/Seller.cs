@@ -1,20 +1,28 @@
+// Seller.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace server.models
+namespace FarmifyService.models
 {
     public class Seller
     {
-        public int Id { get; set; }
+        [Key]
+        public int ID { get; set; }
+        
+        [Required]
+        public string UserID { get; set; } = string.Empty;
+        
+        [Required]
+        public string Address { get; set; } = string.Empty;
+        
+        [Required]
+        public string Status { get; set; } = string.Empty;
 
-        // Foreign key to User table
-        public int UserID { get; set; }
-        public string Address { get; set; }
-        public string Status { get; set; }
-
-        // Navigation property back to User
-        public User User { get; set; }
+        [ForeignKey("UserID")]
+        public virtual User User { get; set; } = null!;
     }
 }

@@ -1,23 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace server.models
+namespace FarmifyService.models
 {
     public class User
     {
-        public int ID { get; set; }
-        public string Email { get; set; }
-        public string Username { get; set;}
-        public string Password { get; set; }
-        public string sessionID { get; set; }
-        public string credits { get; set; }
+        [Key]
+        [Required]
+        public string ID { get; set; } = Guid.NewGuid().ToString();
+        
+        [Required]
+        public string Email { get; set; } = string.Empty;
+        
+        [Required]
+        public string Username { get; set; } = string.Empty;
+        
+        [Required]
+        public string Password { get; set; } = string.Empty;
+        
+        public string? sessionID { get; set; }
+        
+        [Required]
+        public int Credits { get; set; } 
 
+        public string? AccountType { get; set; }
 
-        // Navigation property back to User
-        public Buyer Buyer { get; set; }
-        public Seller Seller { get; set; }
+        [Required]
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow; 
 
+        // Navigation properties
+        public virtual Buyer? Buyer { get; set; }
+        public virtual Seller? Seller { get; set; }
     }
 }

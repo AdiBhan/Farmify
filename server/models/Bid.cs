@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace server.models
+namespace FarmifyService.models
 {
     public class Bid
     {
@@ -13,7 +14,13 @@ namespace server.models
         public DateTime Date { get; set; }
         public int AuctionID { get; set; }
 
+
+
+        [Required]
         public Buyer buyer { get; set; }
+
+        
+        [Required]
         public Auction auction { get; set; }
     }
 }

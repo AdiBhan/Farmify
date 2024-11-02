@@ -18,9 +18,10 @@ import useUser from "@/stores/userStore";
 export default function RegisterScreen() {
   const router = useRouter();
   const {
-    email,
-    password,
-    accountType,
+    email = "", 
+    password = "", 
+    username = "", 
+    accountType = "", 
     setEmail,
     setPassword,
     setUsername,
@@ -53,6 +54,7 @@ export default function RegisterScreen() {
     try {
       await register({
         email,
+        username,
         password,
         accountType,
       });
@@ -132,6 +134,7 @@ export default function RegisterScreen() {
               editable={!isLoading}
             />
             <TextInput
+             onChangeText={setUsername}
               onChangeText={setUsername}
               style={formStyles.input}
               placeholder="Enter your username"
