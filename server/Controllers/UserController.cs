@@ -31,64 +31,77 @@ namespace FarmifyService.Controllers
                 RedirectUri = "/success"
             }, GoogleDefaults.AuthenticationScheme);
         }
-
 [HttpPost("login")]
 public async Task<IActionResult> Login()
 {
-    try
+    var strategy = _context.Database.CreateExecutionStrategy();
+
+    return await strategy.ExecuteAsync(async () =>
     {
-        using var reader = new StreamReader(Request.Body);
-        var body = await reader.ReadToEndAsync();
-        _logger.LogInformation($"Received login request with body: {body}");
-
-        var jsonDocument = JsonDocument.Parse(body);
-        var root = jsonDocument.RootElement;
-
-        var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
-        var password = root.TryGetProperty("password", out var passwordElement) ? passwordElement.GetString() ?? string.Empty : string.Empty;
-
-        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            _logger.LogWarning("Email or password is missing");
-            return BadRequest("Email and password are required");
-        }
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
+            _logger.LogInformation($"Received login request with body: {body}");
 
-        _logger.LogInformation($"Searching for user with email: {email}");
-        
-        var user = await _context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email);
-        
-    _logger.LogInformation($"Found email: {email}");
+            var jsonDocument = JsonDocument.Parse(body);
+            var root = jsonDocument.RootElement;
 
-        if (user == null || user.Password != password)
-        {
-            _logger.LogWarning("Invalid email or password");
-            return Unauthorized(new { message = "Invalid email or password" });
-        }
+            var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
+            var password = root.TryGetProperty("password", out var passwordElement) ? passwordElement.GetString() ?? string.Empty : string.Empty;
 
-        _logger.LogInformation($"User {user.Email} logged in successfully");
-
-        return Ok(new
-        {
-            message = "Login successful",
-            data = new
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                id = user.ID,
-                email = user.Email,
-                username = user.Username,
-                sessionId = user.sessionID,
-                credits = user.Credits,
-                accountType = user.AccountType
+                _logger.LogWarning("Email or password is missing");
+                return BadRequest("Email and password are required");
             }
-        });
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError($"Unexpected error during login: {ex.Message}");
-        return StatusCode(500, new { message = "Internal server error", error = ex.Message });
-    }
+
+            _logger.LogInformation($"Searching for user with email: {email}");
+            
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email); // Removed AsNoTracking()
+
+            if (user == null || user.Password != password)
+            {
+                _logger.LogWarning("Invalid email or password");
+                return Unauthorized(new { message = "Invalid email or password" });
+            }
+
+            _logger.LogInformation($"User {user.Email} logged in successfully");
+
+            // Updating session ID
+            string newSessionId = Guid.NewGuid().ToString();
+            user.sessionID = newSessionId;
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            _logger.LogInformation("Transaction committed for login");
+
+            return Ok(new
+            {
+                message = "Login successful",
+                data = new
+                {
+                    id = user.ID,
+                    email = user.Email,
+                    username = user.Username,
+                    sessionId = newSessionId,
+                    credits = user.Credits,
+                    accountType = user.AccountType
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError($"Unexpected error during login: {ex.Message}");
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+        }
+    });
 }
+
+
 
 
 [HttpPost("register")]

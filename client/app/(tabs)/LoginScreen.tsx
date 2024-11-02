@@ -27,7 +27,8 @@ export default function LoginScreen() {
   
     try {
       await login(email, password); 
-      console.log("SUCCESSFULLY LOGGED IN");
+      setEmail(email);
+      setPassword(password);
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
