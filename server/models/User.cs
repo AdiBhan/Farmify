@@ -14,5 +14,10 @@ namespace server.models
         public string sessionID { get; set; }
         public string credits { get; set; }
 
+
+        // Navigation property back to User
+        public Buyer Buyer { get; set; }
+        public Seller Seller { get; set; }
+
     }
 }
