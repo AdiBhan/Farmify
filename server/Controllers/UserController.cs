@@ -31,6 +31,66 @@ namespace FarmifyService.Controllers
                 RedirectUri = "/success"
             }, GoogleDefaults.AuthenticationScheme);
         }
+
+[HttpPost("login")]
+public async Task<IActionResult> Login()
+{
+    try
+    {
+        using var reader = new StreamReader(Request.Body);
+        var body = await reader.ReadToEndAsync();
+        _logger.LogInformation($"Received login request with body: {body}");
+
+        var jsonDocument = JsonDocument.Parse(body);
+        var root = jsonDocument.RootElement;
+
+        var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
+        var password = root.TryGetProperty("password", out var passwordElement) ? passwordElement.GetString() ?? string.Empty : string.Empty;
+
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            _logger.LogWarning("Email or password is missing");
+            return BadRequest("Email and password are required");
+        }
+
+        _logger.LogInformation($"Searching for user with email: {email}");
+        
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email);
+        
+    _logger.LogInformation($"Found email: {email}");
+
+        if (user == null || user.Password != password)
+        {
+            _logger.LogWarning("Invalid email or password");
+            return Unauthorized(new { message = "Invalid email or password" });
+        }
+
+        _logger.LogInformation($"User {user.Email} logged in successfully");
+
+        return Ok(new
+        {
+            message = "Login successful",
+            data = new
+            {
+                id = user.ID,
+                email = user.Email,
+                username = user.Username,
+                sessionId = user.sessionID,
+                credits = user.Credits,
+                accountType = user.AccountType
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Unexpected error during login: {ex.Message}");
+        return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+    }
+}
+
+
 [HttpPost("register")]
 public async Task<IActionResult> Register()
 {
@@ -56,19 +116,19 @@ public async Task<IActionResult> Register()
 
             var email = emailElement.GetString() ?? string.Empty;
 
-            if (!root.TryGetProperty("username", out var usernameElement) || string.IsNullOrWhiteSpace(usernameElement.GetString()))
+            var username = root.TryGetProperty("username", out var usernameElement) ? usernameElement.GetString() ?? string.Empty : string.Empty;
+            if (string.IsNullOrWhiteSpace(username))
             {
                 _logger.LogWarning("Username is missing or empty");
                 return BadRequest("Username is required and cannot be empty");
             }
-
-            var username = usernameElement.GetString() ?? string.Empty;
+          
 
             _logger.LogInformation($"Checking for existing user with email: {email} or username: {username}");
 
             var existingUser = await _context.Users
                 .AsNoTracking()
-                .Where(u => u.Email.ToLower() == email.ToLower() || u.Username.ToLower() == username.ToLower())
+                .Where(u => u.Email.ToLower() == email.ToLower())
                 .FirstOrDefaultAsync();
 
             if (existingUser != null)
@@ -92,7 +152,8 @@ public async Task<IActionResult> Register()
             var accountType = root.TryGetProperty("accountType", out var accountTypeElement) ? 
                 accountTypeElement.GetString() ?? string.Empty : string.Empty;
 
-            _logger.LogInformation("Creating new user object");
+            _logger.LogInformation($"Creating new user object. Email: {email}, Username: {username}, Password: {password}, Account Type: {accountType}");
+
             var newUser = new User
             {
                 Email = email,
@@ -142,4 +203,4 @@ public async Task<IActionResult> Register()
     });
 }
     }
-};
+}

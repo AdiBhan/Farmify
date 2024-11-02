@@ -1,19 +1,56 @@
-import React from "react";
-import { Text, TextInput, View, TouchableOpacity, Platform, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, TextInput, View, Pressable, Platform } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
+import { Link, router, useRouter } from "expo-router";
 import styles from "./styles";
-import { Image } from "react-native";
 import GoogleAuth from "@/components/GoogleAuth";
-import useUser from "../../stores/userStore"
-import { useStore } from "zustand/react";
-
-
-
+import useUser from "../../stores/userStore";
 export default function LoginScreen() {
+  const { email, password, setEmail, setPassword, login, error, setError,isLoggedIn } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { email, password, setEmail, setPassword, login, register, logout, isLoggedIn } = useUser();
+  const router = useRouter();
+
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Redirect or navigate to another screen upon successful login
+      router.push("/Auction"); 
+    }
+  }, [isLoggedIn]);
+
+  const handleLogin = async () => {
+    if (!validateForm(email, password)) return;
+    setError(""); 
+    setIsLoading(true);
+  
+    try {
+      await login(email, password); 
+      console.log("SUCCESSFULLY LOGGED IN");
+    } catch (err) {
+      console.error("Login failed:", err);
+    } finally {
+      setIsLoading(false); 
+    }
+  };
+
+  const validateForm = (email, password) => {
+    if (!email) {
+      setError("Email is required");
+      return false;
+    }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+    if (!password) {
+      setError("Password is required");
+      return false;
+    }
+    return true;
+  };
+
   return (
     <ThemedView style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
@@ -22,56 +59,52 @@ export default function LoginScreen() {
             <Text style={styles.header}>Welcome Back</Text>
             <Text style={styles.subheader}>Login to your account</Text>
           </View>
-
+          {error ? <Text style={formStyles.errorText}>{error}</Text> : null}
           <View style={styles.buttonContainer}>
             <TextInput
+              onChangeText={setEmail}
               style={formStyles.input}
               placeholder="Enter your email address"
               placeholderTextColor="#666"
               keyboardType="email-address"
               autoCapitalize="none"
             />
-
             <TextInput
+              onChangeText={setPassword}
               style={formStyles.input}
               placeholder="Enter your password"
               placeholderTextColor="#666"
               secureTextEntry={true}
             />
-
-            <Pressable style={[styles.button, styles.primaryButton]}>
-              <Text style={styles.primaryButtonText}>Login</Text>
+            <Pressable onPress={handleLogin} style={[styles.button, styles.primaryButton]}>
+              <Text style={styles.primaryButtonText}> {isLoading ? "Connecting..." : "Login"}</Text>
             </Pressable>
-
             <GoogleAuth />
             <Link href="/RegisterScreen" style={formStyles.link}>
-              <Text style={formStyles.linkText}>
-                Don't have an account? Register
-              </Text>
+              <Text style={formStyles.linkText}>Don't have an account? Register</Text>
             </Link>
           </View>
         </View>
       </LinearGradient>
     </ThemedView>
-  );
+  )
 }
 
 // Additional styles specific to form elements
 const formStyles = {
   input: {
-    width: '100%',
-    backgroundColor: 'white',
+    width: "100%",
+    backgroundColor: "white",
     borderRadius: 28,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     fontSize: 16,
-    color: '#333333',
+    color: "#333333",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -83,11 +116,22 @@ const formStyles = {
   },
   link: {
     marginTop: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   linkText: {
-    color: '#2E7D32',
+    color: "#2E7D32",
     fontSize: 16,
-    fontWeight: '500',
-  },
+    fontWeight: "500",
+  },  errorText: {
+    backgroundColor: '#e8f5e9', 
+    padding: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#c8e6c9', 
+    color: '#1b5e20',
+    fontSize: 14,
+    textAlign: 'center',
+  }
 };

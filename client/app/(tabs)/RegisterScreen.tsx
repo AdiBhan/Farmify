@@ -43,6 +43,7 @@ export default function RegisterScreen() {
     /**
      * handleRegister() Handles the registration process and navigation
      */
+    
     if (!validateForm()) {
       return;
     }
@@ -134,7 +135,7 @@ export default function RegisterScreen() {
               editable={!isLoading}
             />
             <TextInput
-             onChangeText={setUsername}
+           
               onChangeText={setUsername}
               style={formStyles.input}
               placeholder="Enter your username"

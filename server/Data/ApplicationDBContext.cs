@@ -75,7 +75,7 @@ namespace FarmifyService.Data
                 entity.ToTable("Buyer", "public");
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.UserID)
-                    .HasColumnType("character"); // Make sure this matches User.ID type
+                    .HasColumnType("character"); 
             });
 
             modelBuilder.Entity<Seller>(entity =>
@@ -83,7 +83,7 @@ namespace FarmifyService.Data
                 entity.ToTable("Seller", "public");
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.UserID)
-                    .HasColumnType("character"); // Make sure this matches User.ID type
+                    .HasColumnType("character"); 
             });
         }
     }
