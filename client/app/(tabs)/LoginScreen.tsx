@@ -3,36 +3,45 @@ import { Text, TextInput, View, Pressable, Platform } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router, useRouter } from "expo-router";
-import styles from "./styles";
+import styles, { colors } from "./styles";
 import GoogleAuth from "@/components/GoogleAuth";
 import useUser from "../../stores/userStore";
 export default function LoginScreen() {
-  const { email, password, setEmail, setPassword, login, error, setError,isLoggedIn } = useUser();
+  const {
+    email,
+    password,
+    setEmail,
+    setPassword,
+    login,
+    error,
+    setError,
+    isLoggedIn,
+    setIsLoggedIn,
+  } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
-
   useEffect(() => {
     if (isLoggedIn) {
       // Redirect or navigate to another screen upon successful login
-      router.push("/Auction"); 
+      router.push("/Auction");
     }
   }, [isLoggedIn]);
 
   const handleLogin = async () => {
     if (!validateForm(email, password)) return;
-    setError(""); 
+    setError("");
     setIsLoading(true);
-  
+
     try {
-      await login(email, password); 
+      await login(email, password);
       setEmail(email);
       setPassword(password);
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -77,18 +86,45 @@ export default function LoginScreen() {
               placeholderTextColor="#666"
               secureTextEntry={true}
             />
-            <Pressable onPress={handleLogin} style={[styles.button, styles.primaryButton]}>
-              <Text style={styles.primaryButtonText}> {isLoading ? "Connecting..." : "Login"}</Text>
+            <Pressable
+              onPress={handleLogin}
+              style={[styles.button, styles.primaryButton]}
+            >
+              <Text style={styles.primaryButtonText}>
+                {" "}
+                {isLoading ? "Connecting..." : "Login"}
+              </Text>
             </Pressable>
             <GoogleAuth />
             <Link href="/RegisterScreen" style={formStyles.link}>
-              <Text style={formStyles.linkText}>Don't have an account? Register</Text>
+              <Text style={formStyles.linkText}>
+                Don't have an account? Register
+              </Text>
             </Link>
           </View>
         </View>
+
+        <Pressable
+          onPress={() => {
+            router.push("/Auction");
+            setIsLoggedIn(true);
+          }}
+          style={{
+            width: "50%",
+            height: 10,
+            padding: 30,
+            backgroundColor: "lightblue",
+            borderRadius: 28,
+            marginBottom: 30,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={styles.primaryButtonText}>SKIP FOR DEV</Text>
+        </Pressable>
       </LinearGradient>
     </ThemedView>
-  )
+  );
 }
 
 // Additional styles specific to form elements
@@ -123,16 +159,17 @@ const formStyles = {
     color: "#2E7D32",
     fontSize: 16,
     fontWeight: "500",
-  },  errorText: {
-    backgroundColor: '#e8f5e9', 
+  },
+  errorText: {
+    backgroundColor: "#e8f5e9",
     padding: 12,
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#c8e6c9', 
-    color: '#1b5e20',
+    borderColor: "#c8e6c9",
+    color: "#1b5e20",
     fontSize: 14,
-    textAlign: 'center',
-  }
+    textAlign: "center",
+  },
 };

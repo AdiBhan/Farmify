@@ -60,7 +60,7 @@ public async Task<IActionResult> Login()
             _logger.LogInformation($"Searching for user with email: {email}");
             
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email); // Removed AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == email); 
 
             if (user == null || user.Password != password)
             {

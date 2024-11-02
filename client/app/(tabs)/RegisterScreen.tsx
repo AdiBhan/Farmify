@@ -10,7 +10,7 @@ import {
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
-import styles from "./styles";
+import styles, { colors } from "./styles";
 import GoogleAuth from "@/components/GoogleAuth";
 import DropDownPicker from "react-native-dropdown-picker";
 import useUser from "@/stores/userStore";
