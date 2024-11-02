@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
-import styles from "../app/(tabs)/styles";
+import styles from "../app/styles";
 import { Linking } from "react-native";
 
 export default function GoogleAuth(): JSX.Element {

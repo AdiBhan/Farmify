@@ -10,7 +10,7 @@ import {
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
-import styles, { colors } from "./styles";
+import styles, { colors } from "../styles";
 import GoogleAuth from "@/components/GoogleAuth";
 import DropDownPicker from "react-native-dropdown-picker";
 import useUser from "@/stores/userStore";
@@ -61,7 +61,7 @@ export default function RegisterScreen() {
       });
       
       // If registration successful, navigate to the next screen
-      router.push("/LoginScreen");
+      router.push("/(auth)/login");
     } catch (err) {
       // Handle registration error
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
@@ -180,7 +180,7 @@ export default function RegisterScreen() {
             </Pressable>
 
             <GoogleAuth />
-            <Link href="/LoginScreen" style={formStyles.link}>
+            <Link href="/login" style={formStyles.link}>
               <Text style={formStyles.linkText}>
                 Already have an account? Login
               </Text>

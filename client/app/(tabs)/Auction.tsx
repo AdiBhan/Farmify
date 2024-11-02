@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
 import * as Animatable from 'react-native-animatable';
 import { BlurView } from 'expo-blur';
-import styles, { COLORS } from './stylesAuction';
+import styles, { COLORS } from '../stylesAuction';
 // Import icons from assets
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";

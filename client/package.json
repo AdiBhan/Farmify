@@ -18,10 +18,12 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.7.7",
     "client": "file:",
     "expo": "~51.0.28",
+    "expo-blur": "~13.0.2",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.9",
     "expo-linear-gradient": "~13.0.2",
@@ -44,8 +46,7 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.10",
     "sass": "^1.80.4",
-    "zustand": "^5.0.0",
-    "expo-blur": "~13.0.2"
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

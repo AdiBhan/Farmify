@@ -14,12 +14,12 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push("/LoginScreen");
+    router.push("/(auth)/login");
     console.log("Sign In pressed");
   };
 
   const handleRegister = () => {
-    router.push("/LoginScreen");
+    router.push("/(auth)/register");
     console.log("Create Account pressed");
   };
 
@@ -34,7 +34,7 @@ export default function HomeScreen() {
 
           <View style={styles.logoContainer}>
             <Image
-              source={require("../../assets/images/icon.png")}
+              source={require("../assets/images/icon.png")}
               style={styles.logo}
             />
           </View>

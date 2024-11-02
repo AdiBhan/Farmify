@@ -3,7 +3,7 @@ import { Text, TextInput, View, Pressable, Platform } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, router, useRouter } from "expo-router";
-import styles, { colors } from "./styles";
+import styles, { colors } from "../styles";
 import GoogleAuth from "@/components/GoogleAuth";
 import useUser from "../../stores/userStore";
 export default function LoginScreen() {
@@ -25,7 +25,7 @@ export default function LoginScreen() {
   useEffect(() => {
     if (isLoggedIn) {
       // Redirect or navigate to another screen upon successful login
-      router.push("/Auction");
+      router.push("/(tabs)/auction");
     }
   }, [isLoggedIn]);
 
@@ -96,7 +96,7 @@ export default function LoginScreen() {
               </Text>
             </Pressable>
             <GoogleAuth />
-            <Link href="/RegisterScreen" style={formStyles.link}>
+            <Link href="/(auth)/register" style={formStyles.link}>
               <Text style={formStyles.linkText}>
                 Don't have an account? Register
               </Text>
@@ -106,7 +106,8 @@ export default function LoginScreen() {
 
         <Pressable
           onPress={() => {
-            router.push("/Auction");
+            router.push(
+              "/(tabs)/auction");
             setIsLoggedIn(true);
           }}
           style={{
