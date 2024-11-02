@@ -1,26 +1,30 @@
 import React from "react";
 import {
   Image,
-  StyleSheet,
-  Platform,
   TouchableOpacity,
   View,
   Text,
 } from "react-native";
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import styles from "./styles";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import GoogleAuth from "@/components/GoogleAuth";
 
 export default function HomeScreen() {
   const router = useRouter();
 
+  const handleLogin = () => {
+    router.push("/LoginScreen");
+    console.log("Sign In pressed");
+  };
+
+  const handleRegister = () => {
+    router.push("/LoginScreen");
+    console.log("Create Account pressed");
+  };
+
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
@@ -38,29 +42,22 @@ export default function HomeScreen() {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[styles.button, styles.primaryButton]}
-              onPress={() => {
-                router.push("/LoginScreen");
-                console.log("Sign In pressed");
-              }}
+              onPress={handleLogin}
             >
               <Text style={styles.primaryButtonText}>Login In</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.button, styles.secondaryButton]}
-              onPress={() => {
-                console.log("Create Account pressed");
-                router.push("/LoginScreen");
-              }}
+              onPress={handleRegister}
             >
               <Text style={styles.secondaryButtonText}>Register Account</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Added GoogleAuth component */}
           <GoogleAuth />
         </View>
       </LinearGradient>
-    </ThemedView>
+    </View>
   );
 }

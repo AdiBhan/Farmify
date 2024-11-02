@@ -1,13 +1,19 @@
 import React from "react";
-import { Text, TextInput, View, TouchableOpacity, Platform } from "react-native";
+import { Text, TextInput, View, TouchableOpacity, Platform, Pressable } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import styles from "./styles";
 import { Image } from "react-native";
 import GoogleAuth from "@/components/GoogleAuth";
+import useUser from "../../stores/userStore"
+import { useStore } from "zustand/react";
+
+
 
 export default function LoginScreen() {
+
+  const { email, password, setEmail, setPassword, login, register, logout, isLoggedIn } = useUser();
   return (
     <ThemedView style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
@@ -33,9 +39,9 @@ export default function LoginScreen() {
               secureTextEntry={true}
             />
 
-            <TouchableOpacity style={[styles.button, styles.primaryButton]}>
+            <Pressable style={[styles.button, styles.primaryButton]}>
               <Text style={styles.primaryButtonText}>Login</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             <GoogleAuth />
             <Link href="/RegisterScreen" style={formStyles.link}>

@@ -6,8 +6,6 @@ import { Linking } from "react-native";
 export default function GoogleAuth(): JSX.Element {
     const [showWebView, setShowWebView] = useState(false);
 
-console.log("FRONTEND: " ,(process.env.EXPO_PUBLIC_REACT_NATIVE_BACKEND_URL));
-console.log("FRONTEND: " , (process.env.EXPO_PUBLIC_REACT_NATIVE_FRONTEND_URL))
     const handleGoogleAuth = () => {
         Linking.openURL("http://localhost:4000/login");
     }

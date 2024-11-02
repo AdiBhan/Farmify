@@ -11,11 +11,9 @@ Env.Load();
 var clientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
 var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
 
-
 // Add API explorer and Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 // Configure Authentication
 builder.Services.AddAuthentication(options =>
@@ -27,44 +25,41 @@ builder.Services.AddAuthentication(options =>
 .AddCookie() // To store user info in cookies
 .AddGoogle(options =>
 {
-    options.ClientId = clientId; // Use environment variable
-    options.ClientSecret = clientSecret; // Use environment variable
-    options.CallbackPath = new PathString("/signin-google"); // Callback URL
-      options.Scope.Add("email");// Request email scope from Google. By default OAuth doesn't give us access to user email. 
-      // We store this in database
+    options.ClientId = clientId;
+    options.ClientSecret = clientSecret;
+    options.CallbackPath = new PathString("/signin-google");
+    options.Scope.Add("email"); // Request email scope from Google
 });
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger();  // Enabling Swagger for endpoint testing in development
+    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseRouting(); // Adding Routing support
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseAuthentication(); //  Adding Authorization support
-app.UseAuthorization();  // Adding Authentication support
-
-// Initial/Root route, for testing purposes. Making sure localhost:4000 is reachable
+// Initial route for testing
 app.MapGet("/", (HttpContext httpContext) =>
 {
-    return new {
+    return new
+    {
         Message = "Welcome to Farmify!"
     };
 });
 
-// Success Route. User sent here after authentication.
-app.MapGet("success", (HttpContext httpContext) =>
+// Success route after Google authentication
+app.MapGet("/success", (HttpContext httpContext) =>
 {
-    
     var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-    // JSON Response object w/ Menssage, User, IsAuth, Email
     return new
     {
         Message = "You have successfully logged in with Google!",
@@ -74,10 +69,9 @@ app.MapGet("success", (HttpContext httpContext) =>
     };
 });
 
-
-
+// Set up controller routing
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-// Start App
+
 app.Run();
