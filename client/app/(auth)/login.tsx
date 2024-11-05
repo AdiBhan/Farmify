@@ -106,8 +106,7 @@ export default function LoginScreen() {
 
         <Pressable
           onPress={() => {
-            router.push(
-              "/(tabs)/auction");
+            router.push("/(tabs)/auction" as any);
             setIsLoggedIn(true);
           }}
           style={{
