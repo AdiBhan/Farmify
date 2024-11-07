@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   ScrollView,
@@ -31,64 +31,108 @@ const COLORS = {
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { username, isLoggedIn } = useUser();
+  const { username, isLoggedIn, role } = useUser(); // Assume 'role' is either 'Buyer' or 'Seller'
+  const redirectTimerRef = useRef(null);
 
   useEffect(() => {
-    const redirectTimer = setTimeout(() => {
+    redirectTimerRef.current = setTimeout(() => {
       if (typeof window !== "undefined" && !isLoggedIn) {
         router.push("/");
       }
     }, 1000);
 
-    return () => clearTimeout(redirectTimer);
+    return () => clearTimeout(redirectTimerRef.current);
   }, [isLoggedIn, router]);
-
-  const handleSettingsPress = () => {
-    console.log('Settings pressed');
-  };
-
-  const handleUploadPress = () => {
-    console.log('Upload pressed');
-  };
 
   if (!isLoggedIn) {
     return (
       <View style={styles.loadingContainer}>
-        <View style={styles.loadingSpinner} />
-        <Text style={styles.loadingText}>
-          Redirecting...
-        </Text>
+        <Animatable.View
+          animation="rotate"
+          iterationCount="infinite"
+          style={styles.loadingSpinner}
+        />
+        <Text style={styles.loadingText}>Redirecting...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={[COLORS.light, COLORS.white]}
-        style={styles.gradient}
-      >
+      <LinearGradient colors={[COLORS.light, COLORS.white]} style={styles.gradient}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.header}>
             <Text style={styles.headerText}>Settings</Text>
           </View>
 
           <View style={styles.settingsSection}>
-            <TouchableOpacity 
-              style={styles.settingsItem}
-              onPress={handleSettingsPress}
-            >
-              <Image source={SettingsIcon} style={styles.icon} />
-              <Text style={styles.settingsText}>General Settings</Text>
-            </TouchableOpacity>
+            {role === "Buyer" ? (
+              <>
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/buyerUpdateContact")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Update Contact Details</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.settingsItem}
-              onPress={handleUploadPress}
-            >
-              <Image source={UploadIcon} style={styles.icon} />
-              <Text style={styles.settingsText}>Upload Photo</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/buyerModifyRatings")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Modify Past Ratings</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/updatePaymentInfo")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Payment Information</Text>
+                </TouchableOpacity>
+              </>
+            ) : role === "Seller" ? (
+              <>
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-business")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Update Business Information</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-about")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Update About Page</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-auction")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Update Auction</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/upload-photo")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={UploadIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Upload Photo</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/settings/buyerSettings/updateContact")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Update Contact Details</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/modify-ratings")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Modify Past Ratings</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/settings/buyerSettings/updatePaymentInfo")}>
+                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
+                  <Image source={SettingsIcon} style={styles.icon} />
+                  <Text style={styles.settingsText}>Payment Information</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </ScrollView>
       </LinearGradient>
@@ -162,5 +206,11 @@ const styles = StyleSheet.create({
   settingsText: {
     fontSize: 16,
     color: COLORS.black,
+  },
+  noOptionsText: {
+    fontSize: 16,
+    color: COLORS.gray,
+    textAlign: 'center',
+    paddingTop: 20,
   },
 });
