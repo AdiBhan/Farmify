@@ -1,24 +1,26 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FarmifyService.models
 {
     public class Product
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Category { get; set; }
-        public int SellerID { get; set; }
-        public decimal Price { get; set; }
-        public int Quantity { get; set; }
-        public DateTime? ExpirationDate { get; set; }
-        public bool Status { get; set; }
+        [Key]
+        public string ID { get; set; } // Matches character(36) type
+        public string Name { get; set; } // Matches character varying(255)
+        public string Description { get; set; } // Matches character varying(255)
+        public string Category { get; set; } // Matches character varying(255)
+        
+        [ForeignKey("Seller")]
+        public string SellerID { get; set; } // Matches character(36) and serves as the foreign key
 
-        // Navigation to sellerID
-        public Seller seller { get; set; }
+        public int Quantity { get; set; } // Matches integer type
+        public decimal Price { get; set; } // Matches numeric(8, 2)
+        public string Status { get; set; } // Matches character varying(255)
+        public DateTime? ExpirationDate { get; set; } // Matches nullable date
 
+        // Navigation property to Seller
+        public Seller Seller { get; set; }
     }
 }

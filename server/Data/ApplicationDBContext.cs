@@ -13,10 +13,13 @@ namespace FarmifyService.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Buyer> Buyers { get; set; }
         public DbSet<Seller> Sellers { get; set; }
+        public DbSet<Product> Products { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Product>().ToTable("Product", "public");
 
             modelBuilder.Entity<User>(entity =>
             {
