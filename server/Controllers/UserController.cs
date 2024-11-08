@@ -31,6 +31,7 @@ namespace FarmifyService.Controllers
                 RedirectUri = "/success"
             }, GoogleDefaults.AuthenticationScheme);
         }
+
 [HttpPost("login")]
 public async Task<IActionResult> Login()
 {
@@ -212,8 +213,71 @@ public async Task<IActionResult> Register()
             _logger.LogError($"Unexpected error: {ex.Message}");
             _logger.LogError($"Stack trace: {ex.StackTrace}");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
-        }
-    });
+        }    });
 }
+
+        // New UpdateUser endpoint for updating contact information
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser()
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    using var reader = new StreamReader(Request.Body);
+                    var body = await reader.ReadToEndAsync();
+                    _logger.LogInformation($"Received update request with body: {body}");
+
+                    var jsonDocument = JsonDocument.Parse(body);
+                    var root = jsonDocument.RootElement;
+
+                    // Extract the user data from the request body
+                    var userId = root.TryGetProperty("id", out var idElement) ? idElement.GetInt32() : 0;
+                    var name = root.TryGetProperty("name", out var nameElement) ? nameElement.GetString() ?? string.Empty : string.Empty;
+                    var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
+                    var phoneNumber = root.TryGetProperty("phoneNumber", out var phoneElement) ? phoneElement.GetString() ?? string.Empty : string.Empty;
+                    var address = root.TryGetProperty("address", out var addressElement) ? addressElement.GetString() ?? string.Empty : string.Empty;
+
+                    if (userId == 0)
+                    {
+                        _logger.LogWarning("User ID is missing or invalid");
+                        return BadRequest("User ID is required and cannot be empty");
+                    }
+
+                    _logger.LogInformation($"Searching for user with ID: {userId}");
+
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+
+                    if (user == null)
+                    {
+                        _logger.LogWarning("User not found");
+                        return NotFound("User not found");
+                    }
+
+                    // Update user properties
+                    user.Name = name;
+                    user.Email = email;
+                    user.PhoneNumber = phoneNumber;
+                    user.Address = address;
+
+                    _logger.LogInformation("Updating user contact information");
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    _logger.LogInformation("Transaction committed for update");
+
+                    return Ok(new { message = "User information updated successfully." });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError($"Unexpected error during update: {ex.Message}");
+                    return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+                }
+            });
+        }
     }
 }

@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Pressable, Alert, StyleSheet } from "react-native";
+import { Text, TextInput, View, Pressable, Platform, Alert } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
 
-export default function UpdateBuyerContact() {
+export default function UpdateContactScreen() {
   const router = useRouter();
   const {
     getUserDetails,
     updateContactInfo,
+    error,
+    setError,
   } = useUser();
-
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
+  // Load user details initially
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -40,8 +42,7 @@ export default function UpdateBuyerContact() {
   }, []);
 
   const handleUpdate = async () => {
-    if (!validateForm()) return;
-
+    if (!validateForm(name, email, phoneNumber, address)) return;
     setError("");
     setIsLoading(true);
 
@@ -58,9 +59,9 @@ export default function UpdateBuyerContact() {
     }
   };
 
-  const validateForm = () => {
+  const validateForm = (name: string, email: string, phoneNumber: string, address: string) => {
     if (!name || !email || !phoneNumber || !address) {
-      setError("Please fill in all fields.");
+      setError("All fields are required.");
       return false;
     }
     if (!email.includes("@")) {
@@ -82,54 +83,50 @@ export default function UpdateBuyerContact() {
             <Text style={styles.header}>Update Contact Information</Text>
             <Text style={styles.subheader}>Edit your contact details below</Text>
           </View>
-
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          
+          {error ? <Text style={formStyles.errorText}>{error}</Text> : null}
 
           <View style={styles.buttonContainer}>
             <TextInput
               onChangeText={setName}
-              style={styles.input}
+              value={name}
+              style={formStyles.input}
               placeholder="Name"
               placeholderTextColor="#666"
-              value={name}
               editable={!isLoading}
             />
             <TextInput
               onChangeText={setEmail}
-              style={styles.input}
+              value={email}
+              style={formStyles.input}
               placeholder="Email"
               placeholderTextColor="#666"
               keyboardType="email-address"
               autoCapitalize="none"
-              value={email}
               editable={!isLoading}
             />
             <TextInput
               onChangeText={setPhoneNumber}
-              style={styles.input}
+              value={phoneNumber}
+              style={formStyles.input}
               placeholder="Phone Number"
               placeholderTextColor="#666"
               keyboardType="phone-pad"
-              value={phoneNumber}
               editable={!isLoading}
             />
             <TextInput
               onChangeText={setAddress}
-              style={[styles.input, styles.textArea]}
+              value={address}
+              style={[formStyles.input, formStyles.textArea]}
               placeholder="Address"
               placeholderTextColor="#666"
               multiline
-              value={address}
               editable={!isLoading}
             />
 
             <Pressable
               onPress={handleUpdate}
-              style={[
-                styles.button,
-                styles.primaryButton,
-                isLoading && styles.buttonDisabled,
-              ]}
+              style={[styles.button, styles.primaryButton]}
               disabled={isLoading}
             >
               <Text style={styles.primaryButtonText}>
@@ -143,79 +140,44 @@ export default function UpdateBuyerContact() {
   );
 }
 
-// Styles for UpdateBuyerContact Component
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9F9F9",
-  },
-  gradient: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    alignItems: "center",
-  },
-  headerContainer: {
-    marginTop: 40,
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 5,
-  },
-  subheader: {
+// Additional styles specific to form elements
+const formStyles = {
+  input: {
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 28,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
     fontSize: 16,
-    color: "#808080",
+    color: "#333333",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: "top",
   },
   errorText: {
-    color: "red",
-    marginBottom: 10,
+    backgroundColor: "#f8d7da",
+    padding: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#f5c6cb",
+    color: "#721c24",
     fontSize: 14,
     textAlign: "center",
   },
-  buttonContainer: {
-    width: "100%",
-  },
-  input: {
-    width: "100%",
-    padding: 15,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-    color: "#000000",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  button: {
-    width: "100%",
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-  },
-  buttonDisabled: {
-    backgroundColor: "#808080",
-  },
-  primaryButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-});
-
-
+};

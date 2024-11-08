@@ -13,7 +13,7 @@ export default function UpdatePaymentInfo() {
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
-  const [selectedCard, setSelectedCard] = useState(null); // Card currently being edited
+  const [selectedCard, setSelectedCard] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
