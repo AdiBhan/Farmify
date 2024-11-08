@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   Text,
+  Platform,
   TouchableOpacity,
 } from "react-native";
 import * as Animatable from 'react-native-animatable';
@@ -25,6 +26,7 @@ const initialTransactions = [
     image: { uri: "https://cdn-icons-png.flaticon.com/512/135/135620.png" },
     purchaseDate: "2024-10-01",
     amount: 5,
+    seller: "John's Farm",
     cost: 25.0,
     rating: 4,
   },
@@ -34,6 +36,7 @@ const initialTransactions = [
     image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
     purchaseDate: "2024-09-21",
     amount: 3,
+    seller: "Local Foodz",
     cost: 10.5,
     rating: null,
   },
@@ -50,16 +53,14 @@ const Header = ({ onSettingsPress, onUploadPress }) => (
           onPress={onSettingsPress}
         />
         <Text style={styles.header}>
-          Farmify Auctions
+          Past Purchases
         </Text>
         <IconButton
           icon={UploadIcon}
           onPress={onUploadPress}
         />
       </View>
-      <Text style={styles.welcomeText}>
-        HI!
-      </Text>
+
     </View>
   </Animatable.View>
 );
@@ -93,17 +94,24 @@ const TransactionItem = ({ transaction, onRate }) => {
   const [tempRating, setTempRating] = useState(transaction.rating || 0);
 
   const handleRatePress = () => {
+    console.log("Rate button pressed");
     onRate(transaction.id, tempRating);
   };
 
   return (
-    <View style={transactionStyles.itemContainer}>
+    <View style={transactionStyles.itemCard}>
+      {/* Left section: Image and details */}
       <Image source={transaction.image} style={transactionStyles.itemImage} />
-      <View style={transactionStyles.itemDetails}>
+      <View style={transactionStyles.detailsContainer}>
         <Text style={transactionStyles.itemName}>{transaction.name}</Text>
         <Text style={transactionStyles.itemDate}>Date: {transaction.purchaseDate}</Text>
+        <Text style={transactionStyles.itemDate}>Seller: {transaction.seller}</Text>
         <Text style={transactionStyles.itemAmount}>Amount: {transaction.amount}</Text>
         <Text style={transactionStyles.itemCost}>Cost: ${transaction.cost.toFixed(2)}</Text>
+      </View>
+
+      {/* Right section: Rating and button */}
+      <View style={transactionStyles.ratingContainer}>
         <StarRating rating={tempRating} setTempRating={setTempRating} />
         <TouchableOpacity onPress={handleRatePress} style={transactionStyles.rateButton}>
           <Text style={transactionStyles.rateButtonText}>
@@ -114,6 +122,7 @@ const TransactionItem = ({ transaction, onRate }) => {
     </View>
   );
 };
+
 
 export default function Transactions() {
   const router = useRouter();
@@ -157,13 +166,27 @@ export default function Transactions() {
   );
 }
 
+const shadowStyle = Platform.select({
+  ios: {
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+  android: {
+    elevation: 4,
+  },
+});
+
 const transactionStyles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+  itemCard: {
+    flexDirection: 'row',  // Set layout to row
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: COLORS.cardBg,
+    borderRadius: 16,
+    padding: 20,
+    ...shadowStyle,
   },
   itemImage: {
     width: 50,
@@ -171,29 +194,37 @@ const transactionStyles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 12,
   },
-  itemDetails: {
-    flex: 1,
+  detailsContainer: {
+    flex: 1,  // Allows details to take available space
+    justifyContent: 'flex-start',
   },
   itemName: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 4,
+    color: COLORS.text,
   },
   itemDate: {
     fontSize: 14,
-    color: "#555",
+    color: COLORS.textLight,
   },
   itemAmount: {
     fontSize: 14,
-    color: "#555",
+    color: COLORS.textLight,
+    marginTop: 4,
   },
   itemCost: {
     fontSize: 14,
-    color: "#555",
-    marginBottom: 4,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  ratingContainer: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',  // Aligns rating and button to the right
+    paddingLeft: 16,
   },
   starContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 8,
   },
   starIcon: {
@@ -202,15 +233,14 @@ const transactionStyles = StyleSheet.create({
     marginRight: 2,
   },
   rateButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.accent,
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 6,
     marginTop: 4,
-    alignSelf: "flex-start",
   },
   rateButtonText: {
-    color: "white",
+    color: COLORS.white,
     fontSize: 14,
   },
 });
