@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ScrollView,
@@ -11,12 +11,11 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
-import * as Animatable from 'react-native-animatable';
-import { BlurView } from 'expo-blur';
 
 // Import icons from assets
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
+import PhotoUploadPage from "@/components/PhotoUpload";
 
 // Define colors directly in the file to avoid dependency issues
 const COLORS = {
@@ -32,6 +31,7 @@ const COLORS = {
 export default function SettingsScreen() {
   const router = useRouter();
   const { username, isLoggedIn } = useUser();
+  const [isUploadPage, setisUploadPage] = useState(true);
 
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
@@ -49,6 +49,7 @@ export default function SettingsScreen() {
 
   const handleUploadPress = () => {
     console.log('Upload pressed');
+    setisUploadPage(prev => !prev)
   };
 
   if (!isLoggedIn) {
@@ -64,7 +65,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
+     {isUploadPage ? <LinearGradient
         colors={[COLORS.light, COLORS.white]}
         style={styles.gradient}
       >
@@ -91,7 +92,7 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </LinearGradient> : <PhotoUploadPage setisUploadPage={setisUploadPage} />}
     </View>
   );
 }
