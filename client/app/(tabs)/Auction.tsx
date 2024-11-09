@@ -23,9 +23,9 @@ import UploadIcon from "@/assets/images/upload_photo.webp";
 
 const AUCTION_ITEMS = [
   {
-    id: 1,
-    name: "Fresh Farm Tomatoes",
-    image: { uri: "https://cdn-icons-png.flaticon.com/512/135/135620.png" },
+    id: 211,
+    name: "Ribeye Steak",
+    image: { uri: `https://allbizkxjccwarsftcrq.supabase.co/storage/v1/object/public/Products/${id}jpg` },
     currentBid: 5.00,
     timeLeft: "2 hours",
     totalBids: 12,
@@ -33,8 +33,8 @@ const AUCTION_ITEMS = [
     description: "Locally grown, organic tomatoes fresh from the vine.",
   },
   {
-    id: 2,
-    name: "Organic Lettuce Bundle",
+    id: 309,
+    name: "Lobster",
     image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
     currentBid: 3.50,
     timeLeft: "45 minutes",
