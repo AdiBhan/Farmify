@@ -25,7 +25,7 @@ const AUCTION_ITEMS = [
   {
     id: 211,
     name: "Ribeye Steak",
-    image: { uri: `https://allbizkxjccwarsftcrq.supabase.co/storage/v1/object/public/Products/${id}jpg` },
+    image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
     currentBid: 5.00,
     timeLeft: "2 hours",
     totalBids: 12,
