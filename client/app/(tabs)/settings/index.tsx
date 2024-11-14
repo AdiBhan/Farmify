@@ -34,13 +34,13 @@ export default function SettingsScreen() {
   const [isUploadPage, setisUploadPage] = useState(true);
 
   useEffect(() => {
-    redirectTimerRef.current = setTimeout(() => {
+    const redirectTimer = setTimeout(() => {
       if (typeof window !== "undefined" && !isLoggedIn) {
         router.push("/");
       }
     }, 1000);
 
-    return () => clearTimeout(redirectTimerRef.current);
+    return () => clearTimeout(redirectTimer);
   }, [isLoggedIn, router]);
 
   const handleSettingsPress = () => {
@@ -55,12 +55,10 @@ export default function SettingsScreen() {
   if (!isLoggedIn) {
     return (
       <View style={styles.loadingContainer}>
-        <Animatable.View
-          animation="rotate"
-          iterationCount="infinite"
-          style={styles.loadingSpinner}
-        />
-        <Text style={styles.loadingText}>Redirecting...</Text>
+        <View style={styles.loadingSpinner} />
+        <Text style={styles.loadingText}>
+          Redirecting...
+        </Text>
       </View>
     );
   }
@@ -77,73 +75,21 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.settingsSection}>
-            {role === "Buyer" ? (
-              <>
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/buyerUpdateContact")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Update Contact Details</Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.settingsItem}
+              onPress={handleSettingsPress}
+            >
+              <Image source={SettingsIcon} style={styles.icon} />
+              <Text style={styles.settingsText}>General Settings</Text>
+            </TouchableOpacity>
 
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/buyerModifyRatings")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Modify Past Ratings</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/updatePaymentInfo")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Payment Information</Text>
-                </TouchableOpacity>
-              </>
-            ) : role === "Seller" ? (
-              <>
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-business")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Update Business Information</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-about")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Update About Page</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/update-auction")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Update Auction</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/upload-photo")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={UploadIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Upload Photo</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/settings/buyerSettings/updateContact")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Update Contact Details</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/modify-ratings")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Modify Past Ratings</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.settingsItem} onPress={() => router.push("/settings/buyerSettings/updatePaymentInfo")}>
-                  <BlurView intensity={30} style={StyleSheet.absoluteFill} />
-                  <Image source={SettingsIcon} style={styles.icon} />
-                  <Text style={styles.settingsText}>Payment Information</Text>
-                </TouchableOpacity>
-              </>
-            )}
+            <TouchableOpacity
+              style={styles.settingsItem}
+              onPress={handleUploadPress}
+            >
+              <Image source={UploadIcon} style={styles.icon} />
+              <Text style={styles.settingsText}>Upload Photo</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </LinearGradient> : <PhotoUploadPage setisUploadPage={setisUploadPage} />}
@@ -217,11 +163,5 @@ const styles = StyleSheet.create({
   settingsText: {
     fontSize: 16,
     color: COLORS.black,
-  },
-  noOptionsText: {
-    fontSize: 16,
-    color: COLORS.gray,
-    textAlign: 'center',
-    paddingTop: 20,
   },
 });
