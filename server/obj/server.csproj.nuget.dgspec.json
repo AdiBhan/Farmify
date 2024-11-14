@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\adity\\Downloads\\Fall2024\\auction-app\\server\\server.csproj": {}
+    "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\adity\\Downloads\\Fall2024\\auction-app\\server\\server.csproj": {
+    "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\adity\\Downloads\\Fall2024\\auction-app\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\Users\\adity\\Downloads\\Fall2024\\auction-app\\server\\server.csproj",
+        "projectPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj",
         "packagesPath": "C:\\Users\\adity\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\adity\\Downloads\\Fall2024\\auction-app\\server\\obj\\",
+        "outputPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\adity\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -55,6 +55,20 @@
               "version": "[8.0.10, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[8.0.10, )"
             },
