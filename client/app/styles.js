@@ -154,6 +154,49 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontStyle: "italic",
   },
+  input: {
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 28,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    fontSize: 16,
+    color: "#333333",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginVertical: 16,
+    borderRadius: 12,
+  },
+  imageButton: {
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 28,
+    alignItems: "center",
+    marginVertical: 16,
+  },
+  imageButtonText: {
+    color: "#2E7D32",
+    fontSize: 16,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingTop: 50,
+  },
 });
 
 export default styles;

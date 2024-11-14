@@ -86,4 +86,57 @@ public class DiagnosticController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
+
+    [HttpGet("table-content/{tableName}")]
+public async Task<IActionResult> GetTableContent(string tableName)
+{
+    try
+    {
+        // Basic validation to ensure the table name is safe
+        if (string.IsNullOrEmpty(tableName) || !tableName.All(char.IsLetterOrDigit))
+        {
+            return BadRequest(new { error = "Invalid table name." });
+        }
+
+        using var conn = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+        await conn.OpenAsync();
+
+        // Check if the table exists in the database
+        var checkTableSql = $@"
+            SELECT COUNT(*)
+            FROM information_schema.tables
+            WHERE table_name = '{tableName}'";
+
+        using var checkTableCmd = new NpgsqlCommand(checkTableSql, conn);
+        var tableExists = (long)await checkTableCmd.ExecuteScalarAsync() > 0;
+
+        if (!tableExists)
+        {
+            return NotFound(new { error = "Table does not exist." });
+        }
+
+        // Query to get all rows from the specified table
+        var sql = $@"SELECT * FROM {tableName};";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        var rows = new List<Dictionary<string, object>>();
+        while (await reader.ReadAsync())
+        {
+            var row = new Dictionary<string, object>();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                row[reader.GetName(i)] = reader.GetValue(i);
+            }
+            rows.Add(row);
+        }
+
+        return Ok(rows);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { error = ex.Message });
+    }
+}
+
 }

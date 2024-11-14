@@ -23,9 +23,9 @@ import UploadIcon from "@/assets/images/upload_photo.webp";
 
 const AUCTION_ITEMS = [
   {
-    id: 1,
-    name: "Fresh Farm Tomatoes",
-    image: { uri: "https://cdn-icons-png.flaticon.com/512/135/135620.png" },
+    id: 211,
+    name: "Ribeye Steak",
+    image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
     currentBid: 5.00,
     timeLeft: "2 hours",
     totalBids: 12,
@@ -33,8 +33,8 @@ const AUCTION_ITEMS = [
     description: "Locally grown, organic tomatoes fresh from the vine.",
   },
   {
-    id: 2,
-    name: "Organic Lettuce Bundle",
+    id: 309,
+    name: "Lobster",
     image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
     currentBid: 3.50,
     timeLeft: "45 minutes",
@@ -45,20 +45,20 @@ const AUCTION_ITEMS = [
 ];
 
 const IconButton = ({ icon, onPress }) => (
-  <TouchableOpacity 
+  <TouchableOpacity
     style={styles.iconButton}
     onPress={onPress}
   >
-    <Image 
-      source={icon} 
+    <Image
+      source={icon}
       style={styles.icon}
     />
   </TouchableOpacity>
 );
 
 const Header = ({ username, onSettingsPress, onUploadPress }) => (
-  <Animatable.View 
-    animation="fadeIn" 
+  <Animatable.View
+    animation="fadeIn"
     style={styles.headerContainer}
   >
     <View style={styles.headerSurface}>
@@ -89,15 +89,15 @@ const Chip = ({ label }) => (
 );
 
 const AuctionItem = ({ item, onBid }) => (
-  <Animatable.View 
-    animation="fadeInUp" 
-    duration={800} 
+  <Animatable.View
+    animation="fadeInUp"
+    duration={800}
     delay={200}
   >
     <View style={styles.itemCard}>
       <View style={styles.itemHeader}>
-        <Image 
-          source={item.image} 
+        <Image
+          source={item.image}
           style={styles.itemImage}
         />
         <View style={styles.itemHeaderText}>
@@ -108,16 +108,16 @@ const AuctionItem = ({ item, onBid }) => (
           <Text style={styles.badgeText}>{item.totalBids}</Text>
         </View>
       </View>
-      
+
       <Text style={styles.description}>{item.description}</Text>
-      
+
       <View style={styles.bidInfo}>
         <Chip label={`⏰ ${item.timeLeft}`} />
         <Chip label={`💰 $${item.currentBid.toFixed(2)}`} />
       </View>
-      
+
       <View style={styles.cardActions}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.bidButton}
           onPress={() => onBid(item)}
         >
@@ -154,6 +154,15 @@ export default function Auction() {
     console.log('Upload pressed');
   };
 
+  const handleItemPress = (item) => {
+    console.log(`Pressed ${item.name}`);
+    console.log(`ID: ${item.id}`);
+    router.push({
+      pathname: "/(tabs)/details",
+      params: { product: item.id },
+    });
+  };
+
   if (!isLoggedIn) {
     return (
       <View style={styles.loadingContainer}>
@@ -172,22 +181,24 @@ export default function Auction() {
         style={styles.gradient}
       >
         <BlurView intensity={80} style={styles.blurContainer}>
-          <Header 
+          <Header
             username={username}
             onSettingsPress={handleSettingsPress}
             onUploadPress={handleUploadPress}
           />
-          <ScrollView 
+          <ScrollView
             style={styles.auctionContainer}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
             {AUCTION_ITEMS.map((item) => (
-              <AuctionItem
-                key={item.id}
-                item={item}
-                onBid={handleBid}
-              />
+              <Pressable key={item.id} onPress={() => handleItemPress(item)}>
+                <AuctionItem
+                  key={item.id}
+                  item={item}
+                  onBid={handleBid}
+                />
+              </Pressable>
             ))}
           </ScrollView>
         </BlurView>
