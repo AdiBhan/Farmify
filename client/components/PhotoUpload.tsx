@@ -15,17 +15,27 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { createClient } from '@supabase/supabase-js'
+import { decode } from 'base64-arraybuffer'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const PhotoUploadScreen = ({ navigation , setisUploadPage }) => {
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+const PhotoUploadScreen = ({ navigation, setisUploadPage }) => {
 
 
- console.log(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL,  " ", process.env.EXPO_PUBLIC_SUPABASE_API_KEY);
+  console.log(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL, " ", process.env.EXPO_PUBLIC_SUPABASE_API_KEY);
   const supabase = createClient(
-        String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
-        String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
-      );
+    String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
+    String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
+  );
   const [selectedImage, setSelectedImage] = useState(null);
 
 
@@ -89,69 +99,60 @@ const PhotoUploadScreen = ({ navigation , setisUploadPage }) => {
   const handleUseAsProfile = async () => {
     if (!selectedImage) return;
     setIsUploading(true);
-    
+
     try {
       console.log('Starting upload process...');
-      
+
       // Generate unique file path with extension
       const timestamp = Date.now();
       const filePath = `public/${timestamp}.jpg`;
       console.log('Generated file path:', filePath);
-  
+
       // Convert image to base64 first
       console.log('Converting image...');
       const response = await fetch(selectedImage);
       const blobData = await response.blob();
-      
-      // Create a File object from the blob
-      const file = new File([blobData], filePath, {
-        type: 'image/jpeg',
-      });
-      
-      console.log('File created:', {
-        name: file.name,
-        size: file.size,
-        type: file.type
-      });
-  
+      const base64Data = await blobToBase64(blobData);
+
+      // Decode base64 to ArrayBuffer
+      const arrayBuffer = decode(base64Data.split(',')[1]);
+
       // Upload to Supabase
       console.log('Attempting upload to Supabase...');
       const { data, error } = await supabase.storage
         .from('Profiles')
-        .upload(filePath, file, {
-          cacheControl: '3600',
+        .upload(filePath, arrayBuffer, {
           contentType: 'image/jpeg',
-          upsert: true
         });
-  
+
       if (error) {
         console.error('Upload error:', error);
         throw error;
       }
-  
+
       console.log('Upload successful, getting public URL...');
-  
+
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('Profiles')
         .getPublicUrl(filePath);
-  
+
       console.log('Public URL:', publicUrl);
-  
+
       Alert.alert(
-        'Success', 
+        'Success',
         'Profile photo uploaded successfully!\nURL: ' + publicUrl
       );
-      
+
       setisUploadPage(prev => !prev);
-  
+
     } catch (error) {
       console.error('Full error details:', {
         message: error.message,
         code: error.statusCode,
         details: error?.details || 'No details available'
       });
-      
+
       Alert.alert(
         'Error',
         'Upload failed: ' + (error.message || 'Unknown error')
@@ -168,15 +169,15 @@ const PhotoUploadScreen = ({ navigation , setisUploadPage }) => {
         style={styles.container}
       >
         <View style={styles.header}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backButton}
-            onPress={() => setisUploadPage( prev => !prev)}
+            onPress={() => setisUploadPage(prev => !prev)}
           >
             <Ionicons name="chevron-back" size={24} color="#666" />
-         
+
           </TouchableOpacity>
           <Text style={styles.headerText}>Upload Photo</Text>
-          <View style={{width: 40}} /> 
+          <View style={{ width: 40 }} />
         </View>
 
         <View style={styles.uploadArea}>
@@ -217,7 +218,7 @@ const PhotoUploadScreen = ({ navigation , setisUploadPage }) => {
 
         {!selectedImage && (
           <View style={styles.actionButtons}>
-      
+
             <TouchableOpacity
               style={[styles.button, styles.cameraButton]}
               onPress={takePhoto}
