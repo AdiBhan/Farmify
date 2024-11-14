@@ -3,7 +3,8 @@
 
 # Ignore all node_modules folders everywhere
 **/node_modules
-
+bin/Debug/
+obj/Debug/
 .env
 server/.env
 server/.env
