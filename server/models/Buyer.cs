@@ -11,7 +11,7 @@ namespace FarmifyService.models
     public class Buyer
     {
         [Key]
-        public int ID { get; set; }
+        public string ID { get; set; }
         
         [Required]
         public string UserID { get; set; } = string.Empty;

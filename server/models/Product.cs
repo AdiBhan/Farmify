@@ -28,7 +28,7 @@ namespace FarmifyService.models
         public decimal StartPrice { get; set; } // Matches numeric(8, 2)
 
         [Required]
-        public string EndPrice { get; set; } // Matches character varying(255)
+        public decimal EndPrice { get; set; } // Matches character varying(255)
 
         [Required]
         public DateTime StartTime { get; set; } // Matches timestamp without time zone
