@@ -11,7 +11,7 @@ namespace FarmifyService.models
         public int ID { get; set; }
         public int BuyerID { get; set; }
         public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime TimeStamp { get; set; }
         public int AuctionID { get; set; }
 
 

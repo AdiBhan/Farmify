@@ -20,7 +20,7 @@ namespace FarmifyService.models
         public string Address { get; set; } = string.Empty;
         
         [Required]
-        public string Status { get; set; } = string.Empty;
+        public string SellerName { get; set; } = string.Empty;
 
         [ForeignKey("UserID")]
         public virtual User User { get; set; } = null!;
