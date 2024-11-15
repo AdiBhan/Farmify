@@ -90,6 +90,111 @@ namespace FarmifyService.Data
                 entity.Property(e => e.UserID)
                     .HasColumnType("character"); 
             });
+
+            // Configure Product entity
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.ToTable("Product", "public");
+
+                entity.HasKey(e => e.ID);
+
+                entity.Property(e => e.ID)
+                    .ValueGeneratedOnAdd()
+                    .IsRequired();
+
+                entity.Property(e => e.Name)
+                    .HasColumnType("character varying(255)")
+                    .IsRequired();
+
+                entity.Property(e => e.Description)
+                    .HasColumnType("character varying(255)")
+                    .IsRequired();
+
+                entity.Property(e => e.Category)
+                    .HasColumnType("character varying(255)");
+
+                entity.Property(e => e.SellerID)
+                    .HasColumnType("character(36)")
+                    .IsRequired();
+
+                entity.Property(e => e.Quantity)
+                    .HasColumnType("integer")
+                    .IsRequired();
+
+                entity.Property(e => e.StartPrice)
+                    .HasColumnType("numeric(8,2)")
+                    .IsRequired();
+
+                entity.Property(e => e.EndPrice)
+                    .HasColumnType("numeric")
+                    .IsRequired();
+
+                entity.Property(e => e.StartTime)
+                    .HasColumnType("timestamp without time zone")
+                    .IsRequired();
+
+                entity.Property(e => e.EndTime)
+                    .HasColumnType("timestamp without time zone")
+                    .IsRequired();
+
+                entity.Property(e => e.ImgUrl)
+                    .HasColumnType("text");
+
+                entity.HasOne(p => p.Seller)
+                    .WithMany()
+                    .HasForeignKey(p => p.SellerID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Configure Bid entity
+            modelBuilder.Entity<Bid>(entity =>
+            {
+                entity.ToTable("Bid", "public");
+
+                entity.HasKey(e => e.ID);
+
+                entity.Property(e => e.ID)
+                    .HasColumnType("character(36)")
+                    .IsRequired();
+
+                entity.Property(e => e.BuyerID)
+                    .HasColumnType("character(36)")
+                    .IsRequired();
+
+                entity.Property(e => e.Amount)
+                    .HasColumnType("numeric(8,2)")
+                    .IsRequired();
+
+                entity.Property(e => e.TimeStamp)
+                    .HasColumnType("timestamp without time zone")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                    .IsRequired();
+
+                entity.Property(e => e.AuctionID)
+                    .HasColumnType("bigint")
+                    .IsRequired();
+
+                entity.Property(e => e.Price)
+                    .HasColumnType("numeric")
+                    .IsRequired();
+
+                entity.Property(e => e.DeliveryStatus)
+                    .HasColumnType("boolean")
+                    .IsRequired();
+
+                entity.Property(e => e.Rating)
+                    .HasColumnType("integer");
+
+                entity.HasOne(b => b.Buyer)
+                    .WithMany()
+                    .HasForeignKey(b => b.BuyerID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(b => b.Product)
+                    .WithMany()
+                    .HasForeignKey(b => b.AuctionID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
