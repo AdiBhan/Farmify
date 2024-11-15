@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 
-namespace YourNamespace.Controllers
+namespace FarmifyService.Controllers
 {
     [Route("login")]
     public class LoginController : Controller

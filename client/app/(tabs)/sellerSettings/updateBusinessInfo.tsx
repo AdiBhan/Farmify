@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
-import { useSeller } from '../hooks/useSeller'; 
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import axios from 'axios';
+import useUser from '@/stores/userStore';
 
 export default function UpdateBusinessInfo() {
   const router = useRouter();
-  const { getBusinessDetails, updateBusinessInfo } = useSeller();
-
+  const { sessionID } = useUser(); 
+  
   const [businessName, setBusinessName] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
@@ -18,7 +19,12 @@ export default function UpdateBusinessInfo() {
     const fetchBusinessData = async () => {
       try {
         setIsLoading(true);
-        const businessData = await getBusinessDetails();
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/business`,
+          { headers: { sessionID } }
+        );
+
+        const businessData = response.data.data;
         setBusinessName(businessData.name || "");
         setAddress(businessData.address || "");
         setDescription(businessData.description || "");
@@ -31,7 +37,7 @@ export default function UpdateBusinessInfo() {
     };
 
     fetchBusinessData();
-  }, []);
+  }, [sessionID]);
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
@@ -40,10 +46,25 @@ export default function UpdateBusinessInfo() {
     setIsLoading(true);
 
     try {
-      await updateBusinessInfo({ businessName, address, description });
-      Alert.alert("Success", "Business information updated successfully.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      const payload = {
+        name: businessName,
+        address,
+        description,
+      };
+
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/business`,
+        payload,
+        { headers: { sessionID, 'Content-Type': 'application/json' } }
+      );
+
+      if (response.data.message === "Business information updated successfully") {
+        Alert.alert("Success", "Business information updated successfully.", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        throw new Error(response.data.message || "Failed to update business information.");
+      }
     } catch (err) {
       console.error("Update failed:", err);
       setError("Failed to update business information.");

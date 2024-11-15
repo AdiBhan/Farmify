@@ -3,17 +3,15 @@ import { Text, TextInput, View, Pressable, Alert, StyleSheet } from "react-nativ
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import axios from "axios";
 import useUser from "@/stores/userStore";
 
 export default function UpdateBuyerContact() {
   const router = useRouter();
-  const {
-    getUserDetails,
-    updateContactInfo,
-  } = useUser();
+  const { email: currentEmail, sessionID } = useUser();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(currentEmail || "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +21,12 @@ export default function UpdateBuyerContact() {
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const userData = await getUserDetails();
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/details`,
+          { headers: { sessionID } }
+        );
+        const userData = response.data.data;
+
         setName(userData.name || "");
         setEmail(userData.email || "");
         setPhoneNumber(userData.phoneNumber || "");
@@ -37,7 +40,7 @@ export default function UpdateBuyerContact() {
     };
 
     fetchUserData();
-  }, []);
+  }, [sessionID]);
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
@@ -46,10 +49,19 @@ export default function UpdateBuyerContact() {
     setIsLoading(true);
 
     try {
-      await updateContactInfo({ name, email, phoneNumber, address });
-      Alert.alert("Success", "Your contact information has been updated.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/update`,
+        { name, email, phoneNumber, address, sessionID },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data.message === "User updated successfully") {
+        Alert.alert("Success", "Your contact information has been updated.", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        throw new Error(response.data.message || "Failed to update contact information.");
+      }
     } catch (err) {
       console.error("Update failed:", err);
       setError("Failed to update contact information.");
@@ -145,40 +157,14 @@ export default function UpdateBuyerContact() {
 
 // Styles for UpdateBuyerContact Component
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9F9F9",
-  },
-  gradient: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    alignItems: "center",
-  },
-  headerContainer: {
-    marginTop: 40,
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 5,
-  },
-  subheader: {
-    fontSize: 16,
-    color: "#808080",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  buttonContainer: {
-    width: "100%",
-  },
+  container: { flex: 1, backgroundColor: "#F9F9F9" },
+  gradient: { flex: 1 },
+  contentContainer: { padding: 20, alignItems: "center" },
+  headerContainer: { marginTop: 40, alignItems: "center" },
+  header: { fontSize: 28, fontWeight: "bold", color: "#000", marginBottom: 5 },
+  subheader: { fontSize: 16, color: "#808080" },
+  errorText: { color: "red", marginBottom: 10, fontSize: 14, textAlign: "center" },
+  buttonContainer: { width: "100%" },
   input: {
     width: "100%",
     padding: 15,
@@ -193,29 +179,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  button: {
-    width: "100%",
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-  },
-  buttonDisabled: {
-    backgroundColor: "#808080",
-  },
-  primaryButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
+  textArea: { height: 100, textAlignVertical: "top" },
+  button: { width: "100%", paddingVertical: 15, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: 20 },
+  primaryButton: { backgroundColor: "#007AFF" },
+  buttonDisabled: { backgroundColor: "#808080" },
+  primaryButtonText: { fontSize: 18, fontWeight: "bold", color: "#FFFFFF" },
 });
-
 

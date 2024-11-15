@@ -1,114 +1,89 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Pressable, FlatList, Alert, StyleSheet } from "react-native";
+import { Text, TextInput, View, Pressable, Alert, StyleSheet } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import axios from "axios";
 import useUser from "@/stores/userStore";
 
-export default function UpdatePaymentInfo() {
+export default function UpdateBuyerContact() {
   const router = useRouter();
-  const { getCreditCards, addCreditCard, updateCreditCard, deleteCreditCard } = useUser();
+  const { email: currentEmail, sessionID } = useUser();
 
-  const [creditCards, setCreditCards] = useState([]);
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [selectedCard, setSelectedCard] = useState(null); // Card currently being edited
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState(currentEmail || "");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchCreditCards = async () => {
+    const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const cards = await getCreditCards();
-        setCreditCards(cards);
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/details`,
+          { headers: { sessionID } }
+        );
+        const userData = response.data.data;
+
+        setName(userData.name || "");
+        setEmail(userData.email || "");
+        setPhoneNumber(userData.phoneNumber || "");
+        setAddress(userData.address || "");
       } catch (err) {
-        console.error("Failed to fetch credit cards:", err);
-        setError("Failed to load payment information.");
+        console.error("Failed to fetch user data:", err);
+        setError("Failed to load user data.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCreditCards();
-  }, []);
+    fetchUserData();
+  }, [sessionID]);
 
-  const handleAddOrUpdateCard = async () => {
+  const handleUpdate = async () => {
     if (!validateForm()) return;
 
     setError("");
     setIsLoading(true);
 
     try {
-      if (selectedCard) {
-        // Update existing card
-        await updateCreditCard(selectedCard.id, { cardNumber, expiryDate, cvv });
-        Alert.alert("Success", "Credit card updated successfully.");
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/update`,
+        { name, email, phoneNumber, address, sessionID },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data.message === "User updated successfully") {
+        Alert.alert("Success", "Your contact information has been updated.", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
       } else {
-        // Add new card
-        await addCreditCard({ cardNumber, expiryDate, cvv });
-        Alert.alert("Success", "Credit card added successfully.");
+        throw new Error(response.data.message || "Failed to update contact information.");
       }
-
-      // Refresh the card list after adding/updating
-      const updatedCards = await getCreditCards();
-      setCreditCards(updatedCards);
-      resetForm();
     } catch (err) {
-      console.error("Failed to add/update credit card:", err);
-      setError("Failed to add/update credit card.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteCard = async (cardId) => {
-    try {
-      setIsLoading(true);
-      await deleteCreditCard(cardId);
-      Alert.alert("Success", "Credit card deleted successfully.");
-      setCreditCards(creditCards.filter(card => card.id !== cardId));
-    } catch (err) {
-      console.error("Failed to delete credit card:", err);
-      setError("Failed to delete credit card.");
+      console.error("Update failed:", err);
+      setError("Failed to update contact information.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const validateForm = () => {
-    if (!cardNumber || !expiryDate || !cvv) {
+    if (!name || !email || !phoneNumber || !address) {
       setError("Please fill in all fields.");
       return false;
     }
-    if (cardNumber.length !== 16) {
-      setError("Card number must be 16 digits.");
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
       return false;
     }
-    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
-      setError("Expiry date must be in MM/YY format.");
-      return false;
-    }
-    if (cvv.length !== 3) {
-      setError("CVV must be 3 digits.");
+    if (phoneNumber.length < 10) {
+      setError("Please enter a valid phone number.");
       return false;
     }
     return true;
-  };
-
-  const resetForm = () => {
-    setCardNumber("");
-    setExpiryDate("");
-    setCvv("");
-    setSelectedCard(null);
-  };
-
-  const handleEditCard = (card) => {
-    setSelectedCard(card);
-    setCardNumber(card.cardNumber);
-    setExpiryDate(card.expiryDate);
-    setCvv(card.cvv);
   };
 
   return (
@@ -116,114 +91,80 @@ export default function UpdatePaymentInfo() {
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
-            <Text style={styles.header}>Manage Payment Information</Text>
-            <Text style={styles.subheader}>Add, edit, or delete your credit cards</Text>
+            <Text style={styles.header}>Update Contact Information</Text>
+            <Text style={styles.subheader}>Edit your contact details below</Text>
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <View style={styles.inputContainer}>
+          <View style={styles.buttonContainer}>
             <TextInput
-              onChangeText={setCardNumber}
+              onChangeText={setName}
               style={styles.input}
-              placeholder="Card Number (16 digits)"
+              placeholder="Name"
               placeholderTextColor="#666"
-              keyboardType="number-pad"
-              value={cardNumber}
-              maxLength={16}
+              value={name}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setExpiryDate}
+              onChangeText={setEmail}
               style={styles.input}
-              placeholder="Expiry Date (MM/YY)"
+              placeholder="Email"
               placeholderTextColor="#666"
-              value={expiryDate}
-              maxLength={5}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setCvv}
+              onChangeText={setPhoneNumber}
               style={styles.input}
-              placeholder="CVV (3 digits)"
+              placeholder="Phone Number"
               placeholderTextColor="#666"
-              keyboardType="number-pad"
-              value={cvv}
-              maxLength={3}
+              keyboardType="phone-pad"
+              value={phoneNumber}
+              editable={!isLoading}
+            />
+            <TextInput
+              onChangeText={setAddress}
+              style={[styles.input, styles.textArea]}
+              placeholder="Address"
+              placeholderTextColor="#666"
+              multiline
+              value={address}
               editable={!isLoading}
             />
 
             <Pressable
-              onPress={handleAddOrUpdateCard}
-              style={[styles.button, styles.primaryButton, isLoading && styles.buttonDisabled]}
+              onPress={handleUpdate}
+              style={[
+                styles.button,
+                styles.primaryButton,
+                isLoading && styles.buttonDisabled,
+              ]}
               disabled={isLoading}
             >
               <Text style={styles.primaryButtonText}>
-                {selectedCard ? (isLoading ? "Updating..." : "Update Card") : (isLoading ? "Adding..." : "Add Card")}
+                {isLoading ? "Updating..." : "Update"}
               </Text>
             </Pressable>
           </View>
-
-          <FlatList
-            data={creditCards}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.cardContainer}>
-                <Text style={styles.cardText}>**** **** **** {item.cardNumber.slice(-4)}</Text>
-                <Text style={styles.cardText}>Expires: {item.expiryDate}</Text>
-                <View style={styles.cardActions}>
-                  <Pressable onPress={() => handleEditCard(item)}>
-                    <Text style={styles.editText}>Edit</Text>
-                  </Pressable>
-                  <Pressable onPress={() => handleDeleteCard(item.id)}>
-                    <Text style={styles.deleteText}>Delete</Text>
-                  </Pressable>
-                </View>
-              </View>
-            )}
-          />
         </View>
       </LinearGradient>
     </ThemedView>
   );
 }
 
-// Styles for UpdatePaymentInfo Component
+// Styles for UpdateBuyerContact Component
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9F9F9",
-  },
-  gradient: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    alignItems: "center",
-  },
-  headerContainer: {
-    marginTop: 40,
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 5,
-  },
-  subheader: {
-    fontSize: 16,
-    color: "#808080",
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  inputContainer: {
-    width: "100%",
-  },
+  container: { flex: 1, backgroundColor: "#F9F9F9" },
+  gradient: { flex: 1 },
+  contentContainer: { padding: 20, alignItems: "center" },
+  headerContainer: { marginTop: 40, alignItems: "center" },
+  header: { fontSize: 28, fontWeight: "bold", color: "#000", marginBottom: 5 },
+  subheader: { fontSize: 16, color: "#808080" },
+  errorText: { color: "red", marginBottom: 10, fontSize: 14, textAlign: "center" },
+  buttonContainer: { width: "100%" },
   input: {
     width: "100%",
     padding: 15,
@@ -238,51 +179,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  button: {
-    width: "100%",
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-  },
-  buttonDisabled: {
-    backgroundColor: "#808080",
-  },
-  primaryButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-  cardContainer: {
-    backgroundColor: "#FFFFFF",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardText: {
-    fontSize: 16,
-    color: "#000000",
-    marginBottom: 5,
-  },
-  cardActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  editText: {
-    color: "#007AFF",
-    fontSize: 16,
-  },
-  deleteText: {
-    color: "red",
-    fontSize: 16,
-  },
+  textArea: { height: 100, textAlignVertical: "top" },
+  button: { width: "100%", paddingVertical: 15, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: 20 },
+  primaryButton: { backgroundColor: "#007AFF" },
+  buttonDisabled: { backgroundColor: "#808080" },
+  primaryButtonText: { fontSize: 18, fontWeight: "bold", color: "#FFFFFF" },
 });

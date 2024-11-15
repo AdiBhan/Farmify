@@ -215,5 +215,97 @@ public async Task<IActionResult> Register()
         }
     });
 }
+
+[HttpPut("update")]
+public async Task<IActionResult> UpdateUser()
+{
+    var strategy = _context.Database.CreateExecutionStrategy();
+
+    return await strategy.ExecuteAsync(async () =>
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
+            _logger.LogInformation($"Received update request with body: {body}");
+
+            var jsonDocument = JsonDocument.Parse(body);
+            var root = jsonDocument.RootElement;
+
+            var sessionID = root.TryGetProperty("sessionID", out var sessionIdElement) ? 
+                sessionIdElement.GetString() ?? string.Empty : string.Empty;
+
+            if (string.IsNullOrWhiteSpace(sessionID))
+            {
+                _logger.LogWarning("Session ID is missing");
+                return BadRequest("Session ID is required");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.sessionID == sessionID);
+
+            if (user == null)
+            {
+                _logger.LogWarning($"No user found with session ID: {sessionID}");
+                return NotFound(new { message = "User not found" });
+            }
+
+            if (root.TryGetProperty("email", out var emailElement))
+            {
+                var email = emailElement.GetString();
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    _logger.LogInformation($"Updating email for user with session ID: {sessionID}");
+                    user.Email = email;
+                }
+            }
+
+            if (root.TryGetProperty("username", out var usernameElement))
+            {
+                var username = usernameElement.GetString();
+                if (!string.IsNullOrWhiteSpace(username))
+                {
+                    _logger.LogInformation($"Updating username for user with session ID: {sessionID}");
+                    user.Username = username;
+                }
+            }
+
+            if (root.TryGetProperty("password", out var passwordElement))
+            {
+                var password = passwordElement.GetString();
+                if (!string.IsNullOrWhiteSpace(password))
+                {
+                    _logger.LogInformation($"Updating password for user with session ID: {sessionID}");
+                    user.Password = password;
+                }
+            }
+
+            _logger.LogInformation("Saving changes to the database");
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            _logger.LogInformation("Transaction committed for update");
+
+            return Ok(new
+            {
+                message = "User updated successfully",
+                data = new
+                {
+                    id = user.ID,
+                    email = user.Email,
+                    username = user.Username,
+                    sessionId = user.sessionID
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError($"Unexpected error during update: {ex.Message}");
+            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+        }
+    });
+}
+
     }
 }

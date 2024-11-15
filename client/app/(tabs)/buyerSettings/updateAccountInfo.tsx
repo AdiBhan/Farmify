@@ -1,36 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
-import { useSeller } from '../hooks/useBuyer';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import useUser from '@/stores/userStore';
 
 export default function UpdateAccountInfo() {
   const router = useRouter();
-  const { getAccountDetails, updateAccountInfo } = useSeller();
+  const {
+    email: currentEmail,
+    username: currentUsername,
+    setEmail,
+    setUsername,
+    setPassword,
+    sessionID,
+    setError,
+    error,
+  } = useUser();
 
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmailInput] = useState(currentEmail);
+  const [username, setUsernameInput] = useState(currentUsername);
+  const [password, setPasswordInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchAccountData = async () => {
-      try {
-        setIsLoading(true);
-        const accountData = await getAccountDetails();
-        setEmail(accountData.email || "");
-        setPhoneNumber(accountData.phoneNumber || "");
-      } catch (err) {
-        console.error("Failed to fetch account data:", err);
-        setError("Failed to load account data.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAccountData();
-  }, []);
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
@@ -39,29 +29,43 @@ export default function UpdateAccountInfo() {
     setIsLoading(true);
 
     try {
-      await updateAccountInfo({ email, phoneNumber, password });
-      Alert.alert("Success", "Account information updated successfully.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/update`,
+        {
+          email,
+          username,
+          password: password || undefined,
+          sessionID,
+        },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      
+
+      if (response.data.success) {
+        setEmail(email);
+        setUsername(username);
+        if (password) setPassword("");
+        Alert.alert("Success", "Account information updated successfully.", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        throw new Error(response.data.message || "Failed to update account information.");
+      }
     } catch (err) {
       console.error("Update failed:", err);
-      setError("Failed to update account information.");
+      setError(err.message || "Failed to update account information.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const validateForm = () => {
-    if (!email || !phoneNumber || (password && password.length < 6)) {
+    if (!email || !username || (password && password.length < 6)) {
       setError("Please complete all fields and ensure the password is at least 6 characters long.");
       return false;
     }
     if (!email.includes("@")) {
       setError("Please enter a valid email address.");
-      return false;
-    }
-    if (phoneNumber.length < 10) {
-      setError("Please enter a valid phone number.");
       return false;
     }
     return true;
@@ -80,7 +84,7 @@ export default function UpdateAccountInfo() {
 
           <View style={styles.buttonContainer}>
             <TextInput
-              onChangeText={setEmail}
+              onChangeText={setEmailInput}
               style={styles.input}
               placeholder="Email"
               placeholderTextColor="#666"
@@ -90,18 +94,17 @@ export default function UpdateAccountInfo() {
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setPhoneNumber}
+              onChangeText={setUsernameInput}
               style={styles.input}
-              placeholder="Phone Number"
+              placeholder="Username"
               placeholderTextColor="#666"
-              keyboardType="phone-pad"
-              value={phoneNumber}
+              value={username}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setPassword}
+              onChangeText={setPasswordInput}
               style={styles.input}
-              placeholder="New Password"
+              placeholder="New Password (optional)"
               placeholderTextColor="#666"
               secureTextEntry
               value={password}

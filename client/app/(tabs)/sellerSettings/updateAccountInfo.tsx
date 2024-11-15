@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
-import { useSeller } from '../hooks/useSeller';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import axios from 'axios';
+import useUser from '@/stores/userStore';
 
 export default function UpdateAccountInfo() {
   const router = useRouter();
-  const { getAccountDetails, updateAccountInfo } = useSeller();
+  const { sessionID } = useUser();
 
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -18,7 +19,12 @@ export default function UpdateAccountInfo() {
     const fetchAccountData = async () => {
       try {
         setIsLoading(true);
-        const accountData = await getAccountDetails();
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/account`,
+          { headers: { sessionID } }
+        );
+
+        const accountData = response.data.data;
         setEmail(accountData.email || "");
         setPhoneNumber(accountData.phoneNumber || "");
       } catch (err) {
@@ -30,7 +36,7 @@ export default function UpdateAccountInfo() {
     };
 
     fetchAccountData();
-  }, []);
+  }, [sessionID]);
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
@@ -39,10 +45,25 @@ export default function UpdateAccountInfo() {
     setIsLoading(true);
 
     try {
-      await updateAccountInfo({ email, phoneNumber, password });
-      Alert.alert("Success", "Account information updated successfully.", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      const payload = {
+        email,
+        phoneNumber,
+        password: password || undefined, // Send password only if provided
+      };
+
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/account`,
+        payload,
+        { headers: { sessionID, 'Content-Type': 'application/json' } }
+      );
+
+      if (response.data.message === "Account updated successfully") {
+        Alert.alert("Success", "Account information updated successfully.", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        throw new Error(response.data.message || "Failed to update account information.");
+      }
     } catch (err) {
       console.error("Update failed:", err);
       setError("Failed to update account information.");
