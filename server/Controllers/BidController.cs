@@ -18,34 +18,86 @@ namespace FarmifyService.Controllers
             _context = context;
         }
 
-        // GET: api/bids
         [HttpGet]
-        public async Task<IActionResult> GetAllBids()
+    public async Task<IActionResult> GetAllBids()
+    {
+        try
         {
-            try
-            {
-                var bids = await _context.Bids
-                    .Include(b => b.Buyer)
-                    .Include(b => b.Product)
-                    .ToListAsync();
-                return Ok(bids);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+            var bids = await _context.Bids
+                .Include(b => b.Buyer) // Ensure Buyer is included
+                .Include(b => b.Product)
+                    .ThenInclude(p => p.Seller) // Ensure Seller is included through Product
+                .Select(b => new
+                {
+                    b.ID,
+                    b.Amount,
+                    b.TimeStamp,
+                    b.AuctionID,
+                    b.Price,
+                    b.DeliveryStatus,
+                    b.Rating,
+                    Buyer = new
+                    {
+                        b.BuyerID,
+                        Email = b.Buyer.User.Email // Assuming User.Email is accessible
+                    },
+                    Product = new
+                    {
+                        b.Product.ID,
+                        b.Product.Name,
+                        b.Product.Description,
+                        b.Product.StartPrice,
+                        b.Product.EndPrice,
+                        SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
+                    }
+                })
+                .ToListAsync();
 
-        // GET: api/bids/{id}
+            return Ok(bids);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBidById(string id)
         {
             try
             {
                 var bid = await _context.Bids
-                    .Include(b => b.Buyer)
+                    .Include(b => b.Buyer) // Load Buyer navigation property
                     .Include(b => b.Product)
-                    .FirstOrDefaultAsync(b => b.ID == id);
+                        .ThenInclude(p => p.Seller) // Load Seller navigation property through Product
+                    .Where(b => b.ID == id)
+                    .Select(b => new
+                    {
+                        b.ID,
+                        b.Amount,
+                        b.TimeStamp,
+                        b.AuctionID,
+                        b.Price,
+                        b.DeliveryStatus,
+                        b.Rating,
+                        Buyer = new
+                        {
+                            b.BuyerID,
+                            Email = b.Buyer.User.Email // Assuming Buyer.User.Email exists
+                        },
+                        Product = new
+                        {
+                            b.Product.ID,
+                            b.Product.Name,
+                            b.Product.Description,
+                            b.Product.StartPrice,
+                            b.Product.EndPrice,
+                            SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
+                        }
+                    })
+                    .FirstOrDefaultAsync();
+
                 if (bid == null)
                 {
                     return NotFound("Bid not found.");
@@ -58,6 +110,7 @@ namespace FarmifyService.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         // POST: api/bids
         [HttpPost]

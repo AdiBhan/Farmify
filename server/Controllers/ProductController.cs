@@ -24,21 +24,26 @@ namespace FarmifyService.Controllers
             try
             {
                 var products = await _context.Products
-            .Select(p => new
-            {
-                p.ID,
-                p.Name,
-                p.Description,
-                p.Category,
-                p.Quantity,
-                p.StartPrice,
-                p.EndPrice,
-                p.StartTime,
-                p.EndTime,
-                p.ImgUrl,
-                SellerName = p.Seller.SellerName // Include only SellerName
-            })
-            .ToListAsync();
+                .Join(
+                    _context.Sellers,
+                    product => product.SellerID,
+                    seller => seller.ID,
+                    (product, seller) => new
+                    {
+                        product.ID,
+                        product.Name,
+                        product.Description,
+                        product.Category,
+                        product.Quantity,
+                        product.StartPrice,
+                        product.EndPrice,
+                        product.StartTime,
+                        product.EndTime,
+                        product.ImgUrl,
+                        SellerName = seller.SellerName
+                    }
+                )
+                .ToListAsync();
                 return Ok(products);
             }
             catch (Exception ex)
