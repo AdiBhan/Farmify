@@ -7,25 +7,32 @@ namespace FarmifyService.models
     public class Bid
     {
         [Key]
-        public string ID { get; set; } // Matches character(36)
         [Required]
+        public required string ID { get; set; } 
+        
         [ForeignKey("Buyer")]
-        public string BuyerID { get; set; } // Matches character(36)
         [Required]
-        public decimal Amount { get; set; } // Matches numeric(8, 2)
+        public required string BuyerID { get; set; } 
+        
         [Required]
-        public DateTime TimeStamp { get; set; } // Matches timestamp without time zone
+        public decimal Amount { get; set; }
+        
         [Required]
+        public DateTime TimeStamp { get; set; }
+        
         [ForeignKey("Product")]
-        public long AuctionID { get; set; } // Matches bigint
         [Required]
-        public decimal Price { get; set; } // Matches numeric
+        public long AuctionID { get; set; } 
+        
         [Required]
-        public bool DeliveryStatus { get; set; } // Matches boolean
-        public int? Rating { get; set; } // Matches nullable integer
-
-        // Navigation properties
-        public Buyer Buyer { get; set; }
-        public Product Product { get; set; }
+        public decimal Price { get; set; }
+        
+        [Required]
+        public bool DeliveryStatus { get; set; } 
+        
+        public int? Rating { get; set; }
+        
+        public required Buyer Buyer { get; set; } 
+        public required Product Product { get; set; }
     }
 }

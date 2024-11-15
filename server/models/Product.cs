@@ -7,19 +7,19 @@ namespace FarmifyService.models
     public class Product
     {
         [Key]
-        public long ID { get; set; } // Matches bigint
+        public required long ID { get; set; } // Matches bigint
 
         [Required]
-        public string Name { get; set; } // Matches character varying(255)
+        public required string Name { get; set; } // Matches character varying(255)
 
         [Required]
-        public string Description { get; set; } // Matches character varying(255)
+        public required string Description { get; set; } // Matches character varying(255)
 
-        public string Category { get; set; } // Matches character varying(255)
+        public string? Category { get; set; } // Matches character varying(255)
 
         [Required]
         [ForeignKey("Seller")]
-        public string SellerID { get; set; } // Matches character(36)
+        public required string SellerID { get; set; } // Matches character(36)
 
         [Required]
         public int Quantity { get; set; } // Matches integer
@@ -28,7 +28,7 @@ namespace FarmifyService.models
         public decimal StartPrice { get; set; } // Matches numeric(8, 2)
 
         [Required]
-        public decimal EndPrice { get; set; } // Matches character varying(255)
+        public decimal EndPrice { get; set; } // Matches numeric(8, 2)
 
         [Required]
         public DateTime StartTime { get; set; } // Matches timestamp without time zone
@@ -36,10 +36,9 @@ namespace FarmifyService.models
         [Required]
         public DateTime EndTime { get; set; } // Matches timestamp without time zone
 
-        
-        public string ImgUrl { get; set; } // Matches character varying(255)
+        public string? ImgUrl { get; set; } // Matches character varying(255)
 
         // Navigation property
-        public Seller Seller { get; set; }
+        public required Seller Seller { get; set; }
     }
 }

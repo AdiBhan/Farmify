@@ -20,8 +20,7 @@ namespace FarmifyService.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Product>().ToTable("Product", "public");
-            modelBuilder.Entity<Bid>().ToTable("Bid", "public");
+            
 
             modelBuilder.Entity<User>(entity =>
             {
