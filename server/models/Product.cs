@@ -36,6 +36,9 @@ namespace FarmifyService.models
         [Required]
         public DateTime EndTime { get; set; } // Matches timestamp without time zone
 
+        
+        public string ImgUrl { get; set; } // Matches character varying(255)
+
         // Navigation property
         public Seller Seller { get; set; }
     }

@@ -35,6 +35,7 @@ namespace FarmifyService.Controllers
                 p.EndPrice,
                 p.StartTime,
                 p.EndTime,
+                p.ImgUrl,
                 SellerName = p.Seller.SellerName // Include only SellerName
             })
             .ToListAsync();
