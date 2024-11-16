@@ -87,7 +87,7 @@ namespace FarmifyService.Controllers
             {
                 data = new
                 {
-                    name = seller.Name,
+                    SellerName = seller.SellerName,
                     address = seller.Address,
                     description = seller.Description
                 }
@@ -108,8 +108,8 @@ namespace FarmifyService.Controllers
             if (seller == null)
                 return NotFound(new { message = "Seller not found" });
 
-            if (!string.IsNullOrWhiteSpace(model.Name))
-                seller.Name = model.Name;
+            if (!string.IsNullOrWhiteSpace(model.SellerName))
+                seller.SellerName = model.SellerName;
 
             if (!string.IsNullOrWhiteSpace(model.Address))
                 seller.Address = model.Address;
@@ -133,7 +133,7 @@ namespace FarmifyService.Controllers
 
     public class UpdateBusinessModel
     {
-        public string Name { get; set; }
+        public string SellerName { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }
     }
