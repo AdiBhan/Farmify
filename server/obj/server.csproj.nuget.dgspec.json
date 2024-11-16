@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "\\\\Mac\\Home\\Desktop\\Farmify\\server\\server.csproj": {}
+    "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj": {}
   },
   "projects": {
-    "\\\\Mac\\Home\\Desktop\\Farmify\\server\\server.csproj": {
+    "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "\\\\Mac\\Home\\Desktop\\Farmify\\server\\server.csproj",
+        "projectUniqueName": "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj",
         "projectName": "server",
-        "projectPath": "\\\\Mac\\Home\\Desktop\\Farmify\\server\\server.csproj",
-        "packagesPath": "C:\\Users\\kanghuanxu\\.nuget\\packages\\",
-        "outputPath": "\\\\Mac\\Home\\Desktop\\Farmify\\server\\obj\\",
+        "projectPath": "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj",
+        "packagesPath": "/Users/simeongluzman/.nuget/packages/",
+        "outputPath": "/Users/simeongluzman/Documents/GitHub/Farmify/server/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\kanghuanxu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/simeongluzman/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -106,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
