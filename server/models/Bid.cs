@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace FarmifyService.models
 {
@@ -8,7 +10,7 @@ namespace FarmifyService.models
     {
         [Key]
         [Required]
-        public required string ID { get; set; } 
+        public string ID { get; set; } = Guid.NewGuid().ToString();
         
         [ForeignKey("Buyer")]
         [Required]
@@ -31,8 +33,10 @@ namespace FarmifyService.models
         public bool DeliveryStatus { get; set; } 
         
         public int? Rating { get; set; }
-        
-        public required Buyer Buyer { get; set; } 
-        public required Product Product { get; set; }
+
+        [JsonIgnore]
+        public Buyer? Buyer { get; set; } 
+        [JsonIgnore]
+        public Product? Product { get; set; }
     }
 }

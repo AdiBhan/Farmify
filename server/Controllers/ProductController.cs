@@ -65,6 +65,7 @@ namespace FarmifyService.Controllers
         }
 
         // GET: api/products/{id}
+        // GET: api/products/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(long id)
         {
@@ -76,7 +77,22 @@ namespace FarmifyService.Controllers
                 var queryStart = Stopwatch.StartNew();
                 var product = await _context.Products
                     .Include(p => p.Seller)
-                    .FirstOrDefaultAsync(p => p.ID == id);
+                    .Where(p => p.ID == id)
+                    .Select(p => new
+                    {
+                        p.ID,
+                        p.Name,
+                        p.Description,
+                        p.Category,
+                        p.Quantity,
+                        p.StartPrice,
+                        p.EndPrice,
+                        p.StartTime,
+                        p.EndTime,
+                        p.ImgUrl,
+                        SellerName = p.Seller.SellerName
+                    })
+                    .FirstOrDefaultAsync();
                 queryStart.Stop();
 
                 _logger.LogInformation($"Query executed in {queryStart.ElapsedMilliseconds} ms");
@@ -99,5 +115,6 @@ namespace FarmifyService.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
     }
 }

@@ -128,7 +128,8 @@ namespace FarmifyService.Controllers
 
             try
             {
-                bid.TimeStamp = DateTime.UtcNow;
+                bid.TimeStamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+
 
                 _context.Bids.Add(bid);
                 await _context.SaveChangesAsync();
