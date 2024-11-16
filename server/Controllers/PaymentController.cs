@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using FarmifyService.Models; 
+using FarmifyService.models; 
 using FarmifyService.Data;   
 
 namespace FarmifyService.Controllers
