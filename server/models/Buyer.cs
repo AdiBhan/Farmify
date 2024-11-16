@@ -11,7 +11,7 @@ namespace FarmifyService.models
     public class Buyer
     {
         [Key]
-        public int ID { get; set; }
+        public required string ID { get; set; }
         
         [Required]
         public string UserID { get; set; } = string.Empty;
@@ -21,6 +21,8 @@ namespace FarmifyService.models
         
         [Required]
         public string Status { get; set; } = string.Empty;
+
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [ForeignKey("UserID")]
         public virtual User User { get; set; } = null!;

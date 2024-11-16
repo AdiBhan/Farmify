@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -7,73 +7,34 @@ import {
   Text,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
-import useUser from "@/stores/userStore";
 import { useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
+
 const FilledStarIcon = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
 const EmptyStarIcon = "https://cdn-icons-png.flaticon.com/512/1828/1828970.png";
 
-const initialTransactions = [
-  {
-    id: 1,
-    name: "Fresh Farm Tomatoes",
-    image: { uri: "https://cdn-icons-png.flaticon.com/512/135/135620.png" },
-    purchaseDate: "2024-10-01",
-    amount: 5,
-    seller: "John's Farm",
-    cost: 25.0,
-    rating: 4,
-  },
-  {
-    id: 2,
-    name: "Organic Lettuce Bundle",
-    image: { uri: "https://cdn-icons-png.flaticon.com/512/3076/3076000.png" },
-    purchaseDate: "2024-09-21",
-    amount: 3,
-    seller: "Local Foodz",
-    cost: 10.5,
-    rating: null,
-  },
-];
 const Header = ({ onSettingsPress, onUploadPress }) => (
-  <Animatable.View
-    animation="fadeIn"
-    style={styles.headerContainer}
-  >
+  <Animatable.View animation="fadeIn" style={styles.headerContainer}>
     <View style={styles.headerSurface}>
       <View style={styles.headerTop}>
-        <IconButton
-          icon={SettingsIcon}
-          onPress={onSettingsPress}
-        />
-        <Text style={styles.header}>
-          Past Purchases
-        </Text>
-        <IconButton
-          icon={UploadIcon}
-          onPress={onUploadPress}
-        />
+        <IconButton icon={SettingsIcon} onPress={onSettingsPress} />
+        <Text style={styles.header}>Past Purchases</Text>
+        <IconButton icon={UploadIcon} onPress={onUploadPress} />
       </View>
-
     </View>
   </Animatable.View>
 );
 
 const IconButton = ({ icon, onPress }) => (
-  <TouchableOpacity
-    style={styles.iconButton}
-    onPress={onPress}
-  >
-    <Image
-      source={icon}
-      style={styles.icon}
-    />
+  <TouchableOpacity style={styles.iconButton} onPress={onPress}>
+    <Image source={icon} style={styles.icon} />
   </TouchableOpacity>
 );
 
@@ -94,23 +55,28 @@ const TransactionItem = ({ transaction, onRate }) => {
   const [tempRating, setTempRating] = useState(transaction.rating || 0);
 
   const handleRatePress = () => {
-    console.log("Rate button pressed");
     onRate(transaction.id, tempRating);
   };
 
   return (
     <View style={transactionStyles.itemCard}>
-      {/* Left section: Image and details */}
-      <Image source={transaction.image} style={transactionStyles.itemImage} />
+      <Image
+        source={{ uri: transaction.product.imgUrl || "https://via.placeholder.com/150" }}
+        style={transactionStyles.itemImage}
+      />
       <View style={transactionStyles.detailsContainer}>
-        <Text style={transactionStyles.itemName}>{transaction.name}</Text>
-        <Text style={transactionStyles.itemDate}>Date: {transaction.purchaseDate}</Text>
-        <Text style={transactionStyles.itemDate}>Seller: {transaction.seller}</Text>
+        <Text style={transactionStyles.itemName}>{transaction.product.name}</Text>
+        <Text style={transactionStyles.itemDate}>
+          Date: {new Date(transaction.timeStamp).toLocaleDateString()}
+        </Text>
+        <Text style={transactionStyles.itemDate}>
+          Seller: {transaction.product.sellerName}
+        </Text>
         <Text style={transactionStyles.itemAmount}>Amount: {transaction.amount}</Text>
-        <Text style={transactionStyles.itemCost}>Cost: ${transaction.cost.toFixed(2)}</Text>
+        <Text style={transactionStyles.itemCost}>
+          Cost: ${transaction.price.toFixed(2)}
+        </Text>
       </View>
-
-      {/* Right section: Rating and button */}
       <View style={transactionStyles.ratingContainer}>
         <StarRating rating={tempRating} setTempRating={setTempRating} />
         <TouchableOpacity onPress={handleRatePress} style={transactionStyles.rateButton}>
@@ -123,10 +89,26 @@ const TransactionItem = ({ transaction, onRate }) => {
   );
 };
 
-
 export default function Transactions() {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [transactions, setTransactions] = useState(initialTransactions);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/bids");
+        const data = await response.json();
+        setTransactions(data);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   const handleRate = (transactionId, rating) => {
     setTransactions((prevTransactions) =>
@@ -138,26 +120,34 @@ export default function Transactions() {
   };
 
   const handleSettingsPress = () => {
-    console.log('Settings pressed');
+    console.log("Settings pressed");
   };
 
   const handleUploadPress = () => {
-    console.log('Upload pressed');
+    console.log("Upload pressed");
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Loading past purchases...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <LinearGradient colors={[COLORS.light, COLORS.white]} style={styles.gradient}>
         <BlurView intensity={80} style={styles.blurContainer}>
-          <Header
-
-            onSettingsPress={handleSettingsPress}
-            onUploadPress={handleUploadPress}
-          />
-
+          <Header onSettingsPress={handleSettingsPress} onUploadPress={handleUploadPress} />
           <ScrollView style={styles.auctionContainer} contentContainerStyle={styles.scrollContent}>
             {transactions.map((transaction) => (
-              <TransactionItem key={transaction.id} transaction={transaction} onRate={handleRate} />
+              <TransactionItem
+                key={transaction.id}
+                transaction={transaction}
+                onRate={handleRate}
+              />
             ))}
           </ScrollView>
         </BlurView>
@@ -180,8 +170,8 @@ const shadowStyle = Platform.select({
 
 const transactionStyles = StyleSheet.create({
   itemCard: {
-    flexDirection: 'row',  // Set layout to row
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
     backgroundColor: COLORS.cardBg,
     borderRadius: 16,
@@ -195,8 +185,8 @@ const transactionStyles = StyleSheet.create({
     marginRight: 12,
   },
   detailsContainer: {
-    flex: 1,  // Allows details to take available space
-    justifyContent: 'flex-start',
+    flex: 1,
+    justifyContent: "flex-start",
   },
   itemName: {
     fontSize: 16,
@@ -219,12 +209,12 @@ const transactionStyles = StyleSheet.create({
     color: COLORS.text,
   },
   ratingContainer: {
-    justifyContent: 'center',
-    alignItems: 'flex-end',  // Aligns rating and button to the right
+    justifyContent: "center",
+    alignItems: "flex-end",
     paddingLeft: 16,
   },
   starContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 8,
   },
   starIcon: {

@@ -7,20 +7,38 @@ namespace FarmifyService.models
     public class Product
     {
         [Key]
-        public string ID { get; set; } // Matches character(36) type
-        public string Name { get; set; } // Matches character varying(255)
-        public string Description { get; set; } // Matches character varying(255)
-        public string Category { get; set; } // Matches character varying(255)
-        
+        public required long ID { get; set; } // Matches bigint
+
+        [Required]
+        public required string Name { get; set; } // Matches character varying(255)
+
+        [Required]
+        public required string Description { get; set; } // Matches character varying(255)
+
+        public string? Category { get; set; } // Matches character varying(255)
+
+        [Required]
         [ForeignKey("Seller")]
-        public string SellerID { get; set; } // Matches character(36) and serves as the foreign key
+        public required string SellerID { get; set; } // Matches character(36)
 
-        public int Quantity { get; set; } // Matches integer type
-        public decimal Price { get; set; } // Matches numeric(8, 2)
-        public string Status { get; set; } // Matches character varying(255)
-        public DateTime? ExpirationDate { get; set; } // Matches nullable date
+        [Required]
+        public int Quantity { get; set; } // Matches integer
 
-        // Navigation property to Seller
-        public Seller Seller { get; set; }
+        [Required]
+        public decimal StartPrice { get; set; } // Matches numeric(8, 2)
+
+        [Required]
+        public decimal EndPrice { get; set; } // Matches numeric(8, 2)
+
+        [Required]
+        public DateTime StartTime { get; set; } // Matches timestamp without time zone
+
+        [Required]
+        public DateTime EndTime { get; set; } // Matches timestamp without time zone
+
+        public string? ImgUrl { get; set; } // Matches character varying(255)
+
+        // Navigation property
+        public required Seller Seller { get; set; }
     }
 }

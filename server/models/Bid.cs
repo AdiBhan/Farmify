@@ -1,26 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace FarmifyService.models
 {
     public class Bid
     {
-        public int ID { get; set; }
-        public int BuyerID { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public int AuctionID { get; set; }
-
-
-
+        [Key]
         [Required]
-        public Buyer buyer { get; set; }
-
+        public string ID { get; set; } = Guid.NewGuid().ToString();
+        
+        [ForeignKey("Buyer")]
+        [Required]
+        public required string BuyerID { get; set; } 
         
         [Required]
-        public Auction auction { get; set; }
+        public int Amount { get; set; }
+        
+        [Required]
+        public DateTime TimeStamp { get; set; }
+        
+        [ForeignKey("Product")]
+        [Required]
+        public long AuctionID { get; set; } 
+        
+        [Required]
+        public decimal Price { get; set; }
+        
+        [Required]
+        public bool DeliveryStatus { get; set; } 
+        
+        public int? Rating { get; set; }
+
+        [JsonIgnore]
+        public Buyer? Buyer { get; set; } 
+        [JsonIgnore]
+        public Product? Product { get; set; }
     }
 }

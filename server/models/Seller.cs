@@ -11,7 +11,7 @@ namespace FarmifyService.models
     public class Seller
     {
         [Key]
-        public string ID { get; set; }
+        public required string ID { get; set; }
         
         [Required]
         public string UserID { get; set; } = string.Empty;
@@ -19,13 +19,9 @@ namespace FarmifyService.models
         [Required]
         public string Address { get; set; } = string.Empty;
         
-        [Required]
-        public string Status { get; set; } = string.Empty;
+        
 
-        [Required]
-         public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-
+        public string SellerName { get; set; } = string.Empty;
         [ForeignKey("UserID")]
         public virtual User User { get; set; } = null!;
     }
