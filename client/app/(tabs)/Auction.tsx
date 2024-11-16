@@ -61,8 +61,6 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
 };
 
 
-
-
 const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const router = useRouter();
@@ -83,13 +81,14 @@ const Auction = () => {
             item.endPrice,
             item.startTime,
             item.endTime
-          ), // Dynamic price calculation
-          timeLeft: calculateTimeLeft(item.endTime), // Time remaining
+          ), // Calculate price once
+          timeLeft: calculateTimeLeft(item.endTime), // Calculate time left once
           totalBids: 0, // Replace with actual bid count if available
           seller: item.sellerName,
           description: item.description,
-          startTime: item.startTime, // Keep start and end times for updates
-          endTime: item.endTime,
+          startTime: item.startTime, // Keep for display
+          endTime: item.endTime, // Keep for display
+          quantity: item.quantity || 1, // Include quantity with a default of 1
         }));
 
         setAuctionItems(formattedData);
@@ -99,26 +98,7 @@ const Auction = () => {
     };
 
     fetchAuctionItems();
-
-    // Set up interval to update `timeLeft` and `currentBid` every 5 seconds
-    const interval = setInterval(() => {
-      setAuctionItems((prevItems) =>
-        prevItems.map((item) => ({
-          ...item,
-          timeLeft: calculateTimeLeft(item.endTime), // Update timeLeft
-          currentBid: calculateCurrentPrice(
-            item.startPrice,
-            item.endPrice,
-            item.startTime,
-            item.endTime
-          ), // Update price
-        }))
-      );
-    }, 5000);
-
-    return () => clearInterval(interval); // Clear interval on component unmount
-  }, []);
-
+  }, []); // No interval updates
 
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
@@ -186,25 +166,6 @@ const Auction = () => {
   );
 };
 
-const Header = ({ username, onSettingsPress, onUploadPress }) => (
-  <Animatable.View animation="fadeIn" style={styles.headerContainer}>
-    <View style={styles.headerSurface}>
-      <View style={styles.headerTop}>
-        <IconButton icon={SettingsIcon} onPress={onSettingsPress} />
-        <Text style={styles.header}>Farmify Auctions</Text>
-        <IconButton icon={UploadIcon} onPress={onUploadPress} />
-      </View>
-      <Text style={styles.welcomeText}>Welcome, {username}</Text>
-    </View>
-  </Animatable.View>
-);
-
-const IconButton = ({ icon, onPress }) => (
-  <TouchableOpacity style={styles.iconButton} onPress={onPress}>
-    <Image source={icon} style={styles.icon} />
-  </TouchableOpacity>
-);
-
 const AuctionItem = ({ item, onBid }) => (
   <Animatable.View animation="fadeInUp" duration={800} delay={200}>
     <View style={styles.itemCard}>
@@ -213,6 +174,7 @@ const AuctionItem = ({ item, onBid }) => (
         <View style={styles.itemHeaderText}>
           <Text style={styles.itemTitle}>{item.name}</Text>
           <Text style={styles.itemSeller}>{item.seller}</Text>
+          <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text> {/* Display quantity */}
         </View>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{item.totalBids}</Text>
@@ -230,7 +192,6 @@ const AuctionItem = ({ item, onBid }) => (
               : `💰 $${item.currentBid.toFixed(2)}`
           }
         />
-
       </View>
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.bidButton} onPress={() => onBid(item)}>
@@ -240,11 +201,3 @@ const AuctionItem = ({ item, onBid }) => (
     </View>
   </Animatable.View>
 );
-
-const Chip = ({ label }) => (
-  <View style={styles.chip}>
-    <Text style={styles.chipText}>{label}</Text>
-  </View>
-);
-
-export default Auction;
