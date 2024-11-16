@@ -18,6 +18,51 @@ import styles, { COLORS } from "../stylesAuction";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 
+const calculateTimeLeft = (endTime) => {
+  const now = new Date();
+  const end = new Date(endTime);
+  const differenceInSeconds = Math.floor((end - now) / 1000);
+
+  if (differenceInSeconds <= 0) {
+    return "Auction Ended";
+  }
+
+  // Time units in seconds
+  const timeUnits = [
+    { unit: "day", value: 86400 },
+    { unit: "hour", value: 3600 },
+    { unit: "minute", value: 60 },
+    { unit: "second", value: 1 },
+  ];
+
+  // Find the largest time unit that fits
+  for (const { unit, value } of timeUnits) {
+    const amount = Math.floor(differenceInSeconds / value);
+    if (amount > 0) {
+      const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+      return formatter.format(amount, unit); // Positive for future
+    }
+  }
+};
+
+const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
+  const now = new Date();
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (now >= end) return null; // Auction has ended
+  if (now <= start) return null; // Auction hasn't started
+
+  const totalDuration = end - start;
+  const elapsed = now - start;
+  const progress = elapsed / totalDuration;
+
+  return startPrice + (endPrice - startPrice) * progress; // Always returns a number
+};
+
+
+
+
 const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const router = useRouter();
@@ -28,16 +73,25 @@ const Auction = () => {
       try {
         const response = await fetch("http://localhost:4000/api/products");
         const data = await response.json();
+
         const formattedData = data.map((item) => ({
           id: item.id,
           name: item.name,
           image: { uri: item.imgUrl },
-          currentBid: item.startPrice,
-          timeLeft: "TBD", // Update this to calculate actual time left
+          currentBid: calculateCurrentPrice(
+            item.startPrice,
+            item.endPrice,
+            item.startTime,
+            item.endTime
+          ), // Dynamic price calculation
+          timeLeft: calculateTimeLeft(item.endTime), // Time remaining
           totalBids: 0, // Replace with actual bid count if available
           seller: item.sellerName,
           description: item.description,
+          startTime: item.startTime, // Keep start and end times for updates
+          endTime: item.endTime,
         }));
+
         setAuctionItems(formattedData);
       } catch (error) {
         console.error("Error fetching auction items:", error);
@@ -45,7 +99,26 @@ const Auction = () => {
     };
 
     fetchAuctionItems();
+
+    // Set up interval to update `timeLeft` and `currentBid` every 5 seconds
+    const interval = setInterval(() => {
+      setAuctionItems((prevItems) =>
+        prevItems.map((item) => ({
+          ...item,
+          timeLeft: calculateTimeLeft(item.endTime), // Update timeLeft
+          currentBid: calculateCurrentPrice(
+            item.startPrice,
+            item.endPrice,
+            item.startTime,
+            item.endTime
+          ), // Update price
+        }))
+      );
+    }, 5000);
+
+    return () => clearInterval(interval); // Clear interval on component unmount
   }, []);
+
 
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
@@ -148,7 +221,16 @@ const AuctionItem = ({ item, onBid }) => (
       <Text style={styles.description}>{item.description}</Text>
       <View style={styles.bidInfo}>
         <Chip label={`⏰ ${item.timeLeft}`} />
-        <Chip label={`💰 $${item.currentBid.toFixed(2)}`} />
+        <Chip
+          label={
+            item.currentBid === null
+              ? item.startTime > new Date()
+                ? "💰 Auction Not Started"
+                : "💰 Auction Ended"
+              : `💰 $${item.currentBid.toFixed(2)}`
+          }
+        />
+
       </View>
       <View style={styles.cardActions}>
         <TouchableOpacity style={styles.bidButton} onPress={() => onBid(item)}>
