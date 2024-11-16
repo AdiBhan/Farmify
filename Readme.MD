@@ -141,6 +141,8 @@ Simeon:
 
   8. Display real site stats instead of mock data on stats page
 
+  9. Update NavBar
+
 
 
 
