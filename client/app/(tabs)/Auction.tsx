@@ -60,7 +60,6 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
   return startPrice + (endPrice - startPrice) * progress; // Always returns a number
 };
 
-
 const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const router = useRouter();
@@ -166,6 +165,26 @@ const Auction = () => {
   );
 };
 
+const Header = ({ username, onSettingsPress, onUploadPress }) => (
+  <Animatable.View animation="fadeIn" style={styles.headerContainer}>
+    <View style={styles.headerSurface}>
+      <View style={styles.headerTop}>
+        <IconButton icon={SettingsIcon} onPress={onSettingsPress} />
+        <Text style={styles.header}>Farmify Auctions</Text>
+        <IconButton icon={UploadIcon} onPress={onUploadPress} />
+      </View>
+      <Text style={styles.welcomeText}>Welcome, {username}</Text>
+    </View>
+  </Animatable.View>
+);
+
+const IconButton = ({ icon, onPress }) => (
+  <TouchableOpacity style={styles.iconButton} onPress={onPress}>
+    <Image source={icon} style={styles.icon} />
+  </TouchableOpacity>
+);
+
+
 const AuctionItem = ({ item, onBid }) => (
   <Animatable.View animation="fadeInUp" duration={800} delay={200}>
     <View style={styles.itemCard}>
@@ -201,3 +220,11 @@ const AuctionItem = ({ item, onBid }) => (
     </View>
   </Animatable.View>
 );
+
+const Chip = ({ label }) => (
+  <View style={styles.chip}>
+    <Text style={styles.chipText}>{label}</Text>
+  </View>
+);
+
+export default Auction;
