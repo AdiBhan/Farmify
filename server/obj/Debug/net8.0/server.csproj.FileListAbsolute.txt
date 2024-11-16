@@ -302,3 +302,14 @@ C:/Users/adity/Downloads/Fall2024/Farmify/server/bin/Debug/net8.0/zh-Hant/Micros
 /Users/simeongluzman/Documents/GitHub/Farmify/server/obj/Debug/net8.0/server.pdb
 /Users/simeongluzman/Documents/GitHub/Farmify/server/obj/Debug/net8.0/server.genruntimeconfig.cache
 /Users/simeongluzman/Documents/GitHub/Farmify/server/obj/Debug/net8.0/ref/server.dll
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.csproj.AssemblyReference.cache
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.GeneratedMSBuildEditorConfig.editorconfig
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.AssemblyInfoInputs.cache
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.AssemblyInfo.cs
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.csproj.CoreCompileInputs.cache
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.MvcApplicationPartsAssemblyInfo.cs
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.MvcApplicationPartsAssemblyInfo.cache
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.sourcelink.json
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.dll
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\refint\server.dll
+\\Mac\Home\Desktop\Farmify\server\obj\Debug\net8.0\server.pdb

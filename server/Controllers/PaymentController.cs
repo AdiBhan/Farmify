@@ -42,7 +42,7 @@ namespace FarmifyService.Controllers
                     id = c.ID,
                     cardNumber = c.CardNumber,
                     expiryDate = c.ExpiryDate,
-                    cvv = c.CVV // Optional: mask CVV for security
+                    cvv = c.CVV
                 })
                 .ToListAsync();
 

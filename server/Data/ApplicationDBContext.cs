@@ -14,6 +14,7 @@ namespace FarmifyService.Data
         public DbSet<Buyer> Buyers { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<CreditCard> CreditCards { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
