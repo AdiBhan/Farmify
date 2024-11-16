@@ -82,3 +82,65 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 |----------|-------------|
 |  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 | Secret key for Google OAuth |
 |  843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleusercontent.com Client ID for Google OAuth |
+
+
+
+Scrum Nov 12-19
+
+
+Work this week:
+
+Simeon:
+-Adjusted db schema including:
+  1. Merging Auction and Product tables
+  2. Adding start/end price+time to bid
+  3. Added imageURL col to Product table
+  4. FK from bid referencing new Product table
+  5. Trigger to decrement Product amount when a purchase is made
+
+-Adjusted models to fit new DB schema in backend
+
+-Created bid & Product controller with endpoints for:
+   1. Viewing all past bids, past transactions by ID
+   2. Creating a bid
+   3. Viewing all products, products by ID
+   
+- Added new functionality to frontend including:
+  1. Replace hardcoded auction data with function to fetch products from backend
+  2. Added display of quantity remaining (was mising)
+  3. Added function to calculate Current price from the startPrice,EndPrice,StartTime,Endtime
+      (currprice = startPrice + (endPrice - startPrice) * progress)
+  4. Added function to display Time remaining for each auction
+  5. Added functionality to place a bid on a product and view it in your past transactions. 
+  6. Automated quantity decrementing products after a purchase is made
+
+
+
+  Whats left:
+
+  1. Link up paypal API when a purchase is being made - store needed payment/delivery data
+
+  2. decide how doordash is going to be used in the project
+
+  3. Add functionality to create a new product (ADI)
+
+  4. Come up with a way to store photogallery of product (store in details page)
+
+  4. Error/Exception handling for all frontend functionality 
+      - Make sure only valid inputs for creating bid, auction, etc
+      - Shouldn't be able to set end price higher than start price
+      - Shouldn't be able to make end price same as start price (at least half value)
+      - Minimum duration of auctions
+
+  5. Replace hardcoded userData in frontend by tracking state of which user is logged in
+    - ONLY show past transactions for that user
+  
+  6. Modify details page to include link to ABOUT US page for that seller
+
+  7. Create trigger for updating seller rating when one of their products is rated
+
+  8. Display real site stats instead of mock data on stats page
+
+
+
+
