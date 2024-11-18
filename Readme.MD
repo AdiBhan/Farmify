@@ -98,6 +98,13 @@ Simeon:
   4. FK from bid referencing new Product table
   5. Trigger to decrement Product amount when a purchase is made
 
+
+Adi:
+1. Added icons for navigation bar
+2. Created intermediary page and moved update Contact Information and Purchases into settings 
+
+
+
 -Adjusted models to fit new DB schema in backend
 
 -Created bid & Product controller with endpoints for:

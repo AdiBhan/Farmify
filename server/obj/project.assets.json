@@ -7291,24 +7291,27 @@
     ]
   },
   "packageFolders": {
-    "/Users/simeongluzman/.nuget/packages/": {}
+    "C:\\Users\\adity\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj",
+      "projectUniqueName": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj",
       "projectName": "server",
-      "projectPath": "/Users/simeongluzman/Documents/GitHub/Farmify/server/server.csproj",
-      "packagesPath": "/Users/simeongluzman/.nuget/packages/",
-      "outputPath": "/Users/simeongluzman/Documents/GitHub/Farmify/server/obj/",
+      "projectPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\server.csproj",
+      "packagesPath": "C:\\Users\\adity\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/simeongluzman/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\adity\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -7382,7 +7385,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
