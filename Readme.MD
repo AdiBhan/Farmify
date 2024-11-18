@@ -102,7 +102,7 @@ Simeon:
 Adi:
 1. Added icons for navigation bar using vector-icons, and hid non-important tabs
 2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
-
+3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
 
 
 -Adjusted models to fit new DB schema in backend
