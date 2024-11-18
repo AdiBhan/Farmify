@@ -100,8 +100,8 @@ Simeon:
 
 
 Adi:
-1. Added icons for navigation bar
-2. Created intermediary page and moved update Contact Information and Purchases into settings 
+1. Added icons for navigation bar using vector-icons, and hid non-important tabs
+2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
 
 
 

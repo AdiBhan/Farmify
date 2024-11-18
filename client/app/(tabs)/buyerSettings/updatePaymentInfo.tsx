@@ -91,8 +91,8 @@ export default function UpdateBuyerContact() {
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
-            <Text style={styles.header}>Update Contact Information</Text>
-            <Text style={styles.subheader}>Edit your contact details below</Text>
+            <Text style={styles.header}>Update Payment Information</Text>
+            <Text style={styles.subheader}>Edit your Payment details below</Text>
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}

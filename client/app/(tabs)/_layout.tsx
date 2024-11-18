@@ -82,12 +82,7 @@ export default function TabsLayout() {
                     href: null,
                 }}
             />
-            <Tabs.Screen
-                name="buyerSettings/fjksjf"
-                options={{
-                    href: null,
-                }}
-            />
+          
 
          
         </Tabs>
