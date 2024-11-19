@@ -168,6 +168,7 @@ export default function ProductDetails() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
+      <Text style={styles.description}> About Seller: {product.sellerDescription}</Text>
 
 
       <Text style={styles.currentBid}>
@@ -187,7 +188,7 @@ export default function ProductDetails() {
         style={styles.progressBar}
       />
 
-      <Text> About Seller: {product.sellerDescription}</Text>
+
 
       <View style={styles.quantityContainer}>
         <Pressable onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.button}>
