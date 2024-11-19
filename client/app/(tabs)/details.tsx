@@ -168,6 +168,7 @@ export default function ProductDetails() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
+      <Text style={styles.seller}>About Seller: {product.sellerDescription}</Text>
 
       <Text style={styles.currentBid}>
         Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}

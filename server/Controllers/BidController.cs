@@ -50,6 +50,7 @@ namespace FarmifyService.Controllers
                         b.Product.StartPrice,
                         b.Product.EndPrice,
                         SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
+                        SellerDescription = b.Product.Seller.Description
                     }
                 })
                 .ToListAsync();
