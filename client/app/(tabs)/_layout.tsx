@@ -58,7 +58,7 @@ export default function TabsLayout() {
                 name="newlisting"
                 options={{
                     title: 'Create Auction',
-                    href: accountType === 'Seller' ? undefined : null, // Only include for Sellers
+                    href: accountType === 'Seller' || accountType === '' ? undefined : null, // Only include for Sellers
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="create" size={size} color={color} />
                     ),
@@ -68,7 +68,7 @@ export default function TabsLayout() {
                 name="transactions"
                 options={{
                     title: 'Transactions',
-                    href: accountType !== 'Seller' ? undefined : null, // Only include for non-Sellers
+                    href: accountType !== 'Seller' || accountType === undefined ? undefined : null, // Only include for non-Sellers
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="cash-outline" size={size} color={color} />
                     ),
