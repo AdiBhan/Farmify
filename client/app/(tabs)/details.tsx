@@ -1,18 +1,60 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
+
+const calculateTimeLeft = (endTime) => {
+  const now = new Date();
+  const end = new Date(endTime);
+  const diff = Math.floor((end - now) / 1000);
+
+  if (diff <= 0) {
+    return "Auction Ended";
+  }
+
+  // Time units in seconds
+  const timeUnits = [
+    { unit: "day", v: 86400 },
+    { unit: "hour", v: 3600 },
+    { unit: "minute", v: 60 },
+    { unit: "second", v: 1 },
+  ];
+
+  // Find the largest time unit that fits
+  for (const { unit, v } of timeUnits) {
+    const amount = Math.floor(diff / v);
+    if (amount > 0) {
+      const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+      return formatter.format(amount, unit); // Positive for future
+    }
+  }
+};
+
+const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
+  const now = new Date();
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (now >= end) return null; // Auction has ended
+  if (now <= start) return null; // Auction hasn't started
+
+  const totalDuration = end - start;
+  const elapsed = now - start;
+  const progress = elapsed / totalDuration;
+
+  return startPrice + (endPrice - startPrice) * progress; // Always returns a number
+};
 
 export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [timeLeft, setTimeLeft] = useState("");
 
-  // Replace with actual buyer ID from user authentication
-  const buyerID = "323e4567-e89b-12d3-a456-426614174002";
-
-  // Get the product ID from the route params
+  const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams();
 
   useEffect(() => {
@@ -21,6 +63,18 @@ export default function ProductDetails() {
         const response = await fetch(`http://localhost:4000/api/products/${productId}`);
         const data = await response.json();
         setProduct(data);
+
+        // Calculate initial values
+        const price = calculateCurrentPrice(
+          data.startPrice,
+          data.endPrice,
+          data.startTime,
+          data.endTime
+        );
+        setCurrentPrice(price);
+
+        const timeRemaining = calculateTimeLeft(data.endTime);
+        setTimeLeft(timeRemaining);
       } catch (error) {
         console.error("Error fetching product details:", error);
       } finally {
@@ -33,17 +87,36 @@ export default function ProductDetails() {
     }
   }, [productId]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (product) {
+        const updatedPrice = calculateCurrentPrice(
+          product.startPrice,
+          product.endPrice,
+          product.startTime,
+          product.endTime
+        );
+        setCurrentPrice(updatedPrice);
+
+        const updatedTimeLeft = calculateTimeLeft(product.endTime);
+        setTimeLeft(updatedTimeLeft);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [product]);
+
   const handlePurchase = async () => {
-    if (!product) return;
+    if (!product || currentPrice === null) return;
 
     const bidData = {
       buyerID,
-      amount: quantity, // The quantity selected by the user
+      amount: quantity,
       auctionID: product.id,
-      price: product.startPrice, // Assuming purchase is at the start price
-      deliveryStatus: true, // Adjust as needed for the app's logic
+      price: currentPrice,
+      deliveryStatus: true,
     };
-    console.log("Placing bid:", bidData);
+
     setIsSubmitting(true);
 
     try {
@@ -58,10 +131,7 @@ export default function ProductDetails() {
       if (response.ok) {
         window.alert("Success: Your bid has been placed successfully!");
         window.location.reload();
-        Alert.alert("Success", "Your bid has been placed successfully!", [
-          { text: "OK", onPress: () => window.location.reload() },
-        ]);
-
+        Alert.alert("Success", "Your bid has been placed successfully!");
       } else {
         const errorData = await response.json();
         console.error("Error creating bid:", errorData);
@@ -98,7 +168,23 @@ export default function ProductDetails() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
-      <Text style={styles.currentBid}>Current Price: ${product.startPrice.toFixed(2)}</Text>
+
+      <Text style={styles.currentBid}>
+        Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
+      </Text>
+      <Text style={styles.timeRemaining}>Time Remaining: {timeLeft}</Text>
+
+      <Progress.Bar
+        progress={
+          product.endTime && product.startTime
+            ? (new Date().getTime() - new Date(product.startTime).getTime()) /
+            (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+            : 0
+        }
+        width={200}
+        color="#2E7D32"
+        style={styles.progressBar}
+      />
 
       <View style={styles.quantityContainer}>
         <Pressable onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.button}>
