@@ -28,8 +28,8 @@ namespace FarmifyService.models
         [Required]
         public DateTime DateCreated { get; set; } = DateTime.UtcNow; 
 
-        [Required]
-         public string PhoneNumber { get; set; }
+        
+        public string? PhoneNumber { get; set; } = string.Empty;
 
         // Navigation properties
         public virtual Buyer? Buyer { get; set; }

@@ -1,15 +1,21 @@
 import { Tabs } from 'expo-router';
-import {Ionicons, MaterialIcons} from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
+import useUser from "@/stores/userStore";
 
 export default function TabsLayout() {
+    const { username, accountType } = useUser();
+    console.log('Account Type:', accountType);
+
     return (
-        <Tabs screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: '#007AFF',
-            tabBarInactiveTintColor: 'gray',
-            tabBarStyle: { borderTopWidth: 1, borderTopColor: '#e2e2e2' },
-        }}>
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: '#007AFF',
+                tabBarInactiveTintColor: 'gray',
+                tabBarStyle: { borderTopWidth: 1, borderTopColor: '#e2e2e2' },
+            }}
+        >
             <Tabs.Screen
                 name="settings/index"
                 options={{
@@ -40,30 +46,36 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name="details"
                 options={{
-                    title: "Product Details",
+                    title: 'Product Details',
                     tabBarIcon: ({ color, size }) => (
-                    <MaterialIcons name="production-quantity-limits" size={size} color={color}/>
+                        <MaterialIcons name="production-quantity-limits" size={size} color={color} />
                     ),
-            }}
-        />
+                }}
+            />
+
+            {/* Dynamically include "newlisting" or "transactions" */}
             <Tabs.Screen
                 name="newlisting"
                 options={{
                     title: 'Create Auction',
+                    href: accountType === 'Seller' ? undefined : null, // Only include for Sellers
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="create" size={size} color={color} />
                     ),
                 }}
             />
-       
-
-            {/* Hidden tabs from navigation bar*/}
             <Tabs.Screen
                 name="transactions"
                 options={{
-                    href: null,
+                    title: 'Transactions',
+                    href: accountType !== 'Seller' ? undefined : null, // Only include for non-Sellers
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="cash-outline" size={size} color={color} />
+                    ),
                 }}
             />
+
+            {/* Hidden tabs from navigation bar */}
             <Tabs.Screen
                 name="buyerSettings/updateContact"
                 options={{
@@ -82,9 +94,6 @@ export default function TabsLayout() {
                     href: null,
                 }}
             />
-          
-
-         
         </Tabs>
     );
-};
+}
