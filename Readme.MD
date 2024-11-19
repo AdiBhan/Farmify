@@ -98,13 +98,6 @@ Simeon:
   4. FK from bid referencing new Product table
   5. Trigger to decrement Product amount when a purchase is made
 
-
-Adi:
-1. Added icons for navigation bar using vector-icons, and hid non-important tabs
-2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
-3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
-
-
 -Adjusted models to fit new DB schema in backend
 
 -Created bid & Product controller with endpoints for:
@@ -120,6 +113,14 @@ Adi:
   4. Added function to display Time remaining for each auction
   5. Added functionality to place a bid on a product and view it in your past transactions. 
   6. Automated quantity decrementing products after a purchase is made
+
+
+
+Adi:
+1. Added icons for navigation bar using vector-icons, and hid non-important tabs
+2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
+3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
+
 
 
 
