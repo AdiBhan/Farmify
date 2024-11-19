@@ -130,7 +130,7 @@ export default function Transactions() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size={36} color="#0000ff" />
         <Text style={styles.loadingText}>Loading past purchases...</Text>
       </View>
     );

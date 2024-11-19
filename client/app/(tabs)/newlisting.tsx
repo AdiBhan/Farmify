@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Text, TextInput, View, Pressable, Image, ScrollView, Platform } from "react-native";
+import {Text, TextInput, View, Pressable, Image, ScrollView, Platform, Alert} from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from '../stylesAuction';
 import styles from "../styles";
+import {createClient} from "@supabase/supabase-js";
+import {decode} from "base64-arraybuffer";
+
 
 export default function CreateAuctionScreen() {
   const router = useRouter();
@@ -16,6 +19,21 @@ export default function CreateAuctionScreen() {
   const [duration, setDuration] = useState("");
   const [primaryImage, setPrimaryImage] = useState<string | null>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [primaryImageUrl, setPrimaryImageUrl] = useState(null);
+  const [galleryImageUrls, setGalleryImageUrls] = useState([]);
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  console.log(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL, " ", process.env.EXPO_PUBLIC_SUPABASE_API_KEY);
+  const supabase = createClient(
+      String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
+      String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
+  );
 
   const pickPrimaryImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -24,9 +42,54 @@ export default function CreateAuctionScreen() {
       aspect: [4, 3],
       quality: 1,
     });
-
+  try {
     if (!result.canceled) {
-      setPrimaryImage(result.assets[0].uri);
+      const imageUri = result.assets[0].uri;
+      setPrimaryImage(imageUri); 
+      const publicUrl = await uploadImageToSupabase(imageUri);
+      console.log('Primary image uploaded:', publicUrl);
+    }
+  } catch (error) {
+    console.error('Error handling primary image:', error);
+    Alert.alert('Error', 'Failed to upload primary image');
+    
+  }
+  };
+
+  // Helper function for uploading a single image
+  const uploadImageToSupabase = async (imageUri) => {
+    try {
+      // Generate unique file path
+      const timestamp = Date.now();
+      const filePath = `public/${timestamp}.jpg`;
+      console.log('Generated file path:', filePath);
+
+      // Convert image to base64
+      const response = await fetch(imageUri);
+      const blobData = await response.blob();
+      const base64Data = await blobToBase64(blobData);
+      const arrayBuffer = decode(base64Data.split(',')[1]);
+
+      // Upload to Supabase
+      const { data, error } = await supabase.storage
+          .from('Products')
+          .upload(filePath, arrayBuffer, {
+            contentType: 'image/jpeg',
+          });
+
+      if (error) {
+        throw error;
+      }
+
+      // Get and return public URL
+      const { data: { publicUrl } } = supabase.storage
+          .from('Products')
+          .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import {
   View,
   ScrollView,
@@ -30,11 +31,20 @@ const COLORS = {
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { username, isLoggedIn } = useUser();
+  const { username, isLoggedIn, accountType, setAccountType } = useUser();
   const [isUploadPage, setisUploadPage] = useState(true);
 
+  
+  
+  useEffect(() => {
+    // Setting account type as buyer for dev testing purposes
+    if (accountType == "") {
+       setAccountType("Buyer");
+    }
+  }, [])
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
+      
       if (typeof window !== "undefined" && !isLoggedIn) {
         router.push("/");
       }
@@ -75,24 +85,95 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.settingsSection}>
-            <TouchableOpacity
-              style={styles.settingsItem}
-              onPress={handleSettingsPress}
-            >
-              <Image source={SettingsIcon} style={styles.icon} />
-              <Text style={styles.settingsText}>General Settings</Text>
-            </TouchableOpacity>
+
 
             <TouchableOpacity
-              style={styles.settingsItem}
-              onPress={handleUploadPress}
+                style={styles.settingsItem}
+                onPress={handleUploadPress}
             >
-              <Image source={UploadIcon} style={styles.icon} />
-              <Text style={styles.settingsText}>Upload Photo</Text>
+              <Ionicons
+                  name="camera-outline"
+                  size={24}
+                  color={COLORS.primary}
+                  style={styles.icon}
+              />
+              <Text style={styles.settingsText}>Update Profile Photo</Text>
             </TouchableOpacity>
+            {accountType === "Buyer" ? (
+                <>
+                  <TouchableOpacity
+                      style={styles.settingsItem}
+                      onPress={() =>  router.push("/buyerSettings/updateAccountInfo")}
+                  >
+                    <Ionicons
+                        name="person-circle-outline"
+                        size={24}
+                        color={COLORS.primary}
+                        style={styles.icon}
+                    />
+                    <Text style={styles.settingsText}>Account Information</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                      style={styles.settingsItem}
+                      onPress = {() => router.push("/buyerSettings/updateContact")}
+                  >
+                    <MaterialIcons
+                        name="contacts"
+                        size={24}
+                        color={COLORS.primary}
+                        style={styles.icon}
+                    />
+                    <Text style={styles.settingsText}>Contact Information</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                      style={styles.settingsItem}
+                      onPress={() => router.push("/buyerSettings/updatePaymentInfo")}
+                  >
+                    <FontAwesome5
+                        name="credit-card"
+                        size={24}
+                        color={COLORS.primary}
+                        style={styles.icon}
+                    />
+                    <Text style={styles.settingsText}>Payment Methods</Text>
+                  </TouchableOpacity>
+                </>
+            ) : (
+                <>
+                  <TouchableOpacity
+                      style={styles.settingsItem}
+                      onPress={ () => router.push("/sellerSettings/updateAccountInfo")}
+                  >
+                    <Ionicons
+                        name="person-circle-outline"
+                        size={24}
+                        color={COLORS.primary}
+                        style={styles.icon}
+                    />
+                    <Text style={styles.settingsText}>Account Information</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                      style={styles.settingsItem}
+                      onPress={ () => router.push("/sellerSettings/updateBusinessInfo")}
+                  >
+                    <MaterialIcons
+                        name="business"
+                        size={24}
+                        color={COLORS.primary}
+                        style={styles.icon}
+                    />
+                    <Text style={styles.settingsText}>Business Information</Text>
+                  </TouchableOpacity>
+                </>
+            )}
           </View>
+  
         </ScrollView>
       </LinearGradient> : <PhotoUploadPage setisUploadPage={setisUploadPage} />}
+     
     </View>
   );
 }
