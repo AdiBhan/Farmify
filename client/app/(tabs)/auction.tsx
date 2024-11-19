@@ -21,23 +21,23 @@ import UploadIcon from "@/assets/images/upload_photo.webp";
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
   const end = new Date(endTime);
-  const differenceInSeconds = Math.floor((end - now) / 1000);
+  const diff = Math.floor((end - now) / 1000);
 
-  if (differenceInSeconds <= 0) {
+  if (diff <= 0) {
     return "Auction Ended";
   }
 
   // Time units in seconds
   const timeUnits = [
-    { unit: "day", value: 86400 },
-    { unit: "hour", value: 3600 },
-    { unit: "minute", value: 60 },
-    { unit: "second", value: 1 },
+    { unit: "day", v: 86400 },
+    { unit: "hour", v: 3600 },
+    { unit: "minute", v: 60 },
+    { unit: "second", v: 1 },
   ];
 
   // Find the largest time unit that fits
-  for (const { unit, value } of timeUnits) {
-    const amount = Math.floor(differenceInSeconds / value);
+  for (const { unit, v } of timeUnits) {
+    const amount = Math.floor(diff / v);
     if (amount > 0) {
       const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
       return formatter.format(amount, unit); // Positive for future
