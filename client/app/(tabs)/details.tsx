@@ -56,6 +56,8 @@ export default function ProductDetails() {
       });
 
       if (response.ok) {
+        window.alert("Success: Your bid has been placed successfully!");
+        window.location.reload();
         Alert.alert("Success", "Your bid has been placed successfully!", [
           { text: "OK", onPress: () => window.location.reload() },
         ]);

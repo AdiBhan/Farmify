@@ -39,13 +39,14 @@ namespace FarmifyService.Controllers
                     Buyer = new
                     {
                         b.BuyerID,
-                        Email = b.Buyer.User.Email // Assuming User.Email is accessible
+                        Email = b.Buyer.User.Email 
                     },
                     Product = new
                     {
                         b.Product.ID,
                         b.Product.Name,
                         b.Product.Description,
+                        b.Product.ImgUrl,
                         b.Product.StartPrice,
                         b.Product.EndPrice,
                         SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
