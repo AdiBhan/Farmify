@@ -43,15 +43,7 @@ export default function TabsLayout() {
                     ),
                 }}
             />
-            <Tabs.Screen
-                name="details"
-                options={{
-                    title: 'Product Details',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="production-quantity-limits" size={size} color={color} />
-                    ),
-                }}
-            />
+
 
             {/* Dynamically include "newlisting" or "transactions" */}
             <Tabs.Screen
@@ -78,6 +70,12 @@ export default function TabsLayout() {
             {/* Hidden tabs from navigation bar */}
             <Tabs.Screen
                 name="buyerSettings/updateContact"
+                options={{
+                    href: null,
+                }}
+            />
+            <Tabs.Screen
+                name="details"
                 options={{
                     href: null,
                 }}
