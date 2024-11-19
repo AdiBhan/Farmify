@@ -49,7 +49,7 @@ namespace FarmifyService.Controllers
                         b.Product.ImgUrl,
                         b.Product.StartPrice,
                         b.Product.EndPrice,
-                        SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
+                        SellerName = b.Product.Seller.SellerName, // Fetch SellerName explicitly
                         SellerDescription = b.Product.Seller.Description
                     }
                 })
@@ -95,7 +95,8 @@ namespace FarmifyService.Controllers
                             b.Product.Description,
                             b.Product.StartPrice,
                             b.Product.EndPrice,
-                            SellerName = b.Product.Seller.SellerName // Fetch SellerName explicitly
+                            SellerName = b.Product.Seller.SellerName, // Fetch SellerName explicitly
+                            SellerDescription = b.Product.Seller.Description
                         }
                     })
                     .FirstOrDefaultAsync();

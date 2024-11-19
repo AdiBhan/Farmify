@@ -63,7 +63,7 @@ export default function ProductDetails() {
         const response = await fetch(`http://localhost:4000/api/products/${productId}`);
         const data = await response.json();
         setProduct(data);
-
+        console.log(data.sellerDescription);
         // Calculate initial values
         const price = calculateCurrentPrice(
           data.startPrice,
@@ -168,7 +168,7 @@ export default function ProductDetails() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
-      <Text style={styles.seller}>About Seller: {product.sellerDescription}</Text>
+
 
       <Text style={styles.currentBid}>
         Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
@@ -187,6 +187,8 @@ export default function ProductDetails() {
         style={styles.progressBar}
       />
 
+      <Text> About Seller: {product.sellerDescription}</Text>
+
       <View style={styles.quantityContainer}>
         <Pressable onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.button}>
           <Text style={styles.buttonText}>-</Text>
@@ -204,6 +206,6 @@ export default function ProductDetails() {
       >
         <Text style={styles.buyButtonText}>{isSubmitting ? "Processing..." : "Buy Now"}</Text>
       </Pressable>
-    </View>
+    </View >
   );
 }

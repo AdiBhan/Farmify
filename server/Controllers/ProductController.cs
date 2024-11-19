@@ -46,7 +46,8 @@ namespace FarmifyService.Controllers
                         p.StartTime,
                         p.EndTime,
                         p.ImgUrl,
-                        SellerName = p.Seller.SellerName
+                        SellerName = p.Seller.SellerName,
+                        SellerDescription = p.Seller.Description
                     }).ToListAsync();
                 queryStart.Stop();
 
@@ -90,7 +91,8 @@ namespace FarmifyService.Controllers
                         p.StartTime,
                         p.EndTime,
                         p.ImgUrl,
-                        SellerName = p.Seller.SellerName
+                        SellerName = p.Seller.SellerName,
+                        SellerDescription = p.Seller.Description
                     })
                     .FirstOrDefaultAsync();
                 queryStart.Stop();
