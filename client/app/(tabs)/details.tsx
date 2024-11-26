@@ -47,20 +47,23 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
 };
 
 export default function ProductDetails() {
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentPrice, setCurrentPrice] = useState(null);
-  const [timeLeft, setTimeLeft] = useState("");
+  const [product, setProduct] = useState(null); // Store product details
+  const [loading, setLoading] = useState(true); // Indicate if data is being loaded
+  const [quantity, setQuantity] = useState(1); // Track bid quantity
+  const [isSubmitting, setIsSubmitting] = useState(false); // Indicate if a purchase request is in progress
+  const [currentPrice, setCurrentPrice] = useState(null); // Store the current price of the auction
+  const [timeLeft, setTimeLeft] = useState(""); // Store the remaining time for the auction
 
   const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
-  const { product: productId } = useLocalSearchParams();
+  const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         const response = await fetch(`http://localhost:4000/api/products/${productId}`);
+        if (!response.ok) {
+          throw new Error(`Error fetching product details: ${response.status}`);
+        }
         const data = await response.json();
         setProduct(data);
         console.log(data.sellerDescription);
@@ -77,6 +80,7 @@ export default function ProductDetails() {
         setTimeLeft(timeRemaining);
       } catch (error) {
         console.error("Error fetching product details:", error);
+        Alert.alert("Error", "Failed to load product details. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -90,6 +94,7 @@ export default function ProductDetails() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (product) {
+        // Update current price and time left at regular intervals
         const updatedPrice = calculateCurrentPrice(
           product.startPrice,
           product.endPrice,
@@ -107,7 +112,15 @@ export default function ProductDetails() {
   }, [product]);
 
   const handlePurchase = async () => {
-    if (!product || currentPrice === null) return;
+    if (!product || currentPrice === null) {
+      Alert.alert("Error", "Cannot place a bid at this time.");
+      return;
+    }
+
+    if (quantity <= 0) {
+      Alert.alert("Error", "Quantity must be at least 1.");
+      return;
+    }
 
     const bidData = {
       buyerID,
@@ -129,9 +142,8 @@ export default function ProductDetails() {
       });
 
       if (response.ok) {
-        window.alert("Success: Your bid has been placed successfully!");
-        window.location.reload();
         Alert.alert("Success", "Your bid has been placed successfully!");
+        window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Error creating bid:", errorData);
@@ -168,8 +180,7 @@ export default function ProductDetails() {
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
-      <Text style={styles.description}> About Seller: {product.sellerDescription}</Text>
-
+      <Text style={styles.description}>About Seller: {product.sellerDescription}</Text>
 
       <Text style={styles.currentBid}>
         Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
@@ -180,7 +191,7 @@ export default function ProductDetails() {
         progress={
           product.endTime && product.startTime
             ? (new Date().getTime() - new Date(product.startTime).getTime()) /
-            (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+              (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
             : 0
         }
         width={200}
@@ -188,14 +199,18 @@ export default function ProductDetails() {
         style={styles.progressBar}
       />
 
-
-
       <View style={styles.quantityContainer}>
-        <Pressable onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.button}>
+        <Pressable
+          onPress={() => setQuantity(Math.max(1, quantity - 1))}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>-</Text>
         </Pressable>
         <Text style={styles.quantityText}>{quantity}</Text>
-        <Pressable onPress={() => setQuantity(quantity + 1)} style={styles.button}>
+        <Pressable
+          onPress={() => setQuantity(quantity + 1)}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>+</Text>
         </Pressable>
       </View>
@@ -205,8 +220,10 @@ export default function ProductDetails() {
         onPress={handlePurchase}
         disabled={isSubmitting}
       >
-        <Text style={styles.buyButtonText}>{isSubmitting ? "Processing..." : "Buy Now"}</Text>
+        <Text style={styles.buyButtonText}>
+          {isSubmitting ? "Processing..." : "Buy Now"}
+        </Text>
       </Pressable>
-    </View >
+    </View>
   );
 }

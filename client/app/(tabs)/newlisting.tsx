@@ -3,12 +3,11 @@ import {Text, TextInput, View, Pressable, Image, ScrollView, Platform, Alert} fr
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import * as ImagePicker from 'expo-image-picker';
-import { COLORS } from '../stylesAuction';
+import * as ImagePicker from "expo-image-picker";
+import { COLORS } from "../stylesAuction";
 import styles from "../styles";
-import {createClient} from "@supabase/supabase-js";
-import {decode} from "base64-arraybuffer";
-
+import { createClient } from "@supabase/supabase-js";
+import { decode } from "base64-arraybuffer";
 
 export default function CreateAuctionScreen() {
   const router = useRouter();
@@ -50,10 +49,9 @@ export default function CreateAuctionScreen() {
       console.log('Primary image uploaded:', publicUrl);
     }
   } catch (error) {
-    console.error('Error handling primary image:', error);
-    Alert.alert('Error', 'Failed to upload primary image');
-    
-  }
+      console.error("Error handling primary image:", error);
+      Alert.alert("Error", "Failed to upload primary image. Please try again.");
+    }
   };
 
   // Helper function for uploading a single image
@@ -68,7 +66,7 @@ export default function CreateAuctionScreen() {
       const response = await fetch(imageUri);
       const blobData = await response.blob();
       const base64Data = await blobToBase64(blobData);
-      const arrayBuffer = decode(base64Data.split(',')[1]);
+      const arrayBuffer = decode(base64Data.split(",")[1]);
 
       // Upload to Supabase
       const { data, error } = await supabase.storage
@@ -88,28 +86,84 @@ export default function CreateAuctionScreen() {
 
       return publicUrl;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       throw error;
     }
   };
 
   const pickGalleryImages = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsMultipleSelection: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsMultipleSelection: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      const selectedImages = result.assets.map(asset => asset.uri);
-      setGalleryImages(prevImages => [...prevImages, ...selectedImages]);
+      if (!result.canceled) {
+        const selectedImages = result.assets.map((asset) => asset.uri);
+        setGalleryImages((prevImages) => [...prevImages, ...selectedImages]);
+      }
+    } catch (error) {
+      console.error("Error handling gallery images:", error);
+      Alert.alert("Error", "Failed to upload gallery images. Please try again.");
     }
   };
 
-  const handleCreateAuction = () => {
-    console.log("Auction Created:", { productName, description, startingPrice, endingPrice, duration, primaryImage, galleryImages });
-    router.push("/(tabs)/auction");
+  const validateAuctionInputs = () => {
+    const start = parseFloat(startingPrice);
+    const end = parseFloat(endingPrice);
+    const minDuration = 24 * 60 * 60; // Minimum duration of 1 day in seconds
+    const durationInSeconds = parseFloat(duration) * 60 * 60; // Assuming duration input is in hours
+
+    if (!productName.trim()) {
+      Alert.alert("Error", "Product name is required.");
+      return false;
+    }
+    if (!description.trim()) {
+      Alert.alert("Error", "Product description is required.");
+      return false;
+    }
+    if (isNaN(start) || start <= 0) {
+      Alert.alert("Error", "Starting price must be a valid number greater than 0.");
+      return false;
+    }
+    if (isNaN(end) || end <= 0) {
+      Alert.alert("Error", "Ending price must be a valid number greater than 0.");
+      return false;
+    }
+    if (end >= start) {
+      Alert.alert("Error", "Ending price must be less than the starting price.");
+      return false;
+    }
+    if (isNaN(durationInSeconds) || durationInSeconds < minDuration) {
+      Alert.alert("Error", "Auction duration must be at least 1 day.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleCreateAuction = async () => {
+    if (!validateAuctionInputs()) {
+      return;
+    }
+
+    try {
+      console.log("Auction Created:", {
+        productName,
+        description,
+        startingPrice,
+        endingPrice,
+        duration,
+        primaryImage,
+        galleryImages,
+      });
+      Alert.alert("Success", "Auction created successfully!");
+      router.push("/(tabs)/auction");
+    } catch (error) {
+      console.error("Error creating auction:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
@@ -119,6 +173,7 @@ export default function CreateAuctionScreen() {
           <View style={styles.contentContainer}>
             <Text style={styles.header}>Create New Auction</Text>
 
+            {/* Input for Product Name */}
             <TextInput
               onChangeText={setProductName}
               value={productName}
@@ -147,6 +202,7 @@ export default function CreateAuctionScreen() {
               ))}
             </ScrollView>
 
+            {/* Input for Description */}
             <TextInput
               onChangeText={setDescription}
               value={description}
@@ -156,6 +212,7 @@ export default function CreateAuctionScreen() {
               multiline
             />
 
+            {/* Input for Starting Price */}
             <TextInput
               onChangeText={setStartingPrice}
               value={startingPrice}
@@ -165,6 +222,7 @@ export default function CreateAuctionScreen() {
               keyboardType="numeric"
             />
 
+            {/* Input for Ending Price */}
             <TextInput
               onChangeText={setEndingPrice}
               value={endingPrice}
@@ -174,18 +232,18 @@ export default function CreateAuctionScreen() {
               keyboardType="numeric"
             />
 
+            {/* Input for Duration */}
             <TextInput
               onChangeText={setDuration}
               value={duration}
               style={formStyles.input}
-              placeholder="Duration (e.g., 7 days)"
+              placeholder="Duration (in hours)"
               placeholderTextColor="#666"
+              keyboardType="numeric"
             />
 
-            <Pressable
-              onPress={handleCreateAuction}
-              style={[styles.button, styles.primaryButton]}
-            >
+            {/* Create Auction Button */}
+            <Pressable onPress={handleCreateAuction} style={[styles.button, styles.primaryButton]}>
               <Text style={styles.primaryButtonText}>Create Auction</Text>
             </Pressable>
           </View>
@@ -195,7 +253,7 @@ export default function CreateAuctionScreen() {
   );
 }
 
-// Additional styles specific to form elements
+// Styles for form elements
 const formStyles = {
   input: {
     width: "100%",
@@ -250,5 +308,4 @@ const formStyles = {
     fontSize: 16,
   },
 };
-
 
