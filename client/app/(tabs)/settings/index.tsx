@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
+import * as Animatable from 'react-native-animatable';
 
 // Import icons from assets
 import SettingsIcon from "@/assets/images/settings_icon.webp";
@@ -33,7 +34,24 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { username, isLoggedIn, accountType, setAccountType } = useUser();
   const [isUploadPage, setisUploadPage] = useState(true);
-
+  const COLORS = {
+    primary: '#2E7D32',
+    primaryLight: '#4CAF50',
+    primaryDark: '#1B5E20',
+    secondary: '#81C784',
+    white: '#FFFFFF',
+    background: '#F5F9F6',
+    text: '#1A1C1A',
+    textSecondary: '#6B7280',
+    border: '#E8EBE8',
+    shadow: '#000000',
+    error: '#DC2626',
+    glass: 'rgba(255, 255, 255, 0.95)',
+    success: '#43A047',
+ 
+    gradientLight: '#E8F5E9',
+    gradientDark: '#C8E6C9',
+  };
   
   
   useEffect(() => {
@@ -74,111 +92,175 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      {isUploadPage ? <LinearGradient
-        colors={[COLORS.light, COLORS.white]}
-        style={styles.gradient}
-      >
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Settings</Text>
-          </View>
-
-          <View style={styles.settingsSection}>
-
-
-            <TouchableOpacity
-                style={styles.settingsItem}
-                onPress={handleUploadPress}
+      <View style={styles.container}>
+        {isUploadPage ? (
+            <LinearGradient
+                colors={[COLORS.primaryLight + '15', COLORS.white, COLORS.background]}
+                style={styles.gradient}
             >
-              <Ionicons
-                  name="camera-outline"
-                  size={24}
-                  color={COLORS.primary}
-                  style={styles.icon}
-              />
-              <Text style={styles.settingsText}>Update Profile Photo</Text>
-            </TouchableOpacity>
-            {accountType === "Buyer" ? (
-                <>
-                  <TouchableOpacity
-                      style={styles.settingsItem}
-                      onPress={() =>  router.push("/buyerSettings/updateAccountInfo")}
+              <ScrollView
+                  style={styles.scrollView}
+                  contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+              >
+                <Animatable.View
+                    animation="fadeInDown"
+                    duration={600}
+                    style={styles.headerContainer}
+                >
+                  <LinearGradient
+                      colors={[COLORS.glass, COLORS.white]}
+                      style={styles.headerCard}
                   >
-                    <Ionicons
-                        name="person-circle-outline"
-                        size={24}
-                        color={COLORS.primary}
-                        style={styles.icon}
-                    />
-                    <Text style={styles.settingsText}>Account Information</Text>
-                  </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Settings</Text>
+                    <Text style={styles.headerSubtitle}>Customize your experience</Text>
+                  </LinearGradient>
+                </Animatable.View>
 
-                  <TouchableOpacity
-                      style={styles.settingsItem}
-                      onPress = {() => router.push("/buyerSettings/updateContact")}
-                  >
-                    <MaterialIcons
-                        name="contacts"
-                        size={24}
-                        color={COLORS.primary}
-                        style={styles.icon}
-                    />
-                    <Text style={styles.settingsText}>Contact Information</Text>
-                  </TouchableOpacity>
+                <View style={styles.settingsSection}>
+                  <Animatable.View animation="fadeInUp" delay={200} duration={600}>
+                    <TouchableOpacity
+                        style={styles.settingsItem}
+                        onPress={handleUploadPress}
+                        activeOpacity={0.7}
+                    >
+                      <LinearGradient
+                          colors={[COLORS.white, COLORS.background]}
+                          style={styles.settingsItemContent}
+                      >
+                        <View style={styles.iconContainer}>
+                          <Ionicons name="camera-outline" size={22} color={COLORS.primary} />
+                        </View>
+                        <View style={styles.settingsTextContainer}>
+                          <Text style={styles.settingsText}>Update Profile Photo</Text>
+                          <Text style={styles.settingsSubtext}>Change your profile picture</Text>
+                        </View>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </Animatable.View>
 
-                  <TouchableOpacity
-                      style={styles.settingsItem}
-                      onPress={() => router.push("/buyerSettings/updatePaymentInfo")}
-                  >
-                    <FontAwesome5
-                        name="credit-card"
-                        size={24}
-                        color={COLORS.primary}
-                        style={styles.icon}
-                    />
-                    <Text style={styles.settingsText}>Payment Methods</Text>
-                  </TouchableOpacity>
-                </>
-            ) : (
-                <>
-                  <TouchableOpacity
-                      style={styles.settingsItem}
-                      onPress={ () => router.push("/sellerSettings/updateAccountInfo")}
-                  >
-                    <Ionicons
-                        name="person-circle-outline"
-                        size={24}
-                        color={COLORS.primary}
-                        style={styles.icon}
-                    />
-                    <Text style={styles.settingsText}>Account Information</Text>
-                  </TouchableOpacity>
+                  {accountType === "Buyer" ? (
+                      <>
+                        <Animatable.View animation="fadeInUp" delay={300} duration={600}>
+                          <TouchableOpacity
+                              style={styles.settingsItem}
+                              onPress={() => router.push("/buyerSettings/updateAccountInfo")}
+                              activeOpacity={0.7}
+                          >
+                            <LinearGradient
+                                colors={[COLORS.white, COLORS.background]}
+                                style={styles.settingsItemContent}
+                            >
+                              <View style={styles.iconContainer}>
+                                <Ionicons name="person-circle-outline" size={22} color={COLORS.primary} />
+                              </View>
+                              <View style={styles.settingsTextContainer}>
+                                <Text style={styles.settingsText}>Account Information</Text>
+                                <Text style={styles.settingsSubtext}>Manage your profile details</Text>
+                              </View>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </Animatable.View>
 
-                  <TouchableOpacity
-                      style={styles.settingsItem}
-                      onPress={ () => router.push("/sellerSettings/updateBusinessInfo")}
-                  >
-                    <MaterialIcons
-                        name="business"
-                        size={24}
-                        color={COLORS.primary}
-                        style={styles.icon}
-                    />
-                    <Text style={styles.settingsText}>Business Information</Text>
-                  </TouchableOpacity>
-                </>
-            )}
-          </View>
-  
-        </ScrollView>
-      </LinearGradient> : <PhotoUploadPage setisUploadPage={setisUploadPage} />}
-     
-    </View>
+                        <Animatable.View animation="fadeInUp" delay={400} duration={600}>
+                          <TouchableOpacity
+                              style={styles.settingsItem}
+                              onPress={() => router.push("/buyerSettings/updateContact")}
+                              activeOpacity={0.7}
+                          >
+                            <LinearGradient
+                                colors={[COLORS.white, COLORS.background]}
+                                style={styles.settingsItemContent}
+                            >
+                              <View style={styles.iconContainer}>
+                                <MaterialIcons name="contacts" size={22} color={COLORS.primary} />
+                              </View>
+                              <View style={styles.settingsTextContainer}>
+                                <Text style={styles.settingsText}>Contact Information</Text>
+                                <Text style={styles.settingsSubtext}>Update your contact details</Text>
+                              </View>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </Animatable.View>
+
+                        <Animatable.View animation="fadeInUp" delay={500} duration={600}>
+                          <TouchableOpacity
+                              style={styles.settingsItem}
+                              onPress={() => router.push("/buyerSettings/updatePaymentInfo")}
+                              activeOpacity={0.7}
+                          >
+                            <LinearGradient
+                                colors={[COLORS.white, COLORS.background]}
+                                style={styles.settingsItemContent}
+                            >
+                              <View style={styles.iconContainer}>
+                                <FontAwesome5 name="credit-card" size={22} color={COLORS.primary} />
+                              </View>
+                              <View style={styles.settingsTextContainer}>
+                                <Text style={styles.settingsText}>Payment Methods</Text>
+                                <Text style={styles.settingsSubtext}>Manage your payment options</Text>
+                              </View>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </Animatable.View>
+                      </>
+                  ) : (
+                      <>
+                        <Animatable.View animation="fadeInUp" delay={300} duration={600}>
+                          <TouchableOpacity
+                              style={styles.settingsItem}
+                              onPress={() => router.push("/sellerSettings/updateAccountInfo")}
+                              activeOpacity={0.7}
+                          >
+                            <LinearGradient
+                                colors={[COLORS.white, COLORS.background]}
+                                style={styles.settingsItemContent}
+                            >
+                              <View style={styles.iconContainer}>
+                                <Ionicons name="person-circle-outline" size={22} color={COLORS.primary} />
+                              </View>
+                              <View style={styles.settingsTextContainer}>
+                                <Text style={styles.settingsText}>Account Information</Text>
+                                <Text style={styles.settingsSubtext}>Manage your seller profile</Text>
+                              </View>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </Animatable.View>
+
+                        <Animatable.View animation="fadeInUp" delay={400} duration={600}>
+                          <TouchableOpacity
+                              style={styles.settingsItem}
+                              onPress={() => router.push("/sellerSettings/updateBusinessInfo")}
+                              activeOpacity={0.7}
+                          >
+                            <LinearGradient
+                                colors={[COLORS.white, COLORS.background]}
+                                style={styles.settingsItemContent}
+                            >
+                              <View style={styles.iconContainer}>
+                                <MaterialIcons name="business" size={22} color={COLORS.primary} />
+                              </View>
+                              <View style={styles.settingsTextContainer}>
+                                <Text style={styles.settingsText}>Business Information</Text>
+                                <Text style={styles.settingsSubtext}>Update your business details</Text>
+                              </View>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </Animatable.View>
+                      </>
+                  )}
+                </View>
+              </ScrollView>
+            </LinearGradient>
+        ) : (
+            <PhotoUploadPage setisUploadPage={setisUploadPage} />
+        )}
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -189,60 +271,88 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  header: {
-    padding: 20,
+  scrollContent: {
+    paddingBottom: 32,
+  },
+
+  headerContainer: {
+    marginBottom: 24,
+    paddingHorizontal: 16,
     paddingTop: Platform.OS === 'ios' ? 60 : 20,
   },
-  headerText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: COLORS.black,
+  headerCard: {
+    padding: 24,
+    borderRadius: 24,
+    backgroundColor: COLORS.glass,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 8,
+    letterSpacing: -0.5,
   },
-  loadingSpinner: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: COLORS.primary,
-    borderTopColor: 'transparent',
-  },
-  loadingText: {
-    marginTop: 10,
+  headerSubtitle: {
     fontSize: 16,
-    color: COLORS.gray,
+    color: COLORS.textSecondary,
+    letterSpacing: 0.3,
   },
   settingsSection: {
-    padding: 20,
+    paddingHorizontal: 16,
+    gap: 12,
   },
   settingsItem: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  settingsItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    marginBottom: 10,
-    shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 16,
+    backgroundColor: COLORS.glass,
   },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 15,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.primaryLight + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  settingsTextContainer: {
+    flex: 1,
   },
   settingsText: {
     fontSize: 16,
-    color: COLORS.black,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  settingsSubtext: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
   },
 });

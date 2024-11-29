@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
+import {View, Text, TextInput, Pressable, Alert, StyleSheet, Platform} from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import useUser from '@/stores/userStore';
-
+import styles from "@/app/stylesSettings"
 export default function UpdateAccountInfo() {
   const router = useRouter();
   const { sessionID } = useUser();
@@ -148,32 +148,3 @@ export default function UpdateAccountInfo() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F9F9F9" },
-  gradient: { flex: 1 },
-  contentContainer: { padding: 20, alignItems: "center" },
-  headerContainer: { marginTop: 40, alignItems: "center" },
-  header: { fontSize: 28, fontWeight: "bold", color: "#000", marginBottom: 5 },
-  subheader: { fontSize: 16, color: "#808080" },
-  errorText: { color: "red", marginBottom: 10, fontSize: 14, textAlign: "center" },
-  buttonContainer: { width: "100%" },
-  input: {
-    width: "100%",
-    padding: 15,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-    color: "#000",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  button: { width: "100%", paddingVertical: 15, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: 20 },
-  primaryButton: { backgroundColor: "#007AFF" },
-  buttonDisabled: { backgroundColor: "#808080" },
-  primaryButtonText: { fontSize: 18, fontWeight: "bold", color: "#FFF" },
-});

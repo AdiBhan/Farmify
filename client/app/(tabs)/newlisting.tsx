@@ -8,7 +8,9 @@ import { COLORS } from '../stylesAuction';
 import styles from "../styles";
 import {createClient} from "@supabase/supabase-js";
 import {decode} from "base64-arraybuffer";
+import { StyleSheet} from "react-native";
 
+import * as Animatable from 'react-native-animatable';
 export default function CreateAuctionScreen() {
   const router = useRouter();
   const [productName, setProductName] = useState("");
@@ -145,139 +147,257 @@ export default function CreateAuctionScreen() {
     router.push("/(tabs)/auction");
   };
 
-  // Rest of the component remains the same...
-  return (
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ThemedView style={styles.container}>
-          <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
-            <View style={styles.contentContainer}>
-              <Text style={styles.header}>Create New Auction</Text>
 
-              <TextInput
-                  onChangeText={setProductName}
-                  value={productName}
-                  style={formStyles.input}
-                  placeholder="Name of product"
-                  placeholderTextColor="#666"
-              />
+    return (
+        <ScrollView contentContainerStyle={formStyles.scrollContainer}>
+          <LinearGradient
+              colors={[COLORS.primary + '15', COLORS.white, COLORS.background]}
+              style={formStyles.gradient}
+          >
+            <Animatable.View
+                animation="fadeInUp"
+                duration={600}
+                style={formStyles.container}
+            >
+              <View style={formStyles.headerContainer}>
+                <Text style={formStyles.header}>Create Auction</Text>
+                <Text style={formStyles.subheader}>List your product for sale</Text>
+              </View>
 
-              <Pressable onPress={pickPrimaryImage} style={formStyles.imageButton}>
-                <Text style={formStyles.imageButtonText}>Upload Primary Image</Text>
-              </Pressable>
-              {primaryImage && (
-                  <View style={formStyles.primaryImageContainer}>
-                    <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
-                  </View>
-              )}
+              <View style={formStyles.inputGroup}>
+                <Text style={formStyles.inputLabel}>Product Details</Text>
+                <TextInput
+                    onChangeText={setProductName}
+                    value={productName}
+                    style={formStyles.input}
+                    placeholder="Product name"
+                    placeholderTextColor={COLORS.textSecondary}
+                />
+                <TextInput
+                    onChangeText={setDescription}
+                    value={description}
+                    style={[formStyles.input, formStyles.textArea]}
+                    placeholder="Describe your product in detail"
+                    placeholderTextColor={COLORS.textSecondary}
+                    multiline
+                    numberOfLines={4}
+                />
+              </View>
 
-              <Pressable onPress={pickGalleryImages} style={formStyles.imageButton}>
-                <Text style={formStyles.imageButtonText}>Upload Gallery Images</Text>
-              </Pressable>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={formStyles.galleryContainer}>
-                {galleryImages.map((imgUri, index) => (
-                    <Image key={index} source={{ uri: imgUri }} style={formStyles.galleryImage} />
-                ))}
-              </ScrollView>
+              <View style={formStyles.inputGroup}>
+                <Text style={formStyles.inputLabel}>Images</Text>
+                <Pressable
+                    onPress={pickPrimaryImage}
+                    style={formStyles.uploadButton}
+                >
+                  <LinearGradient
+                      colors={[COLORS.primary, COLORS.primary + 'E6']}
+                      style={formStyles.uploadButtonGradient}
+                  >
+                    <Text style={formStyles.uploadButtonText}>Upload Primary Image</Text>
+                  </LinearGradient>
+                </Pressable>
 
-              <TextInput
-                  onChangeText={setDescription}
-                  value={description}
-                  style={formStyles.input}
-                  placeholder="Description of product"
-                  placeholderTextColor="#666"
-                  multiline
-              />
+                {primaryImage && (
+                    <Animatable.View
+                        animation="fadeIn"
+                        style={formStyles.primaryImageContainer}
+                    >
+                      <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
+                    </Animatable.View>
+                )}
 
-              <TextInput
-                  onChangeText={setStartingPrice}
-                  value={startingPrice}
-                  style={formStyles.input}
-                  placeholder="Starting price"
-                  placeholderTextColor="#666"
-                  keyboardType="numeric"
-              />
+                <Pressable
+                    onPress={pickGalleryImages}
+                    style={[formStyles.uploadButton, formStyles.secondaryButton]}
+                >
+                  <Text style={formStyles.secondaryButtonText}>Add Gallery Images</Text>
+                </Pressable>
 
-              <TextInput
-                  onChangeText={setEndingPrice}
-                  value={endingPrice}
-                  style={formStyles.input}
-                  placeholder="Ending price"
-                  placeholderTextColor="#666"
-                  keyboardType="numeric"
-              />
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={formStyles.galleryContainer}
+                >
+                  {galleryImages.map((imgUri, index) => (
+                      <Animatable.View
+                          key={index}
+                          animation="fadeIn"
+                          delay={index * 100}
+                      >
+                        <Image source={{ uri: imgUri }} style={formStyles.galleryImage} />
+                      </Animatable.View>
+                  ))}
+                </ScrollView>
+              </View>
 
-              <TextInput
-                  onChangeText={setDuration}
-                  value={duration}
-                  style={formStyles.input}
-                  placeholder="Duration (e.g., 7 days)"
-                  placeholderTextColor="#666"
-              />
+              <View style={formStyles.inputGroup}>
+                <Text style={formStyles.inputLabel}>Pricing</Text>
+                <View style={formStyles.row}>
+                  <TextInput
+                      onChangeText={setStartingPrice}
+                      value={startingPrice}
+                      style={[formStyles.input, formStyles.halfInput]}
+                      placeholder="Starting price"
+                      placeholderTextColor={COLORS.textSecondary}
+                      keyboardType="numeric"
+                  />
+                  <TextInput
+                      onChangeText={setEndingPrice}
+                      value={endingPrice}
+                      style={[formStyles.input, formStyles.halfInput]}
+                      placeholder="Ending price"
+                      placeholderTextColor={COLORS.textSecondary}
+                      keyboardType="numeric"
+                  />
+                </View>
+                <TextInput
+                    onChangeText={setDuration}
+                    value={duration}
+                    style={formStyles.input}
+                    placeholder="Duration (e.g., 7 days)"
+                    placeholderTextColor={COLORS.textSecondary}
+                />
+              </View>
 
               <Pressable
                   onPress={handleCreateAuction}
-                  style={[styles.button, styles.primaryButton]}
+                  style={formStyles.submitButton}
               >
-                <Text style={styles.primaryButtonText}>Create Auction</Text>
+                <LinearGradient
+                    colors={[COLORS.primary, COLORS.primary + 'E6']}
+                    style={formStyles.submitButtonGradient}
+                >
+                  <Text style={formStyles.submitButtonText}>Create Auction</Text>
+                </LinearGradient>
               </Pressable>
-            </View>
+            </Animatable.View>
           </LinearGradient>
-        </ThemedView>
-      </ScrollView>
-  );
-}
+        </ScrollView>
+    );
+  }
 
-const formStyles = {
-  input: {
-    width: "100%",
-    backgroundColor: "white",
-    borderRadius: 28,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    fontSize: 16,
-    color: "#333333",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  primaryImageContainer: {
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  primaryImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 12,
-  },
-  galleryContainer: {
-    flexDirection: "row",
-    paddingVertical: 8,
-  },
-  galleryImage: {
-    width: 100,
-    height: 100,
-    marginHorizontal: 8,
-    borderRadius: 8,
-  },
-  imageButton: {
-    backgroundColor: COLORS.primary,
-    padding: 12,
-    borderRadius: 28,
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  imageButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
-};
+  const formStyles = StyleSheet.create({
+    scrollContainer: {
+      flexGrow: 1,
+    },
+    gradient: {
+      flex: 1,
+    },
+    container: {
+      padding: 16,
+      paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    },
+    headerContainer: {
+      marginBottom: 24,
+    },
+    header: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: COLORS.text,
+      marginBottom: 4,
+    },
+    subheader: {
+      fontSize: 16,
+      color: COLORS.textSecondary,
+      letterSpacing: 0.3,
+    },
+    inputGroup: {
+      marginBottom: 24,
+    },
+    inputLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: COLORS.text,
+      marginBottom: 12,
+    },
+    input: {
+      backgroundColor: COLORS.white,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: COLORS.border,
+      fontSize: 16,
+      color: COLORS.text,
+      ...Platform.select({
+        ios: {
+          shadowColor: COLORS.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        },
+        android: {
+          elevation: 2,
+        },
+      }),
+    },
+    textArea: {
+      height: 100,
+      textAlignVertical: 'top',
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    halfInput: {
+      width: '48%',
+    },
+    uploadButton: {
+      marginBottom: 16,
+    },
+    uploadButtonGradient: {
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    uploadButtonText: {
+      color: COLORS.white,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    secondaryButton: {
+      backgroundColor: COLORS.light,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: COLORS.primary,
+    },
+    secondaryButtonText: {
+      color: COLORS.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    primaryImageContainer: {
+      alignItems: 'center',
+      marginVertical: 16,
+    },
+    primaryImage: {
+      width: '100%',
+      height: 200,
+      borderRadius: 12,
+    },
+    galleryContainer: {
+      marginTop: 8,
+    },
+    galleryImage: {
+      width: 100,
+      height: 100,
+      marginRight: 8,
+      borderRadius: 8,
+    },
+    submitButton: {
+      marginTop: 8,
+    },
+    submitButtonGradient: {
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    submitButtonText: {
+      color: COLORS.white,
+      fontSize: 18,
+      fontWeight: '600',
+    },
+  });

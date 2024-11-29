@@ -23,18 +23,18 @@ const productDetailsStyles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "60%",
+    width: "60%", // Percentage values stay as strings
   },
   image: {
     width: 48,
     height: 48,
     borderRadius: 12,
     marginRight: 16,
-    backgroundColor: `${COLORS.primary}08`,
+    backgroundColor: COLORS.primary + '08', // Changed from template literal to concatenation
   },
   title: {
     fontSize: 24,
-    fontWeight: "700",
+    fontWeight: "700", // Already correct
     color: COLORS.text,
     marginVertical: 10,
     letterSpacing: -0.3,
@@ -56,7 +56,7 @@ const productDetailsStyles = StyleSheet.create({
   },
   currentBid: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "700", // Changed from "bold" to "700"
     color: COLORS.primary,
     marginBottom: 20,
     textAlign: "center",
@@ -77,7 +77,7 @@ const productDetailsStyles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "700", // Changed from "bold" to "700"
     color: COLORS.text,
   },
   quantityText: {
@@ -97,7 +97,7 @@ const productDetailsStyles = StyleSheet.create({
   buyButtonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "700", // Already correct
     letterSpacing: 0.2,
   },
 });
