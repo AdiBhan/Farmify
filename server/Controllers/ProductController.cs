@@ -66,7 +66,6 @@ namespace FarmifyService.Controllers
         }
 
         // GET: api/products/{id}
-        // GET: api/products/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(long id)
         {
@@ -92,7 +91,9 @@ namespace FarmifyService.Controllers
                         p.EndTime,
                         p.ImgUrl,
                         SellerName = p.Seller.SellerName,
-                        SellerDescription = p.Seller.Description
+                        SellerDescription = p.Seller.Description,
+                        PPID = p.Seller.PPID,
+                        PPsecret = p.Seller.PPsecret
                     })
                     .FirstOrDefaultAsync();
                 queryStart.Stop();
