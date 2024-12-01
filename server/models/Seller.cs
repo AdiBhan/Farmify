@@ -22,6 +22,10 @@ namespace FarmifyService.models
         public string Description { get; set; } = string.Empty;
 
         public string SellerName { get; set; } = string.Empty;
+
+        public string PPID { get; set; } = string.Empty;
+
+        public string PPsecret { get; set; } = string.Empty;
         [ForeignKey("UserID")]
         public virtual User User { get; set; } = null!;
     }

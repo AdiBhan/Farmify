@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, TextInput, Pressable, Alert, StyleSheet, Platform} from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
@@ -25,6 +25,7 @@ export default function UpdateAccountInfo() {
         );
 
         const accountData = response.data.data;
+        console.log(accountData)
         setEmail(accountData.email || "");
         setPhoneNumber(accountData.phoneNumber || "");
       } catch (err) {
