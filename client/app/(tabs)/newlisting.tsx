@@ -149,7 +149,7 @@ export default function CreateAuctionScreen() {
 
 
   return (
-    <ScrollView contentContainerStyle={formStyles.scrollContainer}>
+    <ScrollView contentContainerStyle={[formStyles.scrollContainer, { paddingBottom: 80 }]}>
       <LinearGradient
         colors={[COLORS.primary + '15', COLORS.white, COLORS.background]}
         style={formStyles.gradient}
@@ -280,6 +280,7 @@ export default function CreateAuctionScreen() {
 const formStyles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingBottom: 16,
   },
   gradient: {
     flex: 1,
