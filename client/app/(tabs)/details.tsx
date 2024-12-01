@@ -173,6 +173,8 @@ export default function ProductDetails() {
 
           // Step 5: Capture the order
           capturePayPalOrder(orderId, product.ppid, product.pPsecret);
+          window.alert("Payment Successful!");
+
         }
       }, 500);
     } catch (error) {
