@@ -3,6 +3,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { View, Platform, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import useUser from "@/stores/userStore";
 
 const COLORS = {
     primary: '#2E7D32',
@@ -13,6 +14,10 @@ const COLORS = {
 };
 
 export default function TabsLayout() {
+    const { username, accountType } = useUser();
+    console.log('Account Type:', accountType);
+    console.log('Username:', username);
+
     const tabBarIcon = (Icon: any, name: string) => {
         return ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
             <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
@@ -62,23 +67,31 @@ export default function TabsLayout() {
                     tabBarIcon: tabBarIcon(Ionicons, 'stats-chart'),
                 }}
             />
-            <Tabs.Screen
-                name="details"
-                options={{
-                    title: "Details",
-                    tabBarIcon: tabBarIcon(MaterialIcons, 'production-quantity-limits'),
-                }}
-            />
+
+            {/* Dynamically include "newlisting" or "transactions" */}
             <Tabs.Screen
                 name="newlisting"
                 options={{
-                    title: 'Create',
+                    title: 'Create Auction',
+                    href: accountType === 'Seller' || accountType === '' ? undefined : null, // Only include for Sellers
                     tabBarIcon: tabBarIcon(MaterialIcons, 'create'),
                 }}
             />
+            <Tabs.Screen
+                name="transactions"
+                options={{
+                    title: 'Transactions',
+                    href: accountType !== 'Seller' || accountType === undefined ? undefined : null, // Only include for non-Sellers
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="cash-outline" size={size} color={color} />
+                    ),
+                }}
+            />
+
+
 
             {/* Hidden tabs - keep as is */}
-            <Tabs.Screen name="transactions" options={{ href: null }} />
+            <Tabs.Screen name="details" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updateContact" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updateAccountInfo" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updatePaymentInfo" options={{ href: null }} />
