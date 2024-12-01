@@ -52,7 +52,12 @@ The frontend runs on port 8080 and is built using React Native with Expo.
 3. Start Application: `npm start`
 4. Press 'W' to open in web browser
 
-
+Frontend .env file
+`
+EXPO_PUBLIC_BACKEND_URL=http://localhost:4000
+EXPO_PUBLIC_REACT_NATIVE_FRONTEND_URL=https://localhost
+EXPO_PUBLIC_SUPABASE_PROJECT_URL=https://allbizkxjccwarsftcrq.supabase.co
+EXPO_PUBLIC_SUPABASE_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbGJpemt4amNjd2Fyc2Z0Y3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgwNTMzMTcsImV4cCI6MjA0MzYyOTMxN30.I-4Z7pZXQRYiaDeV8q5qFcP9WgEOX7L8gU4GAO1bKb4`
 ## Backend (C# .NET ASP)
 The backend runs on port 4000.
 
@@ -85,18 +90,25 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 
 
 
-Scrum Nov 12-19
+## Scrum Nov 12-19
 
 
-Work this week:
+### Work this week:
 
-Simeon:
+#### Simeon:
 -Adjusted db schema including:
   1. Merging Auction and Product tables
   2. Adding start/end price+time to bid
   3. Added imageURL col to Product table
   4. FK from bid referencing new Product table
   5. Trigger to decrement Product amount when a purchase is made
+
+
+#### Adi:
+1. Added icons for navigation bar using vector-icons, and hid non-important tabs
+2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
+3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
+
 
 -Adjusted models to fit new DB schema in backend
 
@@ -115,15 +127,18 @@ Simeon:
   6. Automated quantity decrementing products after a purchase is made
 
 
+## Scrum Nov 24-30
 
-Adi:
-1. Added icons for navigation bar using vector-icons, and hid non-important tabs
-2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
-3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
+## Adi
+
+1. Fixed OAuth Verification (Directly connmects from React Native frontend) to Google OAuth
+2. Redesigned pages to make it look more modern / sleak (new fonts, containers, dropshadows, icons)
 
 
 
 
+
+ <br><br>
   Whats left:
 
   1. Link up paypal API when a purchase is being made - store needed payment/delivery data

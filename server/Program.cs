@@ -18,22 +18,6 @@ var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie() // To store user info in cookies
-.AddGoogle(options =>
-{
-    options.ClientId = clientId;
-    options.ClientSecret = clientSecret;
-    options.CallbackPath = new PathString("/signin-google");
-    options.Scope.Add("email"); // Request email scope from Google
-});
-
 //  Enables CORS for https:localhost8081 to allow React Native frontend to send request on diff port (:8081)
 builder.Services.AddCors(options =>
 {
@@ -88,22 +72,8 @@ app.MapGet("/", (HttpContext httpContext) =>
     };
 });
 
-// Success route after Google authentication
-app.MapGet("/success", (HttpContext httpContext) =>
-{
-    var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-    return new
-    {
-        Message = "You have successfully logged in with Google!",
-        User = httpContext.User.Identity.Name,
-        IsAuthenticated = httpContext.User.Identity.IsAuthenticated,
-        Email = email
-    };
-});
-
 // Set up controller routing
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();

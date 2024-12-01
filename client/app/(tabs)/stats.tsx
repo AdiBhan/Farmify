@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {View, Text, ScrollView, StyleSheet, Dimensions, Platform} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
+import * as Animatable from "react-native-animatable";
 
-// Mock data for sitewide statistics
 const statisticsData = [
   { label: "Total Sales", value: "$124,000" },
   { label: "Total Products Sold", value: "5,200" },
@@ -15,44 +15,103 @@ const statisticsData = [
   { label: "Highest Single Sale", value: "$2,300" },
 ];
 
-
 export default function SitewideStatistics() {
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={[COLORS.light, COLORS.white]} style={styles.gradient}>
-        <BlurView intensity={80} style={styles.blurContainer}>
-          <Text style={styles.header}>Sitewide Sales Statistics</Text>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {statisticsData.map((stat, index) => (
-              <View key={index} style={statisticsStyles.statItem}>
-                <Text style={statisticsStyles.statLabel}>{stat.label}</Text>
-                <Text style={statisticsStyles.statValue}>{stat.value}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        </BlurView>
-      </LinearGradient>
-    </View>
+      <View style={styles.container}>
+        <LinearGradient
+            colors={[COLORS.primary + '15', COLORS.white]}
+            style={styles.gradient}
+        >
+          <BlurView intensity={50} style={styles.blurContainer}>
+            <Animatable.View
+                animation="fadeIn"
+                duration={600}
+                style={statisticsStyles.headerContainer}
+            >
+              <Text style={statisticsStyles.mainTitle}>Statistics</Text>
+              <Text style={statisticsStyles.subtitle}>Market Performance Overview</Text>
+            </Animatable.View>
+
+            <ScrollView
+                contentContainerStyle={statisticsStyles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+              {statisticsData.map((stat, index) => (
+                  <Animatable.View
+                      key={index}
+                      animation="fadeInUp"
+                      delay={index * 100}
+                      duration={600}
+                  >
+                    <LinearGradient
+                        colors={[COLORS.white, COLORS.light]}
+                        style={statisticsStyles.statCard}
+                    >
+                      <View style={statisticsStyles.statContent}>
+                        <Text style={statisticsStyles.statLabel}>{stat.label}</Text>
+                        <Text style={statisticsStyles.statValue}>{stat.value}</Text>
+                      </View>
+                    </LinearGradient>
+                  </Animatable.View>
+              ))}
+            </ScrollView>
+          </BlurView>
+        </LinearGradient>
+      </View>
   );
 }
 
 const statisticsStyles = StyleSheet.create({
-  statItem: {
-    ...styles.itemCard,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 18,
-    paddingHorizontal: 20,
+  headerContainer: {
+    padding: 20,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+  },
+  mainTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.textSecondary,
+    letterSpacing: 0.5,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingTop: 10,
+  },
+  statCard: {
+    borderRadius: 16,
     marginBottom: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  statContent: {
+    padding: 20,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
   },
   statLabel: {
-    color: COLORS.textLight,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+    marginBottom: 8,
+    letterSpacing: 0.3,
   },
   statValue: {
+    fontSize: 24,
+    fontWeight: '700',
     color: COLORS.primary,
-    fontSize: 18,
-    fontWeight: "700",
+    letterSpacing: 0.5,
   },
 });

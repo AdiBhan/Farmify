@@ -1,4 +1,3 @@
-// styles.js
 import { StyleSheet, Platform } from "react-native";
 
 const styles = StyleSheet.create({
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 40,
-    fontWeight: "bold",
+    fontWeight: "700", // Changed from "bold"
     color: "#2E7D32",
     marginBottom: 5,
     ...Platform.select({

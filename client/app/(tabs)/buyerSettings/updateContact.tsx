@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Pressable, Alert, StyleSheet } from "react-native";
+import {Text, TextInput, View, Pressable, Alert, StyleSheet, Platform} from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import useUser from "@/stores/userStore";
-
+import styles from "@/app/stylesSettings"
 export default function UpdateBuyerContact() {
   const router = useRouter();
   const { email: currentEmail, sessionID } = useUser();
@@ -154,35 +154,3 @@ export default function UpdateBuyerContact() {
     </ThemedView>
   );
 }
-
-// Styles for UpdateBuyerContact Component
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F9F9F9" },
-  gradient: { flex: 1 },
-  contentContainer: { padding: 20, alignItems: "center" },
-  headerContainer: { marginTop: 40, alignItems: "center" },
-  header: { fontSize: 28, fontWeight: "bold", color: "#000", marginBottom: 5 },
-  subheader: { fontSize: 16, color: "#808080" },
-  errorText: { color: "red", marginBottom: 10, fontSize: 14, textAlign: "center" },
-  buttonContainer: { width: "100%" },
-  input: {
-    width: "100%",
-    padding: 15,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-    color: "#000000",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  textArea: { height: 100, textAlignVertical: "top" },
-  button: { width: "100%", paddingVertical: 15, borderRadius: 8, alignItems: "center", justifyContent: "center", marginTop: 20 },
-  primaryButton: { backgroundColor: "#007AFF" },
-  buttonDisabled: { backgroundColor: "#808080" },
-  primaryButtonText: { fontSize: 18, fontWeight: "bold", color: "#FFFFFF" },
-});
-
