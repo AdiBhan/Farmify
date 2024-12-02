@@ -304,7 +304,7 @@ export default function ProductDetails() {
 
     const deliveryData = {
       externalDeliveryId: `D-${Date.now()}`, // Generate a unique ID
-      pickupAddress: seller.address, // Use seller's address
+      pickupAddress: seller.address || "233 Bay State Road Boston, MA 02215", // Use seller's address or default form bu
       pickupBusinessName: seller.sellerName || "Seller", // Use seller's name
       pickupPhoneNumber: seller.phoneNumber || "+10000000000", // Update accordingly
       pickupInstructions: "", // Optional
