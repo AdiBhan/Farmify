@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using FarmifyService.Data; 
-using FarmifyService.models; 
+using FarmifyService.Data;
+using FarmifyService.models;
+using System.Linq;
 
 namespace FarmifyService.Controllers
 {
-    [Route("api/seller/")]
     [ApiController]
+    [Route("api/seller")]
     public class SellerController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -123,6 +124,37 @@ namespace FarmifyService.Controllers
 
             return Ok(new { message = "Business information updated successfully" });
         }
+
+
+        // New Endpoint: Fetch Seller Details by sellerID
+
+
+        // GET: api/seller/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSellerById(string id)
+        {
+            // Fetch the seller based on the provided sellerID
+            var seller = await _context.Sellers
+                .Include(s => s.User)
+                .FirstOrDefaultAsync(s => s.ID == id);
+
+            if (seller == null)
+            {
+                return NotFound(new { message = "Seller not found" });
+            }
+
+            // Create an anonymous object to exclude sensitive fields
+            var sellerData = new
+            {
+                ID = seller.ID,
+                sellerName = seller.SellerName,
+                description = seller.Description,
+                address = seller.Address,
+                phoneNumber = seller.User.PhoneNumber
+            };
+
+            return Ok(seller);
+        }
     }
 
     // Models for incoming request payloads
@@ -140,4 +172,3 @@ namespace FarmifyService.Controllers
         public string Description { get; set; }
     }
 }
-
