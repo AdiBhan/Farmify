@@ -18,7 +18,7 @@ import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
-import {IconButton} from "react-native-paper";
+import { IconButton } from "react-native-paper";
 
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
@@ -42,7 +42,7 @@ const calculateTimeLeft = (endTime) => {
     const amount = Math.floor(diff / v);
     if (amount > 0) {
       const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-      return formatter.format(amount, unit); // Positive for future
+      return "Auction ends " + formatter.format(amount, unit); // Positive for future
     }
   }
 };
@@ -78,10 +78,10 @@ const Auction = () => {
         name: item.name,
         image: { uri: item.imgUrl },
         currentBid: calculateCurrentPrice(
-            item.startPrice,
-            item.endPrice,
-            item.startTime,
-            item.endTime
+          item.startPrice,
+          item.endPrice,
+          item.startTime,
+          item.endTime
         ),
         timeLeft: calculateTimeLeft(item.endTime),
         totalBids: 0,
@@ -149,107 +149,107 @@ const Auction = () => {
   }
 
   return (
-      <View style={styles.container}>
-        <LinearGradient
-            colors={[COLORS.background, COLORS.white, COLORS.background]}
-            style={styles.gradient}
-        >
-          <BlurView intensity={50} style={styles.blurContainer}>
-            <Header
-                username={username}
-                onSettingsPress={handleSettingsPress}
-                onUploadPress={handleUploadPress}
-            />
-            <ScrollView
-                style={styles.auctionContainer}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                refreshControl={
-                  <RefreshControl
-                      refreshing={isRefreshing}
-                      onRefresh={handleRefresh}
-                      tintColor={COLORS.primary}
-                  />
-                }
-            >
-              {auctionItems.map((item) => (
-                  <Pressable
-                      key={item.id}
-                      onPress={() => handleItemPress(item)}
-                      style={({ pressed }) => [
-                        styles.pressable,
-                        { transform: [{ scale: pressed ? 0.98 : 1 }] }
-                      ]}
-                  >
-                    <AuctionItem item={item} onBid={handleBid} />
-                  </Pressable>
-              ))}
-            </ScrollView>
-          </BlurView>
-        </LinearGradient>
-      </View>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={[COLORS.background, COLORS.white, COLORS.background]}
+        style={styles.gradient}
+      >
+        <BlurView intensity={50} style={styles.blurContainer}>
+          <Header
+            username={username}
+            onSettingsPress={handleSettingsPress}
+            onUploadPress={handleUploadPress}
+          />
+          <ScrollView
+            style={styles.auctionContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor={COLORS.primary}
+              />
+            }
+          >
+            {auctionItems.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => handleItemPress(item)}
+                style={({ pressed }) => [
+                  styles.pressable,
+                  { transform: [{ scale: pressed ? 0.98 : 1 }] }
+                ]}
+              >
+                <AuctionItem item={item} onBid={handleItemPress} />
+              </Pressable>
+            ))}
+          </ScrollView>
+        </BlurView>
+      </LinearGradient>
+    </View>
   );
 };
 
 const Header = ({ username, onSettingsPress, onUploadPress }) => (
-    <Animatable.View animation="fadeIn" duration={600}>
-      <LinearGradient
-          colors={[COLORS.primary + '15', COLORS.white]}
-          style={styles.headerContainer}
-      >
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.headerWrapper}>
-            {/* Top Section */}
-            <View style={styles.headerTopSection}>
-              <View style={styles.iconButtonContainer}>
-                <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={onSettingsPress}
-                    activeOpacity={0.7}
-                >
-                  <Image source={SettingsIcon} style={styles.iconImage} />
-                </TouchableOpacity>
-                <Text style={styles.iconLabel}>Settings</Text>
-              </View>
-
-              <View style={styles.titleContainer}>
-                <Text style={styles.titleMain}>Farmify</Text>
-                <Text style={styles.titleSub}>Market</Text>
-              </View>
-
-              <View style={styles.iconButtonContainer}>
-                <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={onUploadPress}
-                    activeOpacity={0.7}
-                >
-                  <Image source={UploadIcon} style={styles.iconImage} />
-                </TouchableOpacity>
-                <Text style={styles.iconLabel}>Upload</Text>
-              </View>
+  <Animatable.View animation="fadeIn" duration={600}>
+    <LinearGradient
+      colors={[COLORS.primary + '15', COLORS.white]}
+      style={styles.headerContainer}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.headerWrapper}>
+          {/* Top Section */}
+          <View style={styles.headerTopSection}>
+            <View style={styles.iconButtonContainer}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={onSettingsPress}
+                activeOpacity={0.7}
+              >
+                <Image source={SettingsIcon} style={styles.iconImage} />
+              </TouchableOpacity>
+              <Text style={styles.iconLabel}>Settings</Text>
             </View>
 
-            {/* Welcome Section */}
-            <View style={styles.welcomeSection}>
-              <View style={styles.welcomeInfo}>
-                <Text style={styles.welcomeLabel}>Welcome back,</Text>
-                <Text style={styles.welcomeName}>{username}</Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleMain}>Farmify</Text>
+              <Text style={styles.titleSub}>Market</Text>
+            </View>
+
+            <View style={styles.iconButtonContainer}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={onUploadPress}
+                activeOpacity={0.7}
+              >
+                <Image source={UploadIcon} style={styles.iconImage} />
+              </TouchableOpacity>
+              <Text style={styles.iconLabel}>Upload</Text>
+            </View>
+          </View>
+
+          {/* Welcome Section */}
+          <View style={styles.welcomeSection}>
+            <View style={styles.welcomeInfo}>
+              <Text style={styles.welcomeLabel}>Welcome back,</Text>
+              <Text style={styles.welcomeName}>{username}</Text>
+            </View>
+            <View style={styles.statsContainer}>
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>24</Text>
+                <Text style={styles.statLabel}>Active</Text>
               </View>
-              <View style={styles.statsContainer}>
-                <View style={styles.statBox}>
-                  <Text style={styles.statValue}>24</Text>
-                  <Text style={styles.statLabel}>Active</Text>
-                </View>
-                <View style={[styles.statBox, styles.statBoxBorder]}>
-                  <Text style={styles.statValue}>12</Text>
-                  <Text style={styles.statLabel}>Bids</Text>
-                </View>
+              <View style={[styles.statBox, styles.statBoxBorder]}>
+                <Text style={styles.statValue}>12</Text>
+                <Text style={styles.statLabel}>Bids</Text>
               </View>
             </View>
           </View>
-        </SafeAreaView>
-      </LinearGradient>
-    </Animatable.View>
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
+  </Animatable.View>
 );
 
 const AuctionItem = ({ item, onBid }) => {
@@ -257,48 +257,48 @@ const AuctionItem = ({ item, onBid }) => {
   const isNotStarted = item.currentBid === null && new Date(item.startTime) > new Date();
 
   return (
-      <Animatable.View animation="fadeInUp" duration={600} delay={200}>
-        <LinearGradient
-            colors={[COLORS.white, COLORS.background + '10']}
-            style={styles.itemCard}
-        >
-          <View style={styles.itemHeader}>
-            <Image
-                source={item.image}
-                style={styles.itemImage}
-                defaultSource='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s'
-            />
-            <View style={styles.itemContent}>
-              <View style={styles.itemTopRow}>
-                <Text style={styles.itemTitle}>{item.name}</Text>
-                <StatusBadge status={isExpired ? 'expired' : isNotStarted ? 'upcoming' : 'active'} />
-              </View>
-              <Text style={styles.itemSeller}>by {item.seller}</Text>
-              <Text style={styles.itemQuantity}>
-                {item.quantity} {item.quantity > 1 ? 'items' : 'item'} available
-              </Text>
+    <Animatable.View animation="fadeInUp" duration={600} delay={200}>
+      <LinearGradient
+        colors={[COLORS.white, COLORS.background + '10']}
+        style={styles.itemCard}
+      >
+        <View style={styles.itemHeader}>
+          <Image
+            source={item.image}
+            style={styles.itemImage}
+            defaultSource='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s'
+          />
+          <View style={styles.itemContent}>
+            <View style={styles.itemTopRow}>
+              <Text style={styles.itemTitle}>{item.name}</Text>
+              <StatusBadge status={isExpired ? 'expired' : isNotStarted ? 'upcoming' : 'active'} />
             </View>
+            <Text style={styles.itemSeller}>by {item.seller}</Text>
+            <Text style={styles.itemQuantity}>
+              {item.quantity} {item.quantity > 1 ? 'items' : 'item'} available
+            </Text>
           </View>
+        </View>
 
-          <Text style={styles.description} numberOfLines={2}>
-            {item.description}
-          </Text>
+        <Text style={styles.description} numberOfLines={2}>
+          {item.description}
+        </Text>
 
-          <View style={styles.bidInfo}>
-            <PriceInfo
-                currentBid={item.currentBid}
-                timeLeft={item.timeLeft}
-                isExpired={isExpired}
-                isNotStarted={isNotStarted}
-            />
-            <BidButton
-                onPress={() => onBid(item)}
-                isExpired={isExpired}
-                isNotStarted={isNotStarted}
-            />
-          </View>
-        </LinearGradient>
-      </Animatable.View>
+        <View style={styles.bidInfo}>
+          <PriceInfo
+            currentBid={item.currentBid}
+            timeLeft={item.timeLeft}
+            isExpired={isExpired}
+            isNotStarted={isNotStarted}
+          />
+          <BidButton
+            onPress={() => onBid(item)}
+            isExpired={isExpired}
+            isNotStarted={isNotStarted}
+          />
+        </View>
+      </LinearGradient>
+    </Animatable.View>
   );
 };
 
@@ -315,42 +315,42 @@ const StatusBadge = ({ status }) => {
   };
 
   return (
-      <View style={[styles.statusBadge, getStatusStyle()]}>
-        <Text style={styles.statusText}>
-          {status === 'expired' ? 'Ended' : status === 'upcoming' ? 'Coming Soon' : 'Active'}
-        </Text>
-      </View>
+    <View style={[styles.statusBadge, getStatusStyle()]}>
+      <Text style={styles.statusText}>
+        {status === 'expired' ? 'Ended' : status === 'upcoming' ? 'Coming Soon' : 'Active'}
+      </Text>
+    </View>
   );
 };
 
 const PriceInfo = ({ currentBid, timeLeft, isExpired, isNotStarted }) => (
-    <View style={styles.priceContainer}>
-      <Text style={styles.priceLabel}>
-        {isExpired ? 'Final Price' : isNotStarted ? 'Starting Price' : 'Current Bid'}
-      </Text>
-      <Text style={styles.priceAmount}>
-        ${currentBid ? currentBid.toFixed(2) : '0.00'}
-      </Text>
-      <Text style={styles.timeInfo}>
-        {timeLeft}
-      </Text>
-    </View>
+  <View style={styles.priceContainer}>
+    <Text style={styles.priceLabel}>
+      {isExpired ? 'Final Price' : isNotStarted ? 'Starting Price' : 'Current Bid'}
+    </Text>
+    <Text style={styles.priceAmount}>
+      ${currentBid ? currentBid.toFixed(2) : '0.00'}
+    </Text>
+    <Text style={styles.timeInfo}>
+      {timeLeft}
+    </Text>
+  </View>
 );
 
 const BidButton = ({ onPress, isExpired, isNotStarted }) => (
-    <TouchableOpacity
-        style={[
-          styles.bidButton,
-          isExpired && styles.bidButtonExpired,
-          isNotStarted && styles.bidButtonUpcoming
-        ]}
-        onPress={onPress}
-        disabled={isExpired}
-    >
-      <Text style={styles.bidButtonText}>
-        {isExpired ? 'Auction Ended' : isNotStarted ? 'Notify Me' : 'Place Bid'}
-      </Text>
-    </TouchableOpacity>
+  <TouchableOpacity
+    style={[
+      styles.bidButton,
+      isExpired && styles.bidButtonExpired,
+      isNotStarted && styles.bidButtonUpcoming
+    ]}
+    onPress={onPress}
+    disabled={isExpired}
+  >
+    <Text style={styles.bidButtonText}>
+      {isExpired ? 'Auction Ended' : isNotStarted ? 'Notify Me' : 'Place Bid'}
+    </Text>
+  </TouchableOpacity>
 );
 
 export default Auction;

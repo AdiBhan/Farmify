@@ -136,18 +136,30 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 
 
 
+## Simeon
+
+1. integrated paypal api to require sandbox payment before placing a bid
+2. Adjudted details.tsx in frontend to make popup for payment and confirm/redirect after completed
+Plan this week:
+1. Finalize statistics page/controller
+2. Implement rating system for backend. 
+3. Add more information to details.tsx (address, map, option for delivery/pickup)
+4. Create more sellers in paypal&backend to test
+5. adjust cost display (create formatted string like " (4.99 * 5 = $24.95 ))
 
 
  <br><br>
   Whats left:
 
-  1. Link up paypal API when a purchase is being made - store needed payment/delivery data
+  1. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 
   2. decide how doordash is going to be used in the project
 
-  3. Add functionality to create a new product (ADI)
+  3. Store products/auctions in backend when listing is made (newlisting.tsx)
 
-  4. Come up with a way to store photogallery of product (store in details page)
+  4. Display photogallery in details.tsx
+
+  5. display user profile picture (decide where)
 
   4. Error/Exception handling for all frontend functionality 
       - Make sure only valid inputs for creating bid, auction, etc
@@ -162,10 +174,7 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 
   7. Create trigger for updating seller rating when one of their products is rated
 
-  8. Display real site stats instead of mock data on stats page
-
-  9. Update NavBar
-
+  
 
 
 
