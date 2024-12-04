@@ -137,8 +137,8 @@ namespace FarmifyService.Controllers
                     },
                     application_context = new
                     {
-                        return_url = "https://example.com/success",
-                        cancel_url = "https://example.com/cancel"
+                        return_url = "http://localhost:4000/api/payment/payment-success",
+                        cancel_url = "http://localhost:4000/api/payment/payment-failed"
                     }
                 };
 

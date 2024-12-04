@@ -19,6 +19,102 @@ namespace FarmifyService.Controllers
             _context = context;
         }
 
+        [HttpGet("payment-failed")]
+        public IActionResult PaymentFailed()
+        {
+            return Content(@"
+                <!DOCTYPE html>
+                <html lang='en'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <title>Payment Failed</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: red;
+                            color: white;
+                            font-family: Arial, sans-serif;
+                        }
+                        .message-container {
+                            text-align: center;
+                            padding: 20px;
+                            background: rgba(255, 255, 255, 0.2);
+                            border-radius: 10px;
+                        }
+                        .message-container h1 {
+                            margin: 0;
+                            font-size: 2rem;
+                        }
+                        .message-container p {
+                            margin-top: 10px;
+                            font-size: 1rem;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='message-container'>
+                        <h1>Payment Failed</h1>
+                        <p>Something went wrong. Please try again or contact support.</p>
+                    </div>
+                </body>
+                </html>
+            ", "text/html");
+        }
+
+
+        [HttpGet("payment-success")]
+        public IActionResult PaymentSuccess()
+        {
+            return Content(@"
+                <!DOCTYPE html>
+                <html lang='en'>
+                <head>
+                    <meta charset='UTF-8'>
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                    <title>Payment Success</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: green;
+                            color: white;
+                            font-family: Arial, sans-serif;
+                        }
+                        .message-container {
+                            text-align: center;
+                            padding: 20px;
+                            background: rgba(255, 255, 255, 0.2);
+                            border-radius: 10px;
+                        }
+                        .message-container h1 {
+                            margin: 0;
+                            font-size: 2rem;
+                        }
+                        .message-container p {
+                            margin-top: 10px;
+                            font-size: 1rem;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='message-container'>
+                        <h1>Payment Successful!</h1>
+                        <p>Now close this window to return to the main website.</p>
+                    </div>
+                </body>
+                </html>
+            ", "text/html");
+        }
+
+
         // GET: api/payment/cards
         [HttpGet("cards")]
         public async Task<IActionResult> GetCreditCards([FromHeader] string sessionID)

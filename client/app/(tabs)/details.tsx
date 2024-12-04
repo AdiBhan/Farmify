@@ -210,10 +210,12 @@ export default function ProductDetails() {
       } else {
         const errorData = await captureOrderResponse.json();
         console.error("Failed to capture PayPal order:", errorData);
+        window.alert("Payment failed! Please try again.");
         Alert.alert("Error", "Payment capture failed. Please try again.");
       }
     } catch (error) {
       console.error("Error capturing payment:", error);
+      window.alert("Payment failed! Please try again.");
       Alert.alert("Error", "An unexpected error occurred while capturing payment.");
     }
   };
