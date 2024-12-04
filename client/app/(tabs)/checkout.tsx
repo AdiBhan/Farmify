@@ -27,6 +27,7 @@ export default function Checkout() {
     dropoff_instructions: "",
   });
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
+
   const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
 
@@ -108,11 +109,6 @@ export default function Checkout() {
   const handlePurchase = async () => {
     if (!product || currentPrice === null) {
       Alert.alert("Error", "Cannot place a bid at this time.");
-      return;
-    }
-
-    if (quantity <= 0) {
-      Alert.alert("Error", "Quantity must be at least 1.");
       return;
     }
 
