@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -26,17 +26,52 @@ export default function Checkout() {
     dropoff_phone_number: "",
     dropoff_instructions: "",
   });
-
+  const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
   const router = useRouter();
+
+  useEffect(() => {
+    // Fetch product details to include seller's address
+    const fetchProductDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/api/products/${parsedProduct.id}`
+        );
+    
+        if (!response.ok) {
+          throw new Error(`Failed to fetch product details: ${response.statusText}`);
+        }
+    
+        const data = await response.json();
+        console.log("API Response:", data); // Debugging line
+        console.log("Seller Address:", data.SellerAddress); // Debug seller address
+        setSellerAddress(data.SellerAddress || "Address not available"); // Handle empty address
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        Alert.alert("Error", "Failed to load product details. Please try again.");
+      }
+    };    
+
+    fetchProductDetails();
+  }, [parsedProduct.id]);
 
   const handlePayment = async () => {
     setIsSubmitting(true);
 
-    // Include delivery details if delivery is selected
+    if (!product || currentPrice === null) {
+      Alert.alert("Error", "Cannot place a bid at this time.");
+      return;
+    }
+
+    if (quantity <= 0) {
+      Alert.alert("Error", "Quantity must be at least 1.");
+      return;
+    }
+
     const deliveryInfo =
       deliveryMethod === "delivery" ? deliveryDetails : null;
 
     try {
+      // Step 2: Create PayPal order
       const orderRequest = {
         ClientId: parsedProduct.ppid,
         ClientSecret: parsedProduct.pPsecret,
@@ -67,6 +102,7 @@ export default function Checkout() {
 
       const { orderId, approvalLink } = await createOrderResponse.json();
 
+      // Step 3: Open PayPal in a separate window
       const paypalWindow = window.open(
         approvalLink,
         "PayPalPayment",
@@ -78,10 +114,11 @@ export default function Checkout() {
         setIsSubmitting(false);
         return;
       }
-
+      // Step 4: Poll for window closure and handle payment completion
       const pollTimer = setInterval(() => {
         if (paypalWindow.closed) {
           clearInterval(pollTimer);
+          // Step 5: Capture the order
           capturePayPalOrder(orderId, parsedProduct.ppid, parsedProduct.pPsecret);
         }
       }, 500);
@@ -188,6 +225,14 @@ export default function Checkout() {
           <Text>Delivery</Text>
         </Pressable>
       </View>
+
+      {/* Display Seller's Address for Pickup */}
+      {deliveryMethod === "pickup" && (
+        <View style={styles.pickupInfo}>
+          <Text style={styles.pickupTitle}>Pickup Location:</Text>
+          <Text style={styles.pickupDetails}>{sellerAddress}</Text>
+        </View>
+      )}
 
       {/* Delivery Form */}
       {deliveryMethod === "delivery" && (
