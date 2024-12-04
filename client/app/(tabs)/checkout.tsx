@@ -16,7 +16,7 @@ export default function Checkout() {
   const parsedProduct = JSON.parse(product);
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;
   const parsedQuantity = parseInt(quantity, 10) || 1;
-  const totalPrice = parsedCurrentPrice * parsedQuantity;
+  let totalPrice = parsedCurrentPrice * parsedQuantity;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState("pickup"); // Default to pickup
@@ -27,7 +27,8 @@ export default function Checkout() {
     dropoff_instructions: "",
   });
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
-  const router = useRouter();
+  const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
+  const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
 
   useEffect(() => {
     // Fetch product details to include seller's address
@@ -54,9 +55,57 @@ export default function Checkout() {
     fetchProductDetails();
   }, [parsedProduct.id]);
 
-  const handlePayment = async () => {
-    setIsSubmitting(true);
-
+  const handleGenerateDelivery = async () => {
+    if (deliveryMethod !== "delivery") {
+      Alert.alert("Error", "Delivery is not selected.");
+      return;
+    }
+  
+    const deliveryRequest = {
+      externalDeliveryId: `D-${Date.now()}`, // Unique ID for each delivery
+      pickupAddress: "1079 Commonwealth Ave, Boston, MA 02215",
+      pickupBusinessName: "Your Business Name", 
+      pickupPhoneNumber: "+16505555555", // Example phone number
+      pickupInstructions: "Enter gate code 1234 on the callbox.",
+      pickupReferenceTag: `Order number ${Date.now()}`,
+      dropoffAddress: deliveryDetails.dropoff_address.trim() || "3 ashford ct, Allston, MA 02134",
+      dropoffBusinessName: deliveryDetails.dropoff_business_name.trim() || "Test",
+      dropoffPhoneNumber: deliveryDetails.dropoff_phone_number.trim() || "+15628443147",
+      dropoffInstructions: deliveryDetails.dropoff_instructions.trim() || "Leave at door",
+    };
+  
+    try {
+      setIsSubmitting(true);
+      const response = await fetch("http://localhost:4000/api/deliveries/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(deliveryRequest),
+      });
+  
+      const result = await response.json();
+      console.log("Delivery Created:", result);
+  
+      if (response.ok) {
+        Alert.alert("Success", "Delivery created successfully!");
+      } else {
+        if (result.field_errors) {
+          result.field_errors.forEach((error) =>
+            console.error(`Field: ${error.field}, Error: ${error.message}`)
+          );
+        }
+        Alert.alert("Error", "Failed to create delivery. Check the console for details.");
+      }
+    } catch (error) {
+      console.error("Error creating delivery:", error);
+      Alert.alert("Error", "Failed to create delivery.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handlePurchase = async () => {
     if (!product || currentPrice === null) {
       Alert.alert("Error", "Cannot place a bid at this time.");
       return;
@@ -67,19 +116,17 @@ export default function Checkout() {
       return;
     }
 
-    const deliveryInfo =
-      deliveryMethod === "delivery" ? deliveryDetails : null;
-
     try {
+
       // Step 2: Create PayPal order
       const orderRequest = {
-        ClientId: parsedProduct.ppid,
-        ClientSecret: parsedProduct.pPsecret,
-        Amount: totalPrice,
-        Currency: "USD",
-        Name: parsedProduct.name,
-        DeliveryInfo: deliveryInfo,
+        ClientId: product.ppid,
+        ClientSecret: product.pPsecret,
+        Amount: currentPrice * quantity,
+        Currency: "USD", // Adjust currency as needed
+        Name: product.name,
       };
+      console.log(orderRequest);
 
       const createOrderResponse = await fetch(
         "http://localhost:4000/api/paypal/create-order",
@@ -96,7 +143,6 @@ export default function Checkout() {
         const errorData = await createOrderResponse.json();
         console.error("Error creating PayPal order:", errorData);
         Alert.alert("Error", "Failed to initiate payment. Please try again.");
-        setIsSubmitting(false);
         return;
       }
 
@@ -111,24 +157,27 @@ export default function Checkout() {
 
       if (!paypalWindow) {
         Alert.alert("Error", "Failed to open PayPal window. Please try again.");
-        setIsSubmitting(false);
         return;
       }
+
       // Step 4: Poll for window closure and handle payment completion
       const pollTimer = setInterval(() => {
         if (paypalWindow.closed) {
           clearInterval(pollTimer);
+
           // Step 5: Capture the order
-          capturePayPalOrder(orderId, parsedProduct.ppid, parsedProduct.pPsecret);
+          capturePayPalOrder(orderId, product.ppid, product.pPsecret);
+          window.alert("Payment Successful!");
+
         }
       }, 500);
     } catch (error) {
-      console.error("Error during payment process:", error);
+      console.error("Error during purchase process:", error);
       Alert.alert("Error", "An unexpected error occurred. Please try again.");
-      setIsSubmitting(false);
     }
   };
 
+  // Helper function to capture the PayPal order
   const capturePayPalOrder = async (orderId, clientId, clientSecret) => {
     try {
       const captureOrderResponse = await fetch(
@@ -148,28 +197,27 @@ export default function Checkout() {
 
       if (captureOrderResponse.ok) {
         Alert.alert("Success", "Payment captured successfully!");
+        // Proceed with bid creation logic here
         createBid();
       } else {
         const errorData = await captureOrderResponse.json();
         console.error("Failed to capture PayPal order:", errorData);
         Alert.alert("Error", "Payment capture failed. Please try again.");
-        setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Error capturing payment:", error);
       Alert.alert("Error", "An unexpected error occurred while capturing payment.");
-      setIsSubmitting(false);
     }
   };
 
+  // Helper function to create the bid
   const createBid = async () => {
     const bidData = {
-      buyerID: "323e4567-e89b-12d3-a456-426614174002",
-      amount: parsedQuantity,
-      auctionID: parsedProduct.id,
-      price: parsedCurrentPrice,
-      deliveryStatus: deliveryMethod === "delivery",
-      deliveryDetails: deliveryMethod === "delivery" ? deliveryDetails : null,
+      buyerID,
+      amount: quantity,
+      auctionID: product.id,
+      price: currentPrice,
+      deliveryStatus: true,
     };
 
     try {
@@ -182,20 +230,19 @@ export default function Checkout() {
       });
 
       if (response.ok) {
-        Alert.alert("Success", "Your order has been placed successfully!");
-        router.replace("/tabs");
+        Alert.alert("Success", "Your bid has been placed successfully!");
+        window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Error creating bid:", errorData);
-        Alert.alert("Error", "Failed to place order. Please try again.");
+        Alert.alert("Error", "Failed to place bid. Please try again.");
       }
     } catch (error) {
       console.error("Error creating bid:", error);
-      Alert.alert("Error", "An unexpected error occurred while placing your order.");
-    } finally {
-      setIsSubmitting(false);
+      Alert.alert("Error", "An unexpected error occurred while placing your bid.");
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -274,7 +321,18 @@ export default function Checkout() {
 
       <Pressable
         style={styles.buyButton}
-        onPress={handlePayment}
+        onPress={async () => {
+          setIsSubmitting(true);
+          try {
+            await handlePurchase(); // Call PayPal payment first
+            await handleGenerateDelivery(); // then Call generate delivery   
+          } catch (error) {
+            console.error("Error during payment or delivery:", error);
+            Alert.alert("Error", "An unexpected error occurred. Please try again.");
+          } finally {
+            setIsSubmitting(false); // Reset the loading state
+          }
+        }}
         disabled={isSubmitting}
       >
         <Text style={styles.buyButtonText}>
