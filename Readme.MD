@@ -168,15 +168,17 @@ Plan this week:
       - Shouldn't be able to make end price same as start price (at least half value)
       - Minimum duration of auctions
 
-  5. Replace hardcoded userData in frontend by tracking state of which user is logged in
+  6. Replace hardcoded userData in frontend by tracking state of which user is logged in
     - ONLY show past transactions for that user
   
 
   7. Create trigger for updating seller rating when one of their products is rated 
 
-  8. Add amount remaining to details.tsx page (DONE)
+  
 
-  9. add display of photogallery images for each product.
+  8. add display of photogallery images for each product.
+
+  9. Add amount remaining to details.tsx page (DONE)  
 
   10. Document stubbing
     - Written reviews for sellers

@@ -20,6 +20,44 @@ namespace FarmifyService.Controllers
             _context = context;
             _logger = logger;
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        {
+            if (product == null)
+            {
+                return BadRequest("Product is null.");
+            }
+
+            if (product.StartPrice <= 0 || product.EndPrice <= 0)
+            {
+                return BadRequest("Prices must be greater than zero.");
+            }
+
+            if (product.StartTime >= product.EndTime)
+            {
+                return BadRequest("End time must be after start time.");
+            }
+
+            try
+            {
+                // Set default values or adjust the product object if necessary
+                product.ID = 0; // Let the database generate the ID
+                product.StartTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                product.EndTime = DateTime.SpecifyKind(product.EndTime, DateTimeKind.Unspecified);
+
+                // Save the product to the database
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetProductById), new { id = product.ID }, product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
         // GET: api/products
         [HttpGet]

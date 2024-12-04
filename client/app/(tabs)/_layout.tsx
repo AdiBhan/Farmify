@@ -14,8 +14,9 @@ const COLORS = {
 };
 
 export default function TabsLayout() {
-    const { username, accountType } = useUser();
+    const { username, id, accountType } = useUser();
     console.log('Account Type:', accountType);
+    console.log('ID:', id);
     console.log('Username:', username);
 
     const tabBarIcon = (Icon: any, name: string) => {

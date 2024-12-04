@@ -1,13 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Text.Json.Serialization;
 namespace FarmifyService.models
 {
     public class Product
     {
         [Key]
-        public required long ID { get; set; } // Matches bigint
+        public long ID { get; set; } // Matches bigint
 
         [Required]
         public required string Name { get; set; } // Matches character varying(255)
@@ -39,6 +39,7 @@ namespace FarmifyService.models
         public string? ImgUrl { get; set; } // Matches character varying(255)
 
         // Navigation property
-        public required Seller Seller { get; set; }
+        [JsonIgnore]
+        public Seller? Seller { get; set; }
     }
 }

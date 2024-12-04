@@ -9,6 +9,7 @@ import styles from "../styles";
 import { createClient } from "@supabase/supabase-js";
 import { decode } from "base64-arraybuffer";
 import { StyleSheet } from "react-native";
+import useUser from "@/stores/userStore";
 
 import * as Animatable from 'react-native-animatable';
 export default function CreateAuctionScreen() {
@@ -23,6 +24,7 @@ export default function CreateAuctionScreen() {
   const [primaryImageUrl, setPrimaryImageUrl] = useState(null);
   const [galleryImageUrls, setGalleryImageUrls] = useState<string[]>([]);
   const [productId, setProductId] = useState<string>(Date.now().toString());
+  const { username, id, accountType } = useUser();
 
   function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
@@ -133,19 +135,51 @@ export default function CreateAuctionScreen() {
     }
   };
 
-  const handleCreateAuction = () => {
-    console.log("Auction Created:", {
-      productId,
-      productName,
-      description,
-      startingPrice,
-      endingPrice,
-      duration,
-      primaryImageUrl,
-      galleryImageUrls
-    });
-    router.push("/(tabs)/auction");
+  const handleCreateAuction = async () => {
+    try {
+      if (!productName || !description || !startingPrice || !endingPrice || !duration || !primaryImageUrl) {
+        Alert.alert("Error", "Please fill all required fields.");
+        return;
+      }
+
+      const auctionData = {
+        name: productName,
+        description: description,
+        StartPrice: parseFloat(startingPrice),
+        EndPrice: parseFloat(endingPrice),
+        StartTime: new Date().toISOString(),
+        EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
+        ImgUrl: primaryImageUrl,
+        Quantity: 1,
+        sellerID: "S1", // Replace with the actual SellerID
+      };
+      console.log('Auction data:', auctionData);
+      const response = await fetch("http://localhost:4000/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(auctionData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to create auction:", errorText);
+        Alert.alert("Error", `Failed to create auction: ${response.statusText}`);
+        return;
+      }
+
+      const createdAuction = await response.json();
+      console.log("Auction created successfully:", createdAuction);
+
+      Alert.alert("Success", "Auction created successfully!");
+      router.push("/(tabs)/auction");
+    } catch (error) {
+      console.error("Error creating auction:", error);
+      Alert.alert("Error", "An error occurred while creating the auction.");
+    }
   };
+
 
 
   return (
