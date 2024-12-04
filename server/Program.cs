@@ -61,6 +61,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         });
 });
 
+builder.Services.AddHttpClient(); // Register HttpClient for dependency injection
+
 var app = builder.Build();
 app.UseCors("AllowLocalhost8081");
 

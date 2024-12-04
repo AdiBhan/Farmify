@@ -19,16 +19,18 @@ namespace YourNamespace.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<DoorDashController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         // DoorDash API Credentials
         private readonly string DeveloperId = "7714fb92-b125-44de-a0da-a5b7529e93a8";
         private readonly string KeyId = "758af6e3-049b-404a-8447-bc14a90c9c7a";
         private readonly string SigningSecret = "Wj2nZ_qTdTYW2R4KhjJ5FkuhU2Ggg6CBfHNW6cZ5ZHc";
 
-        public DoorDashController(IConfiguration configuration, ILogger<DoorDashController> logger)
+        public DoorDashController(IConfiguration configuration, ILogger<DoorDashController> logger, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
             _logger = logger;
+            _httpClientFactory = httpClientFactory;
 
             // Load DoorDash API credentials from configuration or environment variables
             DeveloperId = "7714fb92-b125-44de-a0da-a5b7529e93a8";
@@ -67,7 +69,7 @@ namespace YourNamespace.Controllers
 
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                using HttpClient client = new HttpClient();
+                using HttpClient client = _httpClientFactory.CreateClient();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 // Send the POST request to DoorDash API
@@ -91,6 +93,39 @@ namespace YourNamespace.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("Error creating DoorDash delivery: {Exception}", ex);
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
+        // GET: /api/delivery/status/{deliveryId}
+        [HttpGet("status/{deliveryId}")]
+        public async Task<IActionResult> GetDeliveryStatus(string deliveryId)
+        {
+            try
+            {
+                using HttpClient client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GenerateJwt());
+
+                // Make the request to DoorDash API
+                var result = await client.GetAsync($"https://openapi.doordash.com/drive/v2/deliveries/{deliveryId}");
+
+                // Read status code and response content
+                var status = result.StatusCode;
+                var resultString = await result.Content.ReadAsStringAsync();
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"DoorDash API Error: {result.StatusCode}, {resultString}");
+                    return StatusCode((int)status, resultString);
+                }
+
+                // Return the response to the client
+                return Ok(resultString);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and return a 500 response
+                _logger.LogError("An error occurred while fetching the delivery status: {0}", ex.Message);
                 return StatusCode(500, $"Error: {ex.Message}");
             }
         }
