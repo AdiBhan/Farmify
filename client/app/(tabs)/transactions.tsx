@@ -55,6 +55,7 @@ const TransactionItem = ({ transaction, onRate }) => {
   const [tempRating, setTempRating] = useState(transaction.rating || 0);
 
   const handleRatePress = () => {
+    console.log(`Rating ${tempRating} for transaction ID: ${transaction.id}`);
     onRate(transaction.id, tempRating);
   };
 
@@ -110,14 +111,34 @@ export default function Transactions() {
     fetchTransactions();
   }, []);
 
-  const handleRate = (transactionId, rating) => {
-    setTransactions((prevTransactions) =>
-      prevTransactions.map((transaction) =>
-        transaction.id === transactionId ? { ...transaction, rating } : transaction
-      )
-    );
-    console.log(`Transaction ID: ${transactionId} updated with Rating: ${rating}`);
+  const handleRate = async (transactionId, rating) => {
+    try {
+      // Optimistically update the rating in the frontend
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction.id === transactionId ? { ...transaction, rating } : transaction
+        )
+      );
+
+      // Send the updated rating to the backend
+      const response = await fetch(`http://localhost:4000/api/bids/${transactionId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update the rating on the backend.");
+      }
+
+      console.log(`Transaction ID: ${transactionId} successfully updated with Rating: ${rating}`);
+    } catch (error) {
+      console.error("Error updating rating:", error);
+    }
   };
+
 
   const handleSettingsPress = () => {
     console.log("Settings pressed");

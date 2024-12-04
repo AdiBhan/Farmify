@@ -171,11 +171,10 @@ Plan this week:
   5. Replace hardcoded userData in frontend by tracking state of which user is logged in
     - ONLY show past transactions for that user
   
-  6. Modify details page to include link to ABOUT US page for that seller
 
-  7. Create trigger for updating seller rating when one of their products is rated
+  7. Create trigger for updating seller rating when one of their products is rated 
 
-  8. Add amount remaining to details.tsx page
+  8. Add amount remaining to details.tsx page (DONE)
 
   9. add display of photogallery images for each product.
 

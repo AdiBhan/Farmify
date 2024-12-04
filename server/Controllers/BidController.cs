@@ -114,6 +114,35 @@ namespace FarmifyService.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBidRating(string id, [FromBody] UpdateRatingDto updatedRating)
+        {
+            if (string.IsNullOrEmpty(id) || updatedRating == null)
+            {
+                return BadRequest("Invalid input.");
+            }
+
+            try
+            {
+                var bid = await _context.Bids.FindAsync(id);
+                if (bid == null)
+                {
+                    return NotFound("Bid not found.");
+                }
+
+                bid.Rating = updatedRating.Rating; // Update only the rating
+                _context.Bids.Update(bid);
+                await _context.SaveChangesAsync();
+
+                return NoContent(); // Success
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
 
         // POST: api/bids
         [HttpPost]
@@ -144,5 +173,10 @@ namespace FarmifyService.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+    }
+
+    public class UpdateRatingDto
+    {
+        public int Rating { get; set; }
     }
 }
