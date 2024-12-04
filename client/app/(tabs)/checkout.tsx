@@ -17,6 +17,8 @@ export default function Checkout() {
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;
   const parsedQuantity = parseInt(quantity, 10) || 1;
   let totalPrice = parsedCurrentPrice * parsedQuantity;
+  const [trackingUrl, setTrackingUrl] = useState(null);
+  const router = useRouter();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState("pickup"); // Default to pickup
@@ -61,7 +63,6 @@ export default function Checkout() {
       Alert.alert("Error", "Delivery is not selected.");
       return;
     }
-  
     const deliveryRequest = {
       externalDeliveryId: `D-${Date.now()}`, // Unique ID for each delivery
       pickupAddress: "1079 Commonwealth Ave, Boston, MA 02215",
@@ -74,7 +75,7 @@ export default function Checkout() {
       dropoffPhoneNumber: deliveryDetails.dropoff_phone_number.trim() || "+15628443147",
       dropoffInstructions: deliveryDetails.dropoff_instructions.trim() || "Leave at door",
     };
-  
+
     try {
       setIsSubmitting(true);
       const response = await fetch("http://localhost:4000/api/deliveries/generate", {
@@ -89,6 +90,7 @@ export default function Checkout() {
       console.log("Delivery Created:", result);
   
       if (response.ok) {
+        setTrackingUrl(result.tracking_url);
         Alert.alert("Success", "Delivery created successfully!");
       } else {
         if (result.field_errors) {
@@ -335,6 +337,16 @@ export default function Checkout() {
           {isSubmitting ? "Processing..." : "Pay Now"}
         </Text>
       </Pressable>
+
+      {trackingUrl && (
+      <Pressable
+      style={styles.buyButton}
+        onPress={() => router.push({ pathname: "/tracking", params: { trackingUrl } })}
+      >
+        <Text style={styles.buyButtonText}>Track Delivery</Text>
+      </Pressable>
+    )}
+
 
       {isSubmitting && (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
