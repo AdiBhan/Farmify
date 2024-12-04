@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   StyleSheet,
+  Linking,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -338,14 +339,20 @@ export default function Checkout() {
         </Text>
       </Pressable>
 
-      {trackingUrl && (
-      <Pressable
-      style={styles.buyButton}
-        onPress={() => router.push({ pathname: "/tracking", params: { trackingUrl } })}
-      >
-        <Text style={styles.buyButtonText}>Track Delivery</Text>
-      </Pressable>
-    )}
+{trackingUrl && (
+  <Pressable
+    style={styles.buyButton}
+    onPress={() => {
+      // Open the tracking URL in the browser
+      Linking.openURL(trackingUrl).catch(err => 
+        console.error("Failed to open tracking URL:", err)
+      );
+    }}
+  >
+    <Text style={styles.buyButtonText}>Track Delivery</Text>
+  </Pressable>
+)}
+
 
 
       {isSubmitting && (
