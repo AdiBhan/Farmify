@@ -92,6 +92,7 @@ export default function TabsLayout() {
 
             {/* Hidden tabs - keep as is */}
             <Tabs.Screen name="details" options={{ href: null }} />
+            <Tabs.Screen name="checkout" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updateContact" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updateAccountInfo" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updatePaymentInfo" options={{ href: null }} />

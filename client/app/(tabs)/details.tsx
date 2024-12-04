@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router"; // For navigation
 import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
 
@@ -56,6 +56,7 @@ export default function ProductDetails() {
 
   const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
+  const router = useRouter(); // For navigation
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -111,144 +112,21 @@ export default function ProductDetails() {
     return () => clearInterval(interval);
   }, [product]);
 
-  const handlePurchase = async () => {
+  const handleNavigateToCheckout = () => {
     if (!product || currentPrice === null) {
-      Alert.alert("Error", "Cannot place a bid at this time.");
+      Alert.alert("Error", "Cannot proceed to checkout at this time.");
       return;
     }
 
-    if (quantity <= 0) {
-      Alert.alert("Error", "Quantity must be at least 1.");
-      return;
-    }
-
-    try {
-
-      // Step 2: Create PayPal order
-      const orderRequest = {
-        ClientId: product.ppid,
-        ClientSecret: product.pPsecret,
-        Amount: currentPrice * quantity,
-        Currency: "USD", // Adjust currency as needed
-        Name: product.name,
-      };
-      console.log(orderRequest);
-
-      const createOrderResponse = await fetch(
-        "http://localhost:4000/api/paypal/create-order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderRequest),
-        }
-      );
-
-      if (!createOrderResponse.ok) {
-        const errorData = await createOrderResponse.json();
-        console.error("Error creating PayPal order:", errorData);
-        Alert.alert("Error", "Failed to initiate payment. Please try again.");
-        return;
-      }
-
-      const { orderId, approvalLink } = await createOrderResponse.json();
-
-      // Step 3: Open PayPal in a separate window
-      const paypalWindow = window.open(
-        approvalLink,
-        "PayPalPayment",
-        "width=800,height=600"
-      );
-
-      if (!paypalWindow) {
-        Alert.alert("Error", "Failed to open PayPal window. Please try again.");
-        return;
-      }
-
-      // Step 4: Poll for window closure and handle payment completion
-      const pollTimer = setInterval(() => {
-        if (paypalWindow.closed) {
-          clearInterval(pollTimer);
-
-          // Step 5: Capture the order
-          capturePayPalOrder(orderId, product.ppid, product.pPsecret);
-          window.alert("Payment Successful!");
-
-        }
-      }, 500);
-    } catch (error) {
-      console.error("Error during purchase process:", error);
-      Alert.alert("Error", "An unexpected error occurred. Please try again.");
-    }
+    router.push({
+      pathname: "/(tabs)/checkout",
+      params: {
+        product: JSON.stringify(product),
+        quantity,
+        currentPrice,
+      },
+    });
   };
-
-  // Helper function to capture the PayPal order
-  const capturePayPalOrder = async (orderId, clientId, clientSecret) => {
-    try {
-      const captureOrderResponse = await fetch(
-        "http://localhost:4000/api/paypal/capture-order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ClientId: clientId,
-            ClientSecret: clientSecret,
-            OrderId: orderId,
-          }),
-        }
-      );
-
-      if (captureOrderResponse.ok) {
-        Alert.alert("Success", "Payment captured successfully!");
-        // Proceed with bid creation logic here
-        createBid();
-      } else {
-        const errorData = await captureOrderResponse.json();
-        console.error("Failed to capture PayPal order:", errorData);
-        Alert.alert("Error", "Payment capture failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error capturing payment:", error);
-      Alert.alert("Error", "An unexpected error occurred while capturing payment.");
-    }
-  };
-
-  // Helper function to create the bid
-  const createBid = async () => {
-    const bidData = {
-      buyerID,
-      amount: quantity,
-      auctionID: product.id,
-      price: currentPrice,
-      deliveryStatus: true,
-    };
-
-    try {
-      const response = await fetch("http://localhost:4000/api/bids", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bidData),
-      });
-
-      if (response.ok) {
-        Alert.alert("Success", "Your bid has been placed successfully!");
-        window.location.reload();
-      } else {
-        const errorData = await response.json();
-        console.error("Error creating bid:", errorData);
-        Alert.alert("Error", "Failed to place bid. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error creating bid:", error);
-      Alert.alert("Error", "An unexpected error occurred while placing your bid.");
-    }
-  };
-
 
   if (loading) {
     return (
@@ -284,7 +162,7 @@ export default function ProductDetails() {
         progress={
           product.endTime && product.startTime
             ? (new Date().getTime() - new Date(product.startTime).getTime()) /
-            (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+              (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
             : 0
         }
         width={200}
@@ -310,7 +188,7 @@ export default function ProductDetails() {
 
       <Pressable
         style={styles.buyButton}
-        onPress={handlePurchase}
+        onPress={handleNavigateToCheckout}
         disabled={isSubmitting}
       >
         <Text style={styles.buyButtonText}>
