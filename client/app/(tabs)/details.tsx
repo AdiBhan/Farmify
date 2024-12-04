@@ -53,6 +53,7 @@ export default function ProductDetails() {
   const [isSubmitting, setIsSubmitting] = useState(false); // Indicate if a purchase request is in progress
   const [currentPrice, setCurrentPrice] = useState(null); // Store the current price of the auction
   const [timeLeft, setTimeLeft] = useState(""); // Store the remaining time for the auction
+  const [amountLeft, setAmountLeft] = useState(""); // Store the remaining time for the auction
 
   const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
@@ -67,6 +68,7 @@ export default function ProductDetails() {
         const data = await response.json();
         setProduct(data);
         console.log(data);
+        setAmountLeft(data.quantity);
         // Calculate initial values
         const price = calculateCurrentPrice(
           data.startPrice,
@@ -278,6 +280,7 @@ export default function ProductDetails() {
       <Text style={styles.currentBid}>
         Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
       </Text>
+      <Text style={styles.timeRemaining}>Products Remaining: {amountLeft}</Text>
       <Text style={styles.timeRemaining}>Time Remaining: {timeLeft}</Text>
 
       <Progress.Bar
