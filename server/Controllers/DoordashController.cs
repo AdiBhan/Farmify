@@ -21,7 +21,7 @@ namespace YourNamespace.Controllers
         private readonly ILogger<DoorDashController> _logger;
 
         // DoorDash API Credentials
-        private readonly string DeveloperId= "7714fb92-b125-44de-a0da-a5b7529e93a8";
+        private readonly string DeveloperId = "7714fb92-b125-44de-a0da-a5b7529e93a8";
         private readonly string KeyId = "758af6e3-049b-404a-8447-bc14a90c9c7a";
         private readonly string SigningSecret = "Wj2nZ_qTdTYW2R4KhjJ5FkuhU2Ggg6CBfHNW6cZ5ZHc";
 
@@ -31,11 +31,9 @@ namespace YourNamespace.Controllers
             _logger = logger;
 
             // Load DoorDash API credentials from configuration or environment variables
-            DeveloperId = = "7714fb92-b125-44de-a0da-a5b7529e93a8";
+            DeveloperId = "7714fb92-b125-44de-a0da-a5b7529e93a8";
             KeyId = "758af6e3-049b-404a-8447-bc14a90c9c7a";
             SigningSecret = "Wj2nZ_qTdTYW2R4KhjJ5FkuhU2Ggg6CBfHNW6cZ5ZHc";
-
-
         }
 
         // POST: /api/delivery/doordash
@@ -154,6 +152,5 @@ namespace YourNamespace.Controllers
         public string ExternalDeliveryId { get; set; }
         public string DeliveryId { get; set; }
         public string Status { get; set; }
-        // Include other fields as needed
     }
 }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using FarmifyService.Data;
 using FarmifyService.models;
+
 // Added usings for DoorDash integration
 using System;
 using System.Text;
@@ -31,7 +32,7 @@ var SigningSecret = "Wj2nZ_qTdTYW2R4KhjJ5FkuhU2Ggg6CBfHNW6cZ5ZHc";
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//  Enables CORS for http://localhost:8081 to allow React Native frontend to send requests on diff port (:8081)
+// Enables CORS for http://localhost:8081 to allow React Native frontend to send requests on different port (:8081)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost8081",
@@ -89,10 +90,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
 // DoorDash Delivery Endpoint Integration
-
 
 // Map POST request to /api/delivery/doordash
 app.MapPost("/api/delivery/doordash", async (HttpContext context) =>
@@ -108,7 +106,7 @@ app.MapPost("/api/delivery/doordash", async (HttpContext context) =>
             return;
         }
 
-        if (string.IsNullOrEmpty(developerId) || string.IsNullOrEmpty(keyId) || string.IsNullOrEmpty(signingSecret))
+        if (string.IsNullOrEmpty(DeveloperId) || string.IsNullOrEmpty(KeyId) || string.IsNullOrEmpty(SigningSecret))
         {
             context.Response.StatusCode = 500;
             await context.Response.WriteAsync("DoorDash API credentials are not configured.");
@@ -116,7 +114,7 @@ app.MapPost("/api/delivery/doordash", async (HttpContext context) =>
         }
 
         // Generate JWT token
-        string token = GenerateJwt(developerId, keyId, signingSecret);
+        string token = GenerateJwt(DeveloperId, KeyId, SigningSecret);
 
         // Create the JSON payload for the DoorDash API request
         var jsonContent = JsonSerializer.Serialize(new
@@ -199,20 +197,6 @@ string GenerateJwt(string developerId, string keyId, string signingSecret)
 
     // Return the generated token string
     return token;
-}
-
-// Define the DeliveryRequest model
-public class DeliveryRequest
-{
-    public string ExternalDeliveryId { get; set; }
-    public string PickupAddress { get; set; }
-    public string PickupBusinessName { get; set; }
-    public string PickupPhoneNumber { get; set; }
-    public string PickupInstructions { get; set; }
-    public string DropoffAddress { get; set; }
-    public string DropoffBusinessName { get; set; }
-    public string DropoffPhoneNumber { get; set; }
-    public string DropoffInstructions { get; set; }
 }
 
 app.Run();
