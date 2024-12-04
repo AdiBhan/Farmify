@@ -17,7 +17,7 @@ export default function Checkout() {
   const parsedProduct = JSON.parse(product);
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;
   const parsedQuantity = parseInt(quantity, 10) || 1;
-  let totalPrice = parsedCurrentPrice * parsedQuantity;
+  let totalPrice = parsedCurrentPrice * parsedQuantity; 
   const [trackingUrl, setTrackingUrl] = useState(null);
   const router = useRouter();
 
@@ -29,6 +29,7 @@ export default function Checkout() {
     dropoff_phone_number: "",
     dropoff_instructions: "",
   });
+  const [tipAmount, setTipAmount] = useState("");
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
 
   const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
@@ -64,6 +65,9 @@ export default function Checkout() {
       Alert.alert("Error", "Delivery is not selected.");
       return;
     }
+    const parsedTip = parseFloat(tipAmount) * 100 || 0; // Ensure tip is a valid number
+    const orderValue = parseFloat(totalPrice.toFixed(2))*100; // Ensures a float with 2 decimal places
+
     const deliveryRequest = {
       externalDeliveryId: `D-${Date.now()}`, // Unique ID for each delivery
       pickupAddress: "1079 Commonwealth Ave, Boston, MA 02215",
@@ -73,8 +77,10 @@ export default function Checkout() {
       pickupReferenceTag: `Order number ${Date.now()}`,
       dropoffAddress: deliveryDetails.dropoff_address.trim() || "3 ashford ct, Allston, MA 02134",
       dropoffBusinessName: deliveryDetails.dropoff_business_name.trim() || "Test",
-      dropoffPhoneNumber: deliveryDetails.dropoff_phone_number.trim() || "+15628443147",
+      dropoffPhoneNumber: `+1${deliveryDetails.dropoff_phone_number.trim()}` || "+15628443147",
       dropoffInstructions: deliveryDetails.dropoff_instructions.trim() || "Leave at door",
+      orderValue: orderValue, // Add total order value
+      tip: parsedTip || 0,
     };
 
     try {
@@ -315,6 +321,13 @@ export default function Checkout() {
               setDeliveryDetails({ ...deliveryDetails, dropoff_instructions: text })
             }
           />
+          <TextInput
+            style={styles.input}
+            placeholder="Tip Amount (Optional)"
+            keyboardType="numeric"
+            value={tipAmount.toString()}
+            onChangeText={(text) => setTipAmount(text)}
+          />
         </View>
       )}
 
@@ -352,8 +365,6 @@ export default function Checkout() {
     <Text style={styles.buyButtonText}>Track Delivery</Text>
   </Pressable>
 )}
-
-
 
       {isSubmitting && (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
