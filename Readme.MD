@@ -151,6 +151,7 @@ Plan this week:
  <br><br>
   Whats left:
 
+
   1. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 
   2. decide how doordash is going to be used in the project
@@ -173,6 +174,17 @@ Plan this week:
   6. Modify details page to include link to ABOUT US page for that seller
 
   7. Create trigger for updating seller rating when one of their products is rated
+
+  8. Add amount remaining to details.tsx page
+
+  9. add display of photogallery images for each product.
+
+  10. Document stubbing
+    - Written reviews for sellers
+    - Allowing sellers to rate buyers
+    - Allow for non-linear decrease of price in dutch auction (exponential, log, etc)
+    - Messaging buyers/sellers on status updates
+    - Update of delivery status
 
   
 
