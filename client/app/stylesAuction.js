@@ -529,7 +529,7 @@ const auctionStyles = StyleSheet.create({
     gap: 12,
   },
   welcomeLabel: {
-    fontSize: 14, 
+    fontSize: 14,
     fontWeight: '400',
     marginTop: 16, // Add some spacing from the top
     letterSpacing: 0.5, // Slightly increase spacing for readability

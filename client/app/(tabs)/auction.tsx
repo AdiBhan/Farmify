@@ -181,16 +181,7 @@ const Header = ({ username, profile_image_url }) => {
           <View style={styles.headerWrapper}>
             {/* Top Section */}
             <View style={styles.headerTopSection}>
-              <View style={styles.iconButtonContainer}>
-                <TouchableOpacity
-                  style={styles.iconButton}
 
-                  activeOpacity={0.7}
-                >
-                  <Image source={SettingsIcon} style={styles.iconImage} />
-                </TouchableOpacity>
-                <Text style={styles.iconLabel}>Settings</Text>
-              </View>
 
               <View style={styles.titleContainer}>
                 <Text style={styles.titleMain}>Farmify🌽</Text>
@@ -198,16 +189,7 @@ const Header = ({ username, profile_image_url }) => {
               </View>
 
 
-              <View style={styles.iconButtonContainer}>
-                <TouchableOpacity
-                  style={styles.iconButton}
 
-                  activeOpacity={0.7}
-                >
-                  <Image source={UploadIcon} style={styles.iconImage} />
-                </TouchableOpacity>
-                <Text style={styles.iconLabel}>Create</Text>
-              </View>
             </View>
 
             {/* Welcome Section */}
