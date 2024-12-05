@@ -110,6 +110,7 @@ export default function RegisterScreen() {
     return true;
   };
 
+  // @ts-ignore
   return (
     <ThemedView style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
@@ -159,7 +160,7 @@ export default function RegisterScreen() {
               value={accountType}
               items={items}
               setOpen={setOpen}
-              setValue={(val) => setAccountType(val())}
+              setValue={(val) => setAccountType(val)}
               placeholder="Select an Account Type"
               style={formStyles.input}
               disabled={isLoading}

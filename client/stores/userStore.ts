@@ -9,6 +9,7 @@ interface UserState {
   sessionID: string;
   accountType: string;
   isLoggedIn: boolean;
+  profile_image_url: string;
   error: string;
   buyerId: string | null; // Add buyerId
   sellerId: string | null;
@@ -44,10 +45,11 @@ const useUser = create<UserState>((set) => ({
   sessionID: "",
   accountType: "",
   isLoggedIn: false,
+  profile_image_url: "",
   error: "",
   buyerId: null, // Initialize buyerId as null
   sellerId: null,
-
+  setProfileImgURL: (url: string) => set({ profile_image_url: url }),
   setEmail: (email: string) => set({ email }),
   setId: (id: string) => set({ id }),
   setUsername: (username: string) => set({ username }),

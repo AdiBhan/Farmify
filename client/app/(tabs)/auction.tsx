@@ -68,7 +68,7 @@ const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
-  const { username, isLoggedIn, buyerId, sellerId } = useUser();
+  const { username, isLoggedIn, buyerId, sellerId, profile_image_url } = useUser();
 
   useFocusEffect(
     useCallback(() => {
@@ -107,12 +107,15 @@ const Auction = () => {
   );
 
 
-  const handleItemPress = (item) => {
-    console.log(`Pressed ${item.name}`);
-    console.log(`ID: ${item.id}`);
+  const handleItemPress = (item: any) => {
+    if (!item?.id) {
+      console.error('Invalid item ID');
+      return;
+    }
+
     router.push({
       pathname: "/(tabs)/details",
-      params: { product: item.id },
+      params: { product: item.id }
     });
   };
 
@@ -134,6 +137,7 @@ const Auction = () => {
         <BlurView intensity={50} style={styles.blurContainer}>
           <Header
             username={username}
+            profile_image_url={profile_image_url}
 
           />
           <ScrollView
@@ -161,66 +165,81 @@ const Auction = () => {
   );
 };
 
-const Header = ({ username, onSettingsPress, onUploadPress }) => (
-  <Animatable.View animation="fadeIn" duration={600}>
-    <LinearGradient
-      colors={[COLORS.primary + '15', COLORS.white]}
-      style={styles.headerContainer}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.headerWrapper}>
-          {/* Top Section */}
-          <View style={styles.headerTopSection}>
-            <View style={styles.iconButtonContainer}>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={onSettingsPress}
-                activeOpacity={0.7}
-              >
-                <Image source={SettingsIcon} style={styles.iconImage} />
-              </TouchableOpacity>
-              <Text style={styles.iconLabel}>Settings</Text>
-            </View>
+const Header = ({ username, profile_image_url }) => {
+  useEffect(() => {
+    console.log("Profile image URL in Header:", profile_image_url);
+  }, [profile_image_url]);
 
-            <View style={styles.titleContainer}>
-              <Text style={styles.titleMain}>Farmify</Text>
-              <Text style={styles.titleSub}>Market</Text>
-            </View>
+  return (
 
-            <View style={styles.iconButtonContainer}>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={onUploadPress}
-                activeOpacity={0.7}
-              >
-                <Image source={UploadIcon} style={styles.iconImage} />
-              </TouchableOpacity>
-              <Text style={styles.iconLabel}>Upload</Text>
-            </View>
-          </View>
+    <Animatable.View animation="fadeIn" duration={600}>
+      <LinearGradient
+        colors={[COLORS.primary + '15', COLORS.white]}
+        style={styles.headerContainer}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.headerWrapper}>
+            {/* Top Section */}
+            <View style={styles.headerTopSection}>
+              <View style={styles.iconButtonContainer}>
+                <TouchableOpacity
+                  style={styles.iconButton}
 
-          {/* Welcome Section */}
-          <View style={styles.welcomeSection}>
-            <View style={styles.welcomeInfo}>
-              <Text style={styles.welcomeLabel}>Welcome back,</Text>
-              <Text style={styles.welcomeName}>{username}</Text>
-            </View>
-            <View style={styles.statsContainer}>
-              <View style={styles.statBox}>
-                <Text style={styles.statValue}>24</Text>
-                <Text style={styles.statLabel}>Active</Text>
+                  activeOpacity={0.7}
+                >
+                  <Image source={SettingsIcon} style={styles.iconImage} />
+                </TouchableOpacity>
+                <Text style={styles.iconLabel}>Settings</Text>
               </View>
-              <View style={[styles.statBox, styles.statBoxBorder]}>
-                <Text style={styles.statValue}>12</Text>
-                <Text style={styles.statLabel}>Bids</Text>
+
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleMain}>Farmify🌽</Text>
+                <Text style={styles.titleSub}>Market</Text>
+              </View>
+
+
+              <View style={styles.iconButtonContainer}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+
+                  activeOpacity={0.7}
+                >
+                  <Image source={UploadIcon} style={styles.iconImage} />
+                </TouchableOpacity>
+                <Text style={styles.iconLabel}>Create</Text>
               </View>
             </View>
+
+            {/* Welcome Section */}
+            <View style={styles.welcomeSection}>
+              <View style={styles.welcomeInfo}>
+                <Text style={styles.welcomeLabel}>Welcome back,</Text>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.welcomeName}>{username}</Text>
+                  <Image
+                    source={{ uri: profile_image_url || 'https://via.placeholder.com/100' }}
+                    style={styles.profileImage}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.statsContainer}>
+                <View style={styles.statBox}>
+                  <Text style={styles.statValue}>24</Text>
+                  <Text style={styles.statLabel}>Active</Text>
+                </View>
+                <View style={[styles.statBox, styles.statBoxBorder]}>
+                  <Text style={styles.statValue}>12</Text>
+                  <Text style={styles.statLabel}>Bids</Text>
+                </View>
+              </View>
+            </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
-  </Animatable.View>
-);
+        </SafeAreaView>
+      </LinearGradient>
+    </Animatable.View>
+  );
+};
 
 const AuctionItem = ({ item, onBid }) => {
   const isExpired = item.currentBid === null && new Date(item.endTime) < new Date();
