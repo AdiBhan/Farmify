@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FarmifyService.Data;
 using FarmifyService.models;
 using System.Linq;
+using System.Text.Json;
 
 namespace FarmifyService.Controllers
 {
@@ -12,10 +13,12 @@ namespace FarmifyService.Controllers
     public class SellerController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UserController> _logger;
 
-        public SellerController(ApplicationDbContext context)
+        public SellerController(ApplicationDbContext context,ILogger<UserController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // Fetch seller account details
@@ -49,6 +52,7 @@ namespace FarmifyService.Controllers
         [HttpPut("account")]
         public async Task<IActionResult> UpdateSellerAccount([FromHeader] string sessionID, [FromBody] UpdateAccountModel model)
         {
+            
             if (string.IsNullOrWhiteSpace(sessionID))
                 return BadRequest(new { message = "Session ID is required" });
 
@@ -77,6 +81,7 @@ namespace FarmifyService.Controllers
         [HttpGet("business")]
         public async Task<IActionResult> GetSellerBusinessInfo([FromHeader] string sessionID)
         {
+            
             if (string.IsNullOrWhiteSpace(sessionID))
                 return BadRequest(new { message = "Session ID is required" });
 
@@ -102,6 +107,9 @@ namespace FarmifyService.Controllers
         [HttpPut("business")]
         public async Task<IActionResult> UpdateSellerBusinessInfo([FromHeader] string sessionID, [FromBody] UpdateBusinessModel model)
         {
+            string jsonString = JsonSerializer.Serialize(model);
+            _logger.LogInformation(jsonString);
+            _logger.LogInformation(sessionID);
             if (string.IsNullOrWhiteSpace(sessionID))
                 return BadRequest(new { message = "Session ID is required" });
 

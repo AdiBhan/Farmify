@@ -11,9 +11,8 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
@@ -36,7 +35,7 @@ const Header = ({ onSettingsPress, onUploadPress }) => (
 
 const IconButton = ({ icon, onPress }) => (
   <TouchableOpacity style={styles.iconButton} onPress={onPress}>
-    <Image source={icon} style={styles.icon}  defaultSource={{uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww'}}/>
+    <Image source={icon} style={styles.icon} defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }} />
   </TouchableOpacity>
 );
 
@@ -47,7 +46,7 @@ const StarRating = ({ rating, setTempRating }) => (
         <Image
           source={{ uri: rating > index ? FilledStarIcon : EmptyStarIcon }}
           style={transactionStyles.starIcon}
-          defaultSource={{uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww'}}
+          defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
         />
       </TouchableOpacity>
     ))}
@@ -65,10 +64,10 @@ const TransactionItem = ({ transaction, onRate }) => {
   return (
     <View style={transactionStyles.itemCard}>
       <Image
-          source={{ uri: transaction.product.imgUrl || "https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww" }}
-          style={transactionStyles.itemImage}
-          defaultSource={{uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww'}}
-          onError={(error) => console.error("Error loading transaction image:", error)}
+        source={{ uri: transaction.product.imgUrl || "https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww" }}
+        style={transactionStyles.itemImage}
+        defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
+        onError={(error) => console.error("Error loading transaction image:", error)}
       />
       <View style={transactionStyles.detailsContainer}>
         <Text style={transactionStyles.itemName}>{transaction.product.name}</Text>

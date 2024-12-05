@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, TextInput, Pressable, Alert, StyleSheet, Platform} from 'react-native';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
@@ -7,8 +7,8 @@ import useUser from '@/stores/userStore';
 import styles from "@/app/stylesSettings"
 export default function UpdateBusinessInfo() {
   const router = useRouter();
-  const { sessionID } = useUser(); 
-  
+  const { sessionID } = useUser();
+
   const [businessName, setBusinessName] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDescription] = useState("");
@@ -23,9 +23,10 @@ export default function UpdateBusinessInfo() {
           `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/business`,
           { headers: { sessionID } }
         );
+        console.log(response.data);
 
         const businessData = response.data.data;
-        setBusinessName(businessData.name || "");
+        setBusinessName(businessData.sellerName || "");
         setAddress(businessData.address || "");
         setDescription(businessData.description || "");
       } catch (err) {
@@ -47,10 +48,11 @@ export default function UpdateBusinessInfo() {
 
     try {
       const payload = {
-        name: businessName,
-        address,
-        description,
+        SellerName: businessName,
+        Address: address,
+        Description: description,
       };
+      console.log('payload', payload);
 
       const response = await axios.put(
         `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/business`,

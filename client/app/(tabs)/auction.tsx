@@ -11,12 +11,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
 import * as Animatable from "react-native-animatable";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
-import { useFocusEffect } from "@react-navigation/native";
+import { } from "@react-navigation/native";
 import { useCallback } from "react";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
@@ -96,7 +96,11 @@ const Auction = () => {
             quantity: item.quantity || 1,
           }));
 
-          setAuctionItems(formattedData);
+          const sortedData = formattedData.sort(
+            (a, b) => new Date(b.startTime) - new Date(a.startTime)
+          );
+
+          setAuctionItems(sortedData);
         } catch (error) {
           console.error("Error fetching auction items:", error);
         }

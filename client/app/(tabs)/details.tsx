@@ -109,7 +109,7 @@ export default function ProductDetails() {
         const updatedTimeLeft = calculateTimeLeft(product.endTime);
         setTimeLeft(updatedTimeLeft);
       }
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [product]);
