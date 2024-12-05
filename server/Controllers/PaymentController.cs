@@ -8,20 +8,24 @@ using FarmifyService.Data;
 
 namespace FarmifyService.Controllers
 {
+    // Defines the route prefix for all actions in payment controller
     [Route("api/payment/")]
     [ApiController]
     public class PaymentController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        // Constructor to inject the database context
         public PaymentController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // GET: api/payment/payment-failed
+        // Returns an HTML page indicating payment failure
         [HttpGet("payment-failed")]
         public IActionResult PaymentFailed()
         {
+            // Returns an HTML content with a custom payment failed message
             return Content(@"
                 <!DOCTYPE html>
                 <html lang='en'>
@@ -66,10 +70,12 @@ namespace FarmifyService.Controllers
             ", "text/html");
         }
 
-
+        // GET: api/payment/payment-success
+        // Returns an HTML page indicating payment success
         [HttpGet("payment-success")]
         public IActionResult PaymentSuccess()
         {
+            // Returns an HTML content with a custom payment success message
             return Content(@"
                 <!DOCTYPE html>
                 <html lang='en'>
@@ -116,14 +122,17 @@ namespace FarmifyService.Controllers
 
 
         // GET: api/payment/cards
+        // Retrieves all credit cards associated with the user's session ID
         [HttpGet("cards")]
         public async Task<IActionResult> GetCreditCards([FromHeader] string sessionID)
         {
+            // Validate the session ID
             if (string.IsNullOrWhiteSpace(sessionID))
             {
                 return BadRequest(new { message = "Session ID is required" });
             }
 
+            // Retrieve the user based on the session ID
             var user = await _context.Users.FirstOrDefaultAsync(u => u.sessionID == sessionID);
 
             if (user == null)
@@ -131,6 +140,7 @@ namespace FarmifyService.Controllers
                 return NotFound(new { message = "User not found" });
             }
 
+            // Fetch all credit cards associated with the user
             var cards = await _context.CreditCards
                 .Where(c => c.UserID == user.ID)
                 .Select(c => new
@@ -142,18 +152,22 @@ namespace FarmifyService.Controllers
                 })
                 .ToListAsync();
 
+            // Return the list of credit cards
             return Ok(new { data = cards });
         }
 
         // POST: api/payment/cards
+        // Adds a new credit card to the user's account
         [HttpPost("cards")]
         public async Task<IActionResult> AddCreditCard([FromHeader] string sessionID, [FromBody] CreditCardModel cardModel)
         {
+            // Validate the session ID
             if (string.IsNullOrWhiteSpace(sessionID))
             {
                 return BadRequest(new { message = "Session ID is required" });
             }
 
+            // Retrieve the user based on the session ID
             var user = await _context.Users.FirstOrDefaultAsync(u => u.sessionID == sessionID);
 
             if (user == null)
@@ -161,6 +175,7 @@ namespace FarmifyService.Controllers
                 return NotFound(new { message = "User not found" });
             }
 
+            // Create a new credit card entity
             var newCard = new CreditCard
             {
                 UserID = user.ID,
@@ -169,6 +184,7 @@ namespace FarmifyService.Controllers
                 CVV = cardModel.CVV
             };
 
+            // Add the new credit card to the database
             _context.CreditCards.Add(newCard);
             await _context.SaveChangesAsync();
 
@@ -176,9 +192,11 @@ namespace FarmifyService.Controllers
         }
 
         // PUT: api/payment/cards/{id}
+        // Updates an existing credit card associated with the user
         [HttpPut("cards/{id}")]
         public async Task<IActionResult> UpdateCreditCard([FromHeader] string sessionID, [FromRoute] int id, [FromBody] CreditCardModel cardModel)
         {
+            // Validate the session ID
             if (string.IsNullOrWhiteSpace(sessionID))
             {
                 return BadRequest(new { message = "Session ID is required" });
@@ -191,6 +209,7 @@ namespace FarmifyService.Controllers
                 return NotFound(new { message = "User not found" });
             }
 
+            // Find the existing credit card by ID and ensure it belongs to the user
             var existingCard = await _context.CreditCards.FirstOrDefaultAsync(c => c.ID == id && c.UserID == user.ID);
 
             if (existingCard == null)
@@ -198,16 +217,19 @@ namespace FarmifyService.Controllers
                 return NotFound(new { message = "Credit card not found" });
             }
 
+            // Update the credit card details
             existingCard.CardNumber = cardModel.CardNumber;
             existingCard.ExpiryDate = cardModel.ExpiryDate;
             existingCard.CVV = cardModel.CVV;
 
+            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Credit card updated successfully" });
         }
 
         // DELETE: api/payment/cards/{id}
+        // Deletes a credit card associated with the user
         [HttpDelete("cards/{id}")]
         public async Task<IActionResult> DeleteCreditCard([FromHeader] string sessionID, [FromRoute] int id)
         {
@@ -237,6 +259,7 @@ namespace FarmifyService.Controllers
         }
     }
 
+    // Model for credit card data received from the client
     public class CreditCardModel
     {
         public string CardNumber { get; set; }

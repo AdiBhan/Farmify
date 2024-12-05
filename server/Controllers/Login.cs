@@ -4,13 +4,22 @@ using Microsoft.AspNetCore.Authentication.Google;
 
 namespace FarmifyService.Controllers
 {
-    [Route("login")]
+    // Defines a controller for handling login functionality
+    [Route("login")] // Sets the route for this controller to "/login"
     public class LoginController : Controller
     {
+        // GET: /login
+        // Initiates the login process using Google authentication
         [HttpGet]
         public IActionResult Login()
         {
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, GoogleDefaults.AuthenticationScheme);
+            // Initiates an authentication challenge using Google's authentication scheme
+            // Redirects the user to Google's login page and, upon successful login,
+            // redirects them back to the root URL ("/")
+            return Challenge(
+                new AuthenticationProperties { RedirectUri = "/" }, // Set the post-login redirect URI
+                GoogleDefaults.AuthenticationScheme // Use Google as the authentication provider
+            );
         }
     }
 }
