@@ -7,17 +7,21 @@ using System.Threading.Tasks;
 
 namespace FarmifyService.Controllers
 {
+    // Define API route for bids and specify this controller handles bid-related logic
     [Route("api/bids")]
     [ApiController]
     public class BidsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
+        // Constructor to inject the application's database context
         public BidsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        // GET: api/bids
+        // Fetch all bids with associated buyer and product information
         [HttpGet]
     public async Task<IActionResult> GetAllBids()
     {
@@ -49,13 +53,13 @@ namespace FarmifyService.Controllers
                         b.Product.ImgUrl,
                         b.Product.StartPrice,
                         b.Product.EndPrice,
-                        SellerName = b.Product.Seller.SellerName, // Fetch SellerName explicitly
-                        SellerDescription = b.Product.Seller.Description
+                        SellerName = b.Product.Seller.SellerName, // Include seller's name
+                        SellerDescription = b.Product.Seller.Description // Include seller's description
                     }
                 })
                 .ToListAsync();
 
-            return Ok(bids);
+            return Ok(bids); // Return bids as HTTP 200 with JSON response
         }
         catch (Exception ex)
         {
@@ -63,7 +67,8 @@ namespace FarmifyService.Controllers
         }
     }
 
-
+        // GET: api/bids/{id}
+        // Fetch a specific bid by its ID with associated buyer and product information
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBidById(string id)
         {
@@ -86,7 +91,7 @@ namespace FarmifyService.Controllers
                         Buyer = new
                         {
                             b.BuyerID,
-                            Email = b.Buyer.User.Email // Assuming Buyer.User.Email exists
+                            Email = b.Buyer.User.Email 
                         },
                         Product = new
                         {
@@ -103,10 +108,10 @@ namespace FarmifyService.Controllers
 
                 if (bid == null)
                 {
-                    return NotFound("Bid not found.");
+                    return NotFound("Bid not found."); // Return 404 if bid doesn't exist
                 }
 
-                return Ok(bid);
+                return Ok(bid); // Return bid as HTTP 200 with JSON response
             }
             catch (Exception ex)
             {
@@ -114,25 +119,27 @@ namespace FarmifyService.Controllers
             }
         }
 
+        // PUT: api/bids/{id}
+        // Update the rating for a specific bid
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBidRating(string id, [FromBody] UpdateRatingDto updatedRating)
         {
             if (string.IsNullOrEmpty(id) || updatedRating == null)
             {
-                return BadRequest("Invalid input.");
+                return BadRequest("Invalid input."); // Return 400 for invalid input
             }
 
             try
             {
-                var bid = await _context.Bids.FindAsync(id);
+                var bid = await _context.Bids.FindAsync(id); // Find bid by ID
                 if (bid == null)
                 {
-                    return NotFound("Bid not found.");
+                    return NotFound("Bid not found."); // Return 404 if bid doesn't exist
                 }
 
                 bid.Rating = updatedRating.Rating; // Update only the rating
-                _context.Bids.Update(bid);
-                await _context.SaveChangesAsync();
+                _context.Bids.Update(bid); // Mark the entity as modified
+                await _context.SaveChangesAsync(); // Save changes to the database
 
                 return NoContent(); // Success
             }
@@ -142,31 +149,30 @@ namespace FarmifyService.Controllers
             }
         }
 
-
-
         // POST: api/bids
+        // Create a new bid
         [HttpPost]
         public async Task<IActionResult> CreateBid([FromBody] Bid bid)
         {
             if (bid == null)
             {
-                return BadRequest("Bid is null.");
+                return BadRequest("Bid is null."); // Return 400 if input is null
             }
 
             if (bid.Amount <= 0)
             {
-                return BadRequest("Amount must be greater than zero.");
+                return BadRequest("Amount must be greater than zero."); // Validate bid amount
             }
 
             try
             {
-                bid.TimeStamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                bid.TimeStamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified); // Set timestamp to current UTC
 
 
-                _context.Bids.Add(bid);
-                await _context.SaveChangesAsync();
+                _context.Bids.Add(bid); // Add bid to the database
+                await _context.SaveChangesAsync();  // Save changes to the database
 
-                return CreatedAtAction(nameof(GetBidById), new { id = bid.ID }, bid);
+                return CreatedAtAction(nameof(GetBidById), new { id = bid.ID }, bid); // Return 201 with location of created resource
             }
             catch (Exception ex)
             {
@@ -175,6 +181,8 @@ namespace FarmifyService.Controllers
         }
     }
 
+
+    // Data Transfer Object (DTO) for updating bid rating
     public class UpdateRatingDto
     {
         public int Rating { get; set; }
