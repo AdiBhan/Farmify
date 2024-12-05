@@ -37,6 +37,7 @@ namespace FarmifyService.Controllers
                 data = new
                 {
                     email = seller.User.Email,
+                    id = seller.ID,
                     phoneNumber = seller.User.PhoneNumber,
                     paypalID = seller.PPID,
                     paypalSecret = seller.PPsecret

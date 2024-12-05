@@ -192,9 +192,11 @@ Plan this week:
 
 
 New Auction needed fixes: (simeon)
-1. how to display and reference gallery images
+1. display and reference gallery images in details.tsx
 2. Add input for quantity of products you can sell
 3. add SellerID instead of userID to create auction args and user store
 4. Fix timezone issues:
 5. display only transactions for that user
 6. don't approve payment or bid if user cancels paypal window. 
+7. add automatic reload after creating acution
+8. add actual buyer to checkout page

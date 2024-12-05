@@ -224,6 +224,7 @@ export default function Checkout() {
       price: currentPrice,
       deliveryStatus: true,
     };
+    console.log("Bid Data:", bidData);
 
     try {
       const response = await fetch("http://localhost:4000/api/bids", {
