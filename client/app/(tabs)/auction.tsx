@@ -66,23 +66,25 @@ const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
-  const { username, isLoggedIn } = useUser();
-
+  const { username, isLoggedIn, profile_image_url } = useUser();
+  useEffect(() => {
+    console.log("Profile image URL in Auction:", profile_image_url);
+  }, [profile_image_url]);
   const fetchAuctionItems = async () => {
     try {
       const response = await fetch("http://localhost:4000/api/products");
       const data = await response.json();
 
       const formattedData = data.map((item) => ({
-        id: item.id,
-        name: item.name,
-        image: { uri: item.imgUrl },
-        currentBid: calculateCurrentPrice(
+        id: item.id || '',
+        name: item.name || '',
+        image: { uri: item.imgUrl || 'https://images.pexels.com/photos/1590549/pexels-photo-1590549.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
+        currentBid: item.startPrice && item.endPrice ? calculateCurrentPrice(
             item.startPrice,
             item.endPrice,
-            item.startTime,
-            item.endTime
-        ),
+            item.startTime || new Date(),
+            item.endTime || new Date()
+        ) : 0,
         timeLeft: calculateTimeLeft(item.endTime),
         totalBids: 0,
         seller: item.sellerName,
@@ -124,18 +126,23 @@ const Auction = () => {
 
   const handleSettingsPress = () => {
     console.log("Settings pressed");
+    router.push("/(tabs)/settings")
   };
 
   const handleUploadPress = () => {
     console.log("Upload pressed");
+    router.push("/(tabs)/newlisting")
   };
 
-  const handleItemPress = (item) => {
-    console.log(`Pressed ${item.name}`);
-    console.log(`ID: ${item.id}`);
+  const handleItemPress = (item: any) => {
+    if (!item?.id) {
+      console.error('Invalid item ID');
+      return;
+    }
+
     router.push({
       pathname: "/(tabs)/details",
-      params: { product: item.id },
+      params: { product: item.id }
     });
   };
 
@@ -159,6 +166,7 @@ const Auction = () => {
                 username={username}
                 onSettingsPress={handleSettingsPress}
                 onUploadPress={handleUploadPress}
+                profile_image_url={profile_image_url}
             />
             <ScrollView
                 style={styles.auctionContainer}
@@ -191,7 +199,14 @@ const Auction = () => {
   );
 };
 
-const Header = ({ username, onSettingsPress, onUploadPress }) => (
+const Header = ({ username, onSettingsPress, onUploadPress, profile_image_url }) =>
+{
+  useEffect(() => {
+    console.log("Profile image URL in Header:", profile_image_url);
+  }, [profile_image_url]);
+
+  return (
+    
     <Animatable.View animation="fadeIn" duration={600}>
       <LinearGradient
           colors={[COLORS.primary + '15', COLORS.white]}
@@ -213,9 +228,10 @@ const Header = ({ username, onSettingsPress, onUploadPress }) => (
               </View>
 
               <View style={styles.titleContainer}>
-                <Text style={styles.titleMain}>Farmify</Text>
+                <Text style={styles.titleMain}>Farmify🌽</Text>
                 <Text style={styles.titleSub}>Market</Text>
               </View>
+            
 
               <View style={styles.iconButtonContainer}>
                 <TouchableOpacity
@@ -225,7 +241,7 @@ const Header = ({ username, onSettingsPress, onUploadPress }) => (
                 >
                   <Image source={UploadIcon} style={styles.iconImage} />
                 </TouchableOpacity>
-                <Text style={styles.iconLabel}>Upload</Text>
+                <Text style={styles.iconLabel}>Create</Text>
               </View>
             </View>
 
@@ -233,8 +249,15 @@ const Header = ({ username, onSettingsPress, onUploadPress }) => (
             <View style={styles.welcomeSection}>
               <View style={styles.welcomeInfo}>
                 <Text style={styles.welcomeLabel}>Welcome back,</Text>
-                <Text style={styles.welcomeName}>{username}</Text>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.welcomeName}>{username}</Text>
+                  <Image
+                      source={{ uri: profile_image_url || 'https://via.placeholder.com/100' }}
+                      style={styles.profileImage}
+                  />
+                </View>
               </View>
+
               <View style={styles.statsContainer}>
                 <View style={styles.statBox}>
                   <Text style={styles.statValue}>24</Text>
@@ -250,7 +273,8 @@ const Header = ({ username, onSettingsPress, onUploadPress }) => (
         </SafeAreaView>
       </LinearGradient>
     </Animatable.View>
-);
+  );
+};
 
 const AuctionItem = ({ item, onBid }) => {
   const isExpired = item.currentBid === null && new Date(item.endTime) < new Date();
@@ -266,7 +290,7 @@ const AuctionItem = ({ item, onBid }) => {
             <Image
                 source={item.image}
                 style={styles.itemImage}
-                defaultSource='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s'
+                defaultSource={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s'}}
             />
             <View style={styles.itemContent}>
               <View style={styles.itemTopRow}>

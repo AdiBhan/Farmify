@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, Pressable, ActivityIndicator, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import styles from "../stylesDetails";
 
 export default function ProductDetails() {
@@ -57,8 +57,9 @@ export default function ProductDetails() {
 
       if (response.ok) {
         Alert.alert("Success", "Your bid has been placed successfully!", [
-          { text: "OK", onPress: () => window.location.reload() },
+          { text: "OK", onPress: () => router.replace("/(tabs)/auction") }  // Use router instead
         ]);
+      
 
       } else {
         const errorData = await response.json();
@@ -92,7 +93,15 @@ export default function ProductDetails() {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: product.imgUrl }} style={styles.image} />
+      <Image
+          source={{ uri: product.imgUrl }}
+          style={styles.image}
+          defaultSource={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s'}}
+          onError={(error) => {
+            console.error("Error loading image:", error);
+            Alert.alert("Error", "Failed to load product image");
+          }}
+      />
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.seller}>Sold by: {product.sellerName}</Text>

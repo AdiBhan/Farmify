@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import useUser from '@/stores/userStore';
 import styles from "@/app/stylesSettings"
+import axios from 'axios';
 export default function UpdateAccountInfo() {
   const router = useRouter();
   const {

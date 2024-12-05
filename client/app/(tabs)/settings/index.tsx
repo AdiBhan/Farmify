@@ -19,41 +19,30 @@ import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 import PhotoUploadPage from "@/components/PhotoUpload";
 
-// Define colors directly in the file to avoid dependency issues
 const COLORS = {
-  primary: "#007AFF",
-  secondary: "#5856D6",
-  white: "#FFFFFF",
-  light: "#F5F5F5",
-  gray: "#808080",
-  black: "#000000",
-  background: "#F9F9F9",
-};
 
+  primary: '#000000',
+  secondary: '#4a7c59',
+  light: '#f5f9f6',
+  white: '#ffffff',
+  text: '#1a1c1a',
+  textLight: '#4b4f4b',
+  border: '#e8ebe8',
+  success: '#43a047',
+  background: '#f0f4f1',
+  shadow: '#000000',
+  accent: '#81c784',
+  textSecondary: '#6B7280',
+  glass: 'rgba(255, 255, 255, 0.95)',
+
+
+  gradientLight: '#E8F5E9',
+  gradientDark: '#C8E6C9',
+};
 export default function SettingsScreen() {
   const router = useRouter();
   const { username, isLoggedIn, accountType, setAccountType } = useUser();
   const [isUploadPage, setisUploadPage] = useState(true);
-  const COLORS = {
-    primary: '#2E7D32',
-    primaryLight: '#4CAF50',
-    primaryDark: '#1B5E20',
-    secondary: '#81C784',
-    white: '#FFFFFF',
-    background: '#F5F9F6',
-    text: '#1A1C1A',
-    textSecondary: '#6B7280',
-    border: '#E8EBE8',
-    shadow: '#000000',
-    error: '#DC2626',
-    glass: 'rgba(255, 255, 255, 0.95)',
-    success: '#43A047',
- 
-    gradientLight: '#E8F5E9',
-    gradientDark: '#C8E6C9',
-  };
-  
-  
   useEffect(() => {
     // Setting account type as buyer for dev testing purposes
     if (accountType == "") {
@@ -112,8 +101,8 @@ export default function SettingsScreen() {
                       colors={[COLORS.glass, COLORS.white]}
                       style={styles.headerCard}
                   >
-                    <Text style={styles.headerTitle}>Settings</Text>
-                    <Text style={styles.headerSubtitle}>Customize your experience</Text>
+                    <Text style={styles.headerTitle}>Settings ⚙️</Text>
+                    <Text style={styles.headerSubtitle}>Customize your experience </Text>
                   </LinearGradient>
                 </Animatable.View>
 
@@ -253,7 +242,7 @@ export default function SettingsScreen() {
               </ScrollView>
             </LinearGradient>
         ) : (
-            <PhotoUploadPage setisUploadPage={setisUploadPage} />
+            <PhotoUploadPage setisUploadPage={setisUploadPage}/>
         )}
       </View>
   );

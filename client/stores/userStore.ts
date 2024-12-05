@@ -8,7 +8,9 @@ interface UserState {
   sessionID: string;
   accountType: string;
   isLoggedIn: boolean;
+  profile_image_url: string;
   error: string;
+  setProfileImgURL: (url: string) => void;  
   setEmail: (email: string) => void;
   setUsername: (username: string) => void;
   setPassword: (password: string) => void;
@@ -38,8 +40,9 @@ const useUser = create<UserState>((set) => ({
   sessionID: "",
   accountType: "",
   isLoggedIn: false,
+  profile_image_url: "",
   error: "",
-
+    setProfileImgURL: (url: string) => set({ profile_image_url: url }),
   setEmail: (email: string) => set({ email }),
   setUsername: (username: string) => set({ username }),
   setPassword: (password: string) => set({ password }),

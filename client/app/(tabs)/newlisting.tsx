@@ -32,7 +32,6 @@ export default function CreateAuctionScreen() {
       reader.readAsDataURL(blob);
     });
   }
-
   const supabase = createClient(
       String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
       String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
@@ -149,7 +148,10 @@ export default function CreateAuctionScreen() {
 
 
     return (
-        <ScrollView contentContainerStyle={formStyles.scrollContainer}>
+       
+        <ScrollView contentContainerStyle={formStyles.scrollContainer}
+              
+        >
           <LinearGradient
               colors={[COLORS.primary + '15', COLORS.white, COLORS.background]}
               style={formStyles.gradient}
@@ -203,7 +205,11 @@ export default function CreateAuctionScreen() {
                         animation="fadeIn"
                         style={formStyles.primaryImageContainer}
                     >
-                      <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
+                      <Image
+                          source={{ uri: primaryImage }}
+                          style={formStyles.primaryImage}
+                          defaultSource={{uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww'}}
+                      />
                     </Animatable.View>
                 )}
 
@@ -225,7 +231,8 @@ export default function CreateAuctionScreen() {
                           animation="fadeIn"
                           delay={index * 100}
                       >
-                        <Image source={{ uri: imgUri }} style={formStyles.galleryImage} />
+                        <Image source={{ uri: imgUri }} style={formStyles.galleryImage}
+                               defaultSource={{uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww'}}/>
                       </Animatable.View>
                   ))}
                 </ScrollView>
@@ -274,12 +281,14 @@ export default function CreateAuctionScreen() {
             </Animatable.View>
           </LinearGradient>
         </ScrollView>
+        
     );
   }
 
   const formStyles = StyleSheet.create({
     scrollContainer: {
       flexGrow: 1,
+      paddingBottom: Platform.OS === 'ios' ? 100 : 80, // Add padding for navigation bar
     },
     gradient: {
       flex: 1,
@@ -288,6 +297,7 @@ export default function CreateAuctionScreen() {
       padding: 16,
       paddingTop: Platform.OS === 'ios' ? 60 : 20,
     },
+ 
     headerContainer: {
       marginBottom: 24,
     },
@@ -387,8 +397,10 @@ export default function CreateAuctionScreen() {
       marginRight: 8,
       borderRadius: 8,
     },
+    // ... rest of your styles remain the same
     submitButton: {
       marginTop: 8,
+      marginBottom: 20, // Add some margin at the bottom of the button
     },
     submitButtonGradient: {
       padding: 16,

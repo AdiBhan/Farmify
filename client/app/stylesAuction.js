@@ -446,23 +446,47 @@ const auctionStyles = StyleSheet.create({
     letterSpacing: 2,
     marginTop: 2,
   },
-  welcomeSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   welcomeInfo: {
     flex: 1,
   },
-  welcomeLabel: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
   },
+
   welcomeName: {
     fontSize: 20,
     fontWeight: '600',
     color: COLORS.text,
-    marginTop: 4,
+  },
+
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+
+  welcomeSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -499,6 +523,16 @@ const auctionStyles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.textSecondary,
     marginTop: 2,
+  }, userSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  welcomeLabel: {
+    fontSize: 14, 
+    fontWeight: '400',
+    marginTop: 16, // Add some spacing from the top
+    letterSpacing: 0.5, // Slightly increase spacing for readability
   },
 });
 

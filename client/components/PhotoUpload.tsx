@@ -28,9 +28,8 @@ function blobToBase64(blob) {
   });
 }
 
-const PhotoUploadScreen = ({ navigation, setisUploadPage }) => {
-
-
+const PhotoUploadScreen = ({setisUploadPage }) => {
+  
   console.log(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL, " ", process.env.EXPO_PUBLIC_SUPABASE_API_KEY);
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),

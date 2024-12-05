@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import {View, Text, Image, TouchableOpacity, Platform} from "react-native";
 import styles from "../app/styles";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -8,28 +8,44 @@ import useUser from "@/stores/userStore";
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function GoogleAuth(): JSX.Element {
+export default function GoogleAuth(): JSX.Element | null {
+    if (Platform.OS === 'android') {
+        WebBrowser.maybeCompleteAuthSession();
+    }
+    if (!Google || !WebBrowser) {
+        console.error('Required dependencies not loaded');
+        return null;
+    }
     const [loading, setLoading] = useState(false);
     const {
         setEmail,
         setIsLoggedIn,
         username,
-        setUsername
+        setUsername,
+        setProfileImgURL,
+        
     } = useUser();
 
     const [request, response, promptAsync] = Google.useAuthRequest({
         clientId: "843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com",
         webClientId: "843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com",
-        redirectUri: "http://localhost:8081/oauth2redirect",
+        redirectUri: Platform.OS === 'android'
+            ? "com.googleusercontent.apps.843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4:/oauth2redirect"
+            : "http://localhost:8081/oauth2redirect",
         scopes: ['profile', 'email'],
         useProxy: false
     });
 
-    
+
+
     useEffect(() => {
         if (response?.type === 'success') {
             const { authentication } = response;
-            getUserInfo(authentication.accessToken);
+            async function handleAuth() {
+                await getUserInfo(authentication.accessToken);
+              
+            }
+            handleAuth();
         }
     }, [response]);
 
@@ -44,13 +60,40 @@ export default function GoogleAuth(): JSX.Element {
             const userInfo = await response.json();
             console.log('User Info:', userInfo);
 
+            if (!userInfo?.email) {
+                console.error('No email found in user info');
+                return;
+            }
+
             // Set email and username from Google user info
             setEmail(userInfo.email);
-            // Use given_name as username, or fall back to email prefix if name not available
-            const username = userInfo.given_name || userInfo.email.split('@')[0];
+
+            // Safer username extraction
+            let username = userInfo.given_name;
+            if (!username && userInfo.email) {
+                username = userInfo.email.split('@')[0];
+            }
+            if (!username) {
+                username = 'User'; // Default fallback
+            }
+
+            // Set profile image first and wait for it to complete
+            if (userInfo.picture) {
+                console.log("Setting profile image URL to:", userInfo.picture);
+                setProfileImgURL(userInfo.picture);
+            }
             setUsername(username);
             setIsLoggedIn(true);
+
+            // Wait for state updates to complete
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Log the current state before navigation
+            console.log("Before navigation - Profile URL:", userInfo.picture);
+
+            // Only navigate after everything is set
             router.push("/(tabs)/auction");
+
         } catch (error) {
             console.error('Error fetching user info:', error);
         }
@@ -89,8 +132,11 @@ export default function GoogleAuth(): JSX.Element {
                     source={{
                         uri: "https://cdn.icon-icons.com/icons2/800/PNG/512/_google_icon-icons.com_65791.png",
                     }}
+                    defaultSource={require('@/assets/images/icon.png')} 
+                    onError={(error) => console.error('Error loading Google icon:', error)}
                     style={styles.socialIcon}
                 />
+                
                 <Text style={styles.socialButtonText}>
                     {loading ? 'Loading...' : 'Continue with Google'}
                 </Text>
