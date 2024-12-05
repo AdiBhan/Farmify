@@ -196,3 +196,5 @@ New Auction needed fixes: (simeon)
 2. Add input for quantity of products you can sell
 3. add SellerID instead of userID to create auction args and user store
 4. Fix timezone issues:
+5. display only transactions for that user
+6. don't approve payment or bid if user cancels paypal window. 
