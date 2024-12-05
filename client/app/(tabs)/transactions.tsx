@@ -100,7 +100,13 @@ export default function Transactions() {
       try {
         const response = await fetch("http://localhost:4000/api/bids");
         const data = await response.json();
-        setTransactions(data);
+
+        // Sort transactions by timestamp (most recent first)
+        const sortedData = data.sort(
+          (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+        );
+
+        setTransactions(sortedData);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
@@ -110,6 +116,9 @@ export default function Transactions() {
 
     fetchTransactions();
   }, []);
+
+
+
 
   const handleRate = async (transactionId, rating) => {
     try {
