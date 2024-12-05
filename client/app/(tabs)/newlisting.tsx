@@ -34,7 +34,6 @@ export default function CreateAuctionScreen() {
       reader.readAsDataURL(blob);
     });
   }
-
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
     String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
@@ -237,7 +236,11 @@ export default function CreateAuctionScreen() {
                 animation="fadeIn"
                 style={formStyles.primaryImageContainer}
               >
-                <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
+                <Image
+                  source={{ uri: primaryImage }}
+                  style={formStyles.primaryImage}
+                  defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
+                />
               </Animatable.View>
             )}
 
@@ -259,7 +262,8 @@ export default function CreateAuctionScreen() {
                   animation="fadeIn"
                   delay={index * 100}
                 >
-                  <Image source={{ uri: imgUri }} style={formStyles.galleryImage} />
+                  <Image source={{ uri: imgUri }} style={formStyles.galleryImage}
+                    defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }} />
                 </Animatable.View>
               ))}
             </ScrollView>

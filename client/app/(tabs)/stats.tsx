@@ -2,9 +2,9 @@ import React from "react";
 import {View, Text, ScrollView, StyleSheet, Dimensions, Platform} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
-import styles, { COLORS } from "../stylesAuction";
-import * as Animatable from "react-native-animatable";
 
+import * as Animatable from "react-native-animatable";
+import { commonStyles, settingsStyles, COLORS } from '@/app/stylesPages';
 const statisticsData = [
   { label: "Total Sales", value: "$124,000" },
   { label: "Total Products Sold", value: "5,200" },
@@ -17,19 +17,19 @@ const statisticsData = [
 
 export default function SitewideStatistics() {
   return (
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
         <LinearGradient
             colors={[COLORS.primary + '15', COLORS.white]}
-            style={styles.gradient}
+            style={commonStyles.gradient}
         >
-          <BlurView intensity={50} style={styles.blurContainer}>
+          <BlurView intensity={50} style={commonStyles.blurContainer}>
             <Animatable.View
                 animation="fadeIn"
                 duration={600}
-                style={statisticsStyles.headerContainer}
+                style={commonStyles.headerContainer}
             >
-              <Text style={statisticsStyles.mainTitle}>Statistics</Text>
-              <Text style={statisticsStyles.subtitle}>Market Performance Overview</Text>
+              <Text style={commonStyles.headerTitle}>Statistics</Text>
+              <Text style={commonStyles.subtitle}>Market Performance Overview</Text>
             </Animatable.View>
 
             <ScrollView
@@ -43,15 +43,14 @@ export default function SitewideStatistics() {
                       delay={index * 100}
                       duration={600}
                   >
-                    <LinearGradient
-                        colors={[COLORS.white, COLORS.light]}
-                        style={statisticsStyles.statCard}
-                    >
+                    <View style={statisticsStyles.statCard}>
                       <View style={statisticsStyles.statContent}>
-                        <Text style={statisticsStyles.statLabel}>{stat.label}</Text>
-                        <Text style={statisticsStyles.statValue}>{stat.value}</Text>
+                        <View style={statisticsStyles.statInfo}>
+                          <Text style={statisticsStyles.statLabel}>{stat.label}</Text>
+                          <Text style={statisticsStyles.statValue}>{stat.value}</Text>
+                        </View>
                       </View>
-                    </LinearGradient>
+                    </View>
                   </Animatable.View>
               ))}
             </ScrollView>
@@ -60,7 +59,6 @@ export default function SitewideStatistics() {
       </View>
   );
 }
-
 const statisticsStyles = StyleSheet.create({
   headerContainer: {
     padding: 20,

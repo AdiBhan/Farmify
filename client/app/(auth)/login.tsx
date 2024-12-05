@@ -66,7 +66,7 @@ export default function LoginScreen() {
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
-            <Text style={styles.header}>Welcome Back</Text>
+            <Text style={styles.header}>Welcome</Text>
             <Text style={styles.subheader}>Login to your account</Text>
           </View>
           {error ? <Text style={formStyles.errorText}>{error}</Text> : null}
