@@ -1,8 +1,10 @@
+// This file defines the "Create Auction" screen for an auction app, allowing users to upload product details and images, and submit auctions.
+
 import React, { useState } from "react";
 import { Text, TextInput, View, Pressable, Image, ScrollView, Platform, Alert } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../stylesAuction";
 import styles from "../styles";
@@ -13,9 +15,12 @@ import useUser from "@/stores/userStore";
 
 import * as Animatable from 'react-native-animatable';
 export default function CreateAuctionScreen() {
-  const router = useRouter();
+  const router = useRouter();// Navigation object for routing between screens
+
+  // State variables to manage form data and images
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [startingPrice, setStartingPrice] = useState("");
   const [endingPrice, setEndingPrice] = useState("");
   const [duration, setDuration] = useState("");
@@ -24,8 +29,11 @@ export default function CreateAuctionScreen() {
   const [primaryImageUrl, setPrimaryImageUrl] = useState(null);
   const [galleryImageUrls, setGalleryImageUrls] = useState<string[]>([]);
   const [productId, setProductId] = useState<string>(Date.now().toString());
+
+  // Extract user data from custom user store
   const { username, id, accountType, buyerId, sellerId } = useUser();
 
+  // Helper function to convert blobs to Base64
   function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -34,11 +42,14 @@ export default function CreateAuctionScreen() {
       reader.readAsDataURL(blob);
     });
   }
+
+  // Initialize Supabase client for uploading images and data
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
     String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
   );
 
+  // Upload image to Supabase and return the public URL
   const uploadImageToSupabase = async (imageUri, isGallery = false) => {
     try {
       const timestamp = Date.now();
@@ -76,6 +87,7 @@ export default function CreateAuctionScreen() {
     }
   };
 
+  // Open image picker to select the primary image
   const pickPrimaryImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -98,6 +110,7 @@ export default function CreateAuctionScreen() {
     }
   };
 
+  // Open image picker to select multiple gallery images
   const pickGalleryImages = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -134,6 +147,7 @@ export default function CreateAuctionScreen() {
     }
   };
 
+  // Handle form submission to create an auction
   const handleCreateAuction = async () => {
     try {
       if (!productName || !description || !startingPrice || !endingPrice || !duration || !primaryImageUrl) {
@@ -149,10 +163,12 @@ export default function CreateAuctionScreen() {
         StartTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
         ImgUrl: primaryImageUrl,
-        Quantity: 1,
+        Quantity: quantity,
         sellerID: sellerId, // Replace with the actual SellerID
       };
       console.log('Auction data:', auctionData);
+
+      //Sends data to the backend to create a new auction
       const response = await fetch("http://localhost:4000/api/products", {
         method: "POST",
         headers: {
@@ -180,7 +196,7 @@ export default function CreateAuctionScreen() {
   };
 
 
-
+  // Render the form and UI
   return (
     <ScrollView contentContainerStyle={[formStyles.scrollContainer, { paddingBottom: 80 }]}>
       <LinearGradient
@@ -192,11 +208,13 @@ export default function CreateAuctionScreen() {
           duration={600}
           style={formStyles.container}
         >
+          {/* Header Section */}
           <View style={formStyles.headerContainer}>
             <Text style={formStyles.header}>Create Auction</Text>
             <Text style={formStyles.subheader}>List your product for sale</Text>
           </View>
 
+          {/* Input Fields */}
           <View style={formStyles.inputGroup}>
             <Text style={formStyles.inputLabel}>Product Details</Text>
             <TextInput
@@ -215,8 +233,16 @@ export default function CreateAuctionScreen() {
               multiline
               numberOfLines={4}
             />
-          </View>
-
+            <TextInput
+            onChangeText={setQuantity}
+            value={quantity}
+            style={formStyles.input}
+            placeholder="Please Enter Quantity available"
+            placeholderTextColor={COLORS.textSecondary}
+          />
+        </View>
+        
+          {/* Image Upload */}
           <View style={formStyles.inputGroup}>
             <Text style={formStyles.inputLabel}>Images</Text>
             <Pressable
@@ -236,11 +262,7 @@ export default function CreateAuctionScreen() {
                 animation="fadeIn"
                 style={formStyles.primaryImageContainer}
               >
-                <Image
-                  source={{ uri: primaryImage }}
-                  style={formStyles.primaryImage}
-                  defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
-                />
+                <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
               </Animatable.View>
             )}
 
@@ -262,8 +284,7 @@ export default function CreateAuctionScreen() {
                   animation="fadeIn"
                   delay={index * 100}
                 >
-                  <Image source={{ uri: imgUri }} style={formStyles.galleryImage}
-                    defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }} />
+                  <Image source={{ uri: imgUri }} style={formStyles.galleryImage} />
                 </Animatable.View>
               ))}
             </ScrollView>
@@ -298,6 +319,7 @@ export default function CreateAuctionScreen() {
             />
           </View>
 
+          {/* Submit Button */}
           <Pressable
             onPress={handleCreateAuction}
             style={formStyles.submitButton}
