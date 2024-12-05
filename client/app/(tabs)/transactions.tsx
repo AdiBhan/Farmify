@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
