@@ -53,7 +53,7 @@ export default function UpdateBusinessInfo() {
         Description: description,
       };
       console.log('payload', payload);
-
+      console.log('sessionID', sessionID);
       const response = await axios.put(
         `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/business`,
         payload,

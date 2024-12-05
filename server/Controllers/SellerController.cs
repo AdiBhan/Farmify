@@ -13,9 +13,9 @@ namespace FarmifyService.Controllers
     public class SellerController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<SellerController> _logger;
 
-        public SellerController(ApplicationDbContext context,ILogger<UserController> logger)
+        public SellerController(ApplicationDbContext context,ILogger<SellerController> logger)
         {
             _context = context;
             _logger = logger;
@@ -120,6 +120,10 @@ namespace FarmifyService.Controllers
             if (seller == null)
                 return NotFound(new { message = "Seller not found" });
 
+            _logger.LogInformation(model.SellerName);
+            _logger.LogInformation(model.Address);
+            _logger.LogInformation(model.Description);
+            _logger.LogInformation(seller.ID);
             if (!string.IsNullOrWhiteSpace(model.SellerName))
                 seller.SellerName = model.SellerName;
 
@@ -129,7 +133,17 @@ namespace FarmifyService.Controllers
             if (!string.IsNullOrWhiteSpace(model.Description))
                 seller.Description = model.Description;
 
-            await _context.SaveChangesAsync();
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, "Concurrency error when updating Seller with ID {SellerID}", seller.ID);
+                return StatusCode(409, new { message = "Concurrency conflict. The data may have changed since it was loaded." });
+            }
+
 
             return Ok(new { message = "Business information updated successfully" });
         }
