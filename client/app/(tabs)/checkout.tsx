@@ -17,7 +17,7 @@ export default function Checkout() {
   const parsedProduct = JSON.parse(product);
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;
   const parsedQuantity = parseInt(quantity, 10) || 1;
-  let totalPrice = parsedCurrentPrice * parsedQuantity; 
+  let totalPrice = parsedCurrentPrice * parsedQuantity;
   const [trackingUrl, setTrackingUrl] = useState(null);
   const router = useRouter();
 
@@ -42,11 +42,11 @@ export default function Checkout() {
         const response = await fetch(
           `http://localhost:4000/api/products/${parsedProduct.id}`
         );
-    
+
         if (!response.ok) {
           throw new Error(`Failed to fetch product details: ${response.statusText}`);
         }
-    
+
         const data = await response.json();
         console.log("API Response:", data); // Debugging line
         console.log("Seller Address:", data.SellerAddress); // Debug seller address
@@ -55,7 +55,7 @@ export default function Checkout() {
         console.error("Error fetching product details:", error);
         Alert.alert("Error", "Failed to load product details. Please try again.");
       }
-    };    
+    };
 
     fetchProductDetails();
   }, [parsedProduct.id]);
@@ -66,12 +66,12 @@ export default function Checkout() {
       return;
     }
     const parsedTip = parseFloat(tipAmount) * 100 || 0; // Ensure tip is a valid number
-    const orderValue = parseFloat(totalPrice.toFixed(2))*100; // Ensures a float with 2 decimal places
+    const orderValue = parseFloat(totalPrice.toFixed(2)) * 100; // Ensures a float with 2 decimal places
 
     const deliveryRequest = {
       externalDeliveryId: `D-${Date.now()}`, // Unique ID for each delivery
-      pickupAddress: "1079 Commonwealth Ave, Boston, MA 02215",
-      pickupBusinessName: "Your Business Name", 
+      pickupAddress: parsedProduct.sellerAddress,
+      pickupBusinessName: parsedProduct.sellerName,
       pickupPhoneNumber: "+16505555555", // Example phone number
       pickupInstructions: "Enter gate code 1234 on the callbox.",
       pickupReferenceTag: `Order number ${Date.now()}`,
@@ -92,10 +92,10 @@ export default function Checkout() {
         },
         body: JSON.stringify(deliveryRequest),
       });
-  
+
       const result = await response.json();
       console.log("Delivery Created:", result);
-  
+
       if (response.ok) {
         setTrackingUrl(result.tracking_url);
         Alert.alert("Success", "Delivery created successfully!");
@@ -114,7 +114,7 @@ export default function Checkout() {
       setIsSubmitting(false);
     }
   };
-  
+
   const handlePurchase = async () => {
     if (!product || currentPrice === null) {
       Alert.alert("Error", "Cannot place a bid at this time.");
@@ -125,11 +125,11 @@ export default function Checkout() {
 
       // Step 2: Create PayPal order
       const orderRequest = {
-        ClientId: product.ppid,
-        ClientSecret: product.pPsecret,
+        ClientId: parsedProduct.ppid,
+        ClientSecret: parsedProduct.pPsecret,
         Amount: currentPrice * quantity,
         Currency: "USD", // Adjust currency as needed
-        Name: product.name,
+        Name: parsedProduct.name,
       };
       console.log(orderRequest);
 
@@ -171,7 +171,7 @@ export default function Checkout() {
           clearInterval(pollTimer);
 
           // Step 5: Capture the order
-          capturePayPalOrder(orderId, product.ppid, product.pPsecret);
+          capturePayPalOrder(orderId, parsedProduct.ppid, parsedProduct.pPsecret);
           window.alert("Payment Successful!");
 
         }
@@ -220,7 +220,7 @@ export default function Checkout() {
     const bidData = {
       buyerID,
       amount: quantity,
-      auctionID: product.id,
+      auctionID: parsedProduct.id,
       price: currentPrice,
       deliveryStatus: true,
     };
@@ -282,7 +282,7 @@ export default function Checkout() {
       {deliveryMethod === "pickup" && (
         <View style={styles.pickupInfo}>
           <Text style={styles.pickupTitle}>Pickup Location:</Text>
-          <Text style={styles.pickupDetails}>{sellerAddress}</Text>
+          <Text style={styles.pickupDetails}>{parsedProduct.sellerAddress}</Text>
         </View>
       )}
 
@@ -352,19 +352,19 @@ export default function Checkout() {
         </Text>
       </Pressable>
 
-{trackingUrl && (
-  <Pressable
-    style={styles.buyButton}
-    onPress={() => {
-      // Open the tracking URL in the browser
-      Linking.openURL(trackingUrl).catch(err => 
-        console.error("Failed to open tracking URL:", err)
-      );
-    }}
-  >
-    <Text style={styles.buyButtonText}>Track Delivery</Text>
-  </Pressable>
-)}
+      {trackingUrl && (
+        <Pressable
+          style={styles.buyButton}
+          onPress={() => {
+            // Open the tracking URL in the browser
+            Linking.openURL(trackingUrl).catch(err =>
+              console.error("Failed to open tracking URL:", err)
+            );
+          }}
+        >
+          <Text style={styles.buyButtonText}>Track Delivery</Text>
+        </Pressable>
+      )}
 
       {isSubmitting && (
         <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />

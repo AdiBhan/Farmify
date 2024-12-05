@@ -564,3 +564,8 @@ C:/Users/adity/Downloads/Fall2024/Farmify/server/bin/Debug/net8.0/zh-Hant/Micros
 /Users/kanghuanxu/Farmify/server/obj/Debug/net8.0/server.pdb
 /Users/kanghuanxu/Farmify/server/obj/Debug/net8.0/server.genruntimeconfig.cache
 /Users/kanghuanxu/Farmify/server/obj/Debug/net8.0/ref/server.dll
+/Users/simeongluzman/Documents/GitHub/Farmify/server/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/simeongluzman/Documents/GitHub/Farmify/server/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/simeongluzman/Documents/GitHub/Farmify/server/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/Users/simeongluzman/Documents/GitHub/Farmify/server/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/Users/simeongluzman/Documents/GitHub/Farmify/server/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
