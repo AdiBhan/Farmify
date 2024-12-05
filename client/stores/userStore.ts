@@ -10,6 +10,8 @@ interface UserState {
   accountType: string;
   isLoggedIn: boolean;
   error: string;
+  buyerId: string | null; // Add buyerId
+  sellerId: string | null;
   setEmail: (email: string) => void;
   setId: (id: string) => void;
   setUsername: (username: string) => void;
@@ -43,6 +45,8 @@ const useUser = create<UserState>((set) => ({
   accountType: "",
   isLoggedIn: false,
   error: "",
+  buyerId: null, // Initialize buyerId as null
+  sellerId: null,
 
   setEmail: (email: string) => set({ email }),
   setId: (id: string) => set({ id }),
@@ -66,7 +70,9 @@ const useUser = create<UserState>((set) => ({
       console.log('Login response:', response.data);
 
       if (response.data && response.data.data) {
-        const { email, id, username, sessionId, accountType } = response.data.data;
+        const { email, id, username, sessionId, accountType, buyerId, sellerId } = response.data.data;
+        console.log('buyerID:', buyerId);
+        console.log('sellerID:', sellerId);
         set({
           email,
           id,
@@ -76,6 +82,8 @@ const useUser = create<UserState>((set) => ({
           isLoggedIn: true,
           password: "",
           error: "", // Clear any previous errors on successful login
+          buyerId: buyerId || null, // Set buyerId if provided
+          sellerId: sellerId || null,
         });
       }
     } catch (error) {
@@ -108,15 +116,18 @@ const useUser = create<UserState>((set) => ({
       console.log('Registration response:', response.data);
 
       if (response.data) {
+        const { email, id, username, sessionId, accountType, buyerId, sellerId } = response.data.data;
         set({
-          email: response.data.email,
-          id: response.data.id,
-          username: response.data.username,
-          password: response.data.password,
-          sessionID: response.data.sessionID,
-          accountType: response.data.accountType,
+          email,
+          id,
+          username,
+          sessionID: sessionId,
+          accountType,
           isLoggedIn: true,
+          password: "", // Clear password after registration
           error: "", // Clear any previous errors
+          buyerId: buyerId || null, // Set buyerId if provided
+          sellerId: sellerId || null,
         });
       }
     } catch (error) {
@@ -141,6 +152,8 @@ const useUser = create<UserState>((set) => ({
     accountType: "",
     isLoggedIn: false,
     error: "", // Clear any errors on logout
+    buyerId: null, // Clear buyerId on logout
+    sellerId: null,
   }),
 }));
 

@@ -24,7 +24,7 @@ export default function CreateAuctionScreen() {
   const [primaryImageUrl, setPrimaryImageUrl] = useState(null);
   const [galleryImageUrls, setGalleryImageUrls] = useState<string[]>([]);
   const [productId, setProductId] = useState<string>(Date.now().toString());
-  const { username, id, accountType } = useUser();
+  const { username, id, accountType, buyerId, sellerId } = useUser();
 
   function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
@@ -151,7 +151,7 @@ export default function CreateAuctionScreen() {
         EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
         ImgUrl: primaryImageUrl,
         Quantity: 1,
-        sellerID: "S1", // Replace with the actual SellerID
+        sellerID: sellerId, // Replace with the actual SellerID
       };
       console.log('Auction data:', auctionData);
       const response = await fetch("http://localhost:4000/api/products", {

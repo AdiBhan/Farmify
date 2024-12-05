@@ -11,8 +11,12 @@ import {
   Linking,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import useUser from "@/stores/userStore";
 
 export default function Checkout() {
+  const { username, id, accountType, buyerId, sellerId } = useUser();
+  console.log(buyerId);
+  console.log(username)
   const { product, quantity, currentPrice } = useLocalSearchParams();
   const parsedProduct = JSON.parse(product);
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;
@@ -32,7 +36,7 @@ export default function Checkout() {
   const [tipAmount, setTipAmount] = useState("");
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
 
-  const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
+  // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
 
   useEffect(() => {
@@ -218,7 +222,7 @@ export default function Checkout() {
   // Helper function to create the bid
   const createBid = async () => {
     const bidData = {
-      buyerID,
+      buyerId,
       amount: quantity,
       auctionID: parsedProduct.id,
       price: currentPrice,

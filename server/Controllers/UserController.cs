@@ -31,75 +31,98 @@ namespace FarmifyService.Controllers
                 RedirectUri = "/success"
             }, GoogleDefaults.AuthenticationScheme);
         }
-[HttpPost("login")]
-public async Task<IActionResult> Login()
-{
-    var strategy = _context.Database.CreateExecutionStrategy();
-
-    return await strategy.ExecuteAsync(async () =>
+    [HttpPost("login")]
+    public async Task<IActionResult> Login()
     {
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(async () =>
         {
-            using var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
-            _logger.LogInformation($"Received login request with body: {body}");
-
-            var jsonDocument = JsonDocument.Parse(body);
-            var root = jsonDocument.RootElement;
-
-            var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
-            var password = root.TryGetProperty("password", out var passwordElement) ? passwordElement.GetString() ?? string.Empty : string.Empty;
-
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _logger.LogWarning("Email or password is missing");
-                return BadRequest("Email and password are required");
-            }
+                using var reader = new StreamReader(Request.Body);
+                var body = await reader.ReadToEndAsync();
+                _logger.LogInformation($"Received login request with body: {body}");
 
-            _logger.LogInformation($"Searching for user with email: {email}");
-            
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email); 
+                var jsonDocument = JsonDocument.Parse(body);
+                var root = jsonDocument.RootElement;
 
-            if (user == null || user.Password != password)
-            {
-                _logger.LogWarning("Invalid email or password");
-                return Unauthorized(new { message = "Invalid email or password" });
-            }
+                var email = root.TryGetProperty("email", out var emailElement) ? emailElement.GetString() ?? string.Empty : string.Empty;
+                var password = root.TryGetProperty("password", out var passwordElement) ? passwordElement.GetString() ?? string.Empty : string.Empty;
 
-            _logger.LogInformation($"User {user.Email} logged in successfully");
-
-            // Updating session ID
-            string newSessionId = Guid.NewGuid().ToString();
-            user.sessionID = newSessionId;
-            await _context.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-            _logger.LogInformation("Transaction committed for login");
-
-            return Ok(new
-            {
-                message = "Login successful",
-                data = new
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    id = user.ID,
-                    email = user.Email,
-                    username = user.Username,
-                    sessionId = newSessionId,
-                    credits = user.Credits,
-                    accountType = user.AccountType
+                    _logger.LogWarning("Email or password is missing");
+                    return BadRequest("Email and password are required");
                 }
-            });
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError($"Unexpected error during login: {ex.Message}");
-            return StatusCode(500, new { message = "Internal server error", error = ex.Message });
-        }
-    });
-}
+
+                _logger.LogInformation($"Searching for user with email: {email}");
+                
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == email); 
+
+                if (user == null || user.Password != password)
+                {
+                    _logger.LogWarning("Invalid email or password");
+                    return Unauthorized(new { message = "Invalid email or password" });
+                }
+
+                _logger.LogInformation($"User {user.Email} logged in successfully");
+
+                // Updating session ID
+                string newSessionId = Guid.NewGuid().ToString();
+                user.sessionID = newSessionId;
+                await _context.SaveChangesAsync();
+
+                // Retrieve Buyer or Seller ID based on AccountType
+                string? buyerId = null;
+                string? sellerId = null;
+
+                if (user.AccountType.Equals("buyer", StringComparison.OrdinalIgnoreCase))
+                {
+                    var buyer = await _context.Buyers.FirstOrDefaultAsync(b => b.UserID == user.ID);
+                    if (buyer != null)
+                    {
+                        buyerId = buyer.ID;
+                    }
+                }
+                else if (user.AccountType.Equals("seller", StringComparison.OrdinalIgnoreCase))
+                {
+                    var seller = await _context.Sellers.FirstOrDefaultAsync(s => s.UserID == user.ID);
+                    if (seller != null)
+                    {
+                        sellerId = seller.ID;
+                    }
+                }
+
+                await transaction.CommitAsync();
+                _logger.LogInformation("Transaction committed for login");
+
+                return Ok(new
+                {
+                    message = "Login successful",
+                    data = new
+                    {
+                        id = user.ID,
+                        email = user.Email,
+                        username = user.Username,
+                        sessionId = newSessionId,
+                        credits = user.Credits,
+                        accountType = user.AccountType,
+                        buyerId, // Add buyerId
+                        sellerId // Add sellerId
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError($"Unexpected error during login: {ex.Message}");
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        });
+    }
 
 
 
@@ -135,7 +158,6 @@ public async Task<IActionResult> Register()
                 _logger.LogWarning("Username is missing or empty");
                 return BadRequest("Username is required and cannot be empty");
             }
-          
 
             _logger.LogInformation($"Checking for existing user with email: {email} or username: {username}");
 
@@ -179,17 +201,79 @@ public async Task<IActionResult> Register()
 
             _logger.LogInformation("Adding user to context");
             await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Saving changes");
-            var saveResult = await _context.SaveChangesAsync();
-            _logger.LogInformation($"SaveChanges result: {saveResult}");
+            string newId = Guid.NewGuid().ToString();
+
+            if (accountType.Equals("buyer", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogInformation("Creating buyer account");
+                var newBuyer = new Buyer
+                {
+                    ID = newId,
+                    UserID = newUser.ID,
+                    Address = "Default Address", // Replace with actual data
+                    Status = "Active",
+                    PhoneNumber = "000-000-0000" // Replace with actual data
+                };
+                await _context.Buyers.AddAsync(newBuyer);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return Ok(new
+                {
+                    message = "User registered successfully.",
+                    data = new
+                    {
+                        id = newUser.ID,
+                        email = newUser.Email,
+                        username = newUser.Username,
+                        sessionId = newUser.sessionID,
+                        credits = newUser.Credits,
+                        accountType = newUser.AccountType,
+                        buyerId = newBuyer.ID
+                    }
+                });
+            }
+            else if (accountType.Equals("seller", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogInformation("Creating seller account");
+                var newSeller = new Seller
+                {
+                    ID = newId,
+                    UserID = newUser.ID,
+                    Address = "Default Address", // Replace with actual data
+                    Description = "Default Description", // Replace with actual data
+                    SellerName = username, // Example use, adjust as needed
+                    PPID = "DefaultPPID", // Replace with actual data
+                    PPsecret = "DefaultPPSecret" // Replace with actual data
+                };
+                await _context.Sellers.AddAsync(newSeller);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return Ok(new
+                {
+                    message = "User registered successfully.",
+                    data = new
+                    {
+                        id = newUser.ID,
+                        email = newUser.Email,
+                        username = newUser.Username,
+                        sessionId = newUser.sessionID,
+                        credits = newUser.Credits,
+                        accountType = newUser.AccountType,
+                        sellerId = newSeller.ID
+                    }
+                });
+            }
 
             await transaction.CommitAsync();
-            _logger.LogInformation("Transaction committed");
-
-            return Ok(new {
-                message = "User registered successfully.",
-                data = new {
+            return Ok(new
+            {
+                message = "User registered successfully, but no buyer/seller account was created.",
+                data = new
+                {
                     id = newUser.ID,
                     email = newUser.Email,
                     username = newUser.Username,
@@ -203,18 +287,17 @@ public async Task<IActionResult> Register()
         {
             await transaction.RollbackAsync();
             _logger.LogError($"Database update error: {dbEx.Message}");
-            _logger.LogError($"Inner exception: {dbEx.InnerException?.Message}");
             return StatusCode(500, new { message = "Failed to create user", error = dbEx.Message });
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
             _logger.LogError($"Unexpected error: {ex.Message}");
-            _logger.LogError($"Stack trace: {ex.StackTrace}");
             return StatusCode(500, new { message = "Internal server error", error = ex.Message });
         }
     });
 }
+
 
 [HttpPut("update")]
 public async Task<IActionResult> UpdateUser()

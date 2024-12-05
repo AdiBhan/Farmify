@@ -66,7 +66,7 @@ const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
-  const { username, isLoggedIn } = useUser();
+  const { username, isLoggedIn, buyerId, sellerId } = useUser();
 
   const fetchAuctionItems = async () => {
     try {
