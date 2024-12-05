@@ -241,7 +241,7 @@ export default function Checkout() {
 
       if (response.ok) {
         Alert.alert("Success", "Your bid has been placed successfully!");
-        window.location.reload();
+        //window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Error creating bid:", errorData);

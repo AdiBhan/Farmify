@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 import { useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
@@ -95,27 +97,32 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/api/bids");
-        const data = await response.json();
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true); // Start loading
+      const response = await fetch("http://localhost:4000/api/bids");
+      const data = await response.json();
 
-        // Sort transactions by timestamp (most recent first)
-        const sortedData = data.sort(
-          (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
-        );
+      // Sort transactions by timestamp (most recent first)
+      const sortedData = data.sort(
+        (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+      );
 
-        setTransactions(sortedData);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setTransactions(sortedData);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
-    fetchTransactions();
-  }, []);
+  // Use useFocusEffect to refresh transactions on page focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchTransactions();
+    }, [])
+  );
+
 
 
 

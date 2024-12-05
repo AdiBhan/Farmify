@@ -16,6 +16,8 @@ import useUser from "@/stores/userStore";
 import * as Animatable from "react-native-animatable";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 import { IconButton } from "react-native-paper";
@@ -68,67 +70,42 @@ const Auction = () => {
   const router = useRouter();
   const { username, isLoggedIn, buyerId, sellerId } = useUser();
 
-  const fetchAuctionItems = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/products");
-      const data = await response.json();
+  useFocusEffect(
+    useCallback(() => {
+      const fetchAuctionItemsOnFocus = async () => {
+        try {
+          const response = await fetch("http://localhost:4000/api/products");
+          const data = await response.json();
 
-      const formattedData = data.map((item) => ({
-        id: item.id,
-        name: item.name,
-        image: { uri: item.imgUrl },
-        currentBid: calculateCurrentPrice(
-          item.startPrice,
-          item.endPrice,
-          item.startTime,
-          item.endTime
-        ),
-        timeLeft: calculateTimeLeft(item.endTime),
-        totalBids: 0,
-        seller: item.sellerName,
-        description: item.description,
-        startTime: item.startTime,
-        endTime: item.endTime,
-        quantity: item.quantity || 1,
-      }));
+          const formattedData = data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            image: { uri: item.imgUrl },
+            currentBid: calculateCurrentPrice(
+              item.startPrice,
+              item.endPrice,
+              item.startTime,
+              item.endTime
+            ),
+            timeLeft: calculateTimeLeft(item.endTime),
+            totalBids: 0,
+            seller: item.sellerName,
+            description: item.description,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            quantity: item.quantity || 1,
+          }));
 
-      setAuctionItems(formattedData);
-    } catch (error) {
-      console.error("Error fetching auction items:", error);
-    }
-  };
+          setAuctionItems(formattedData);
+        } catch (error) {
+          console.error("Error fetching auction items:", error);
+        }
+      };
 
-  useEffect(() => {
-    fetchAuctionItems();
-  }, []);
+      fetchAuctionItemsOnFocus();
+    }, [])
+  );
 
-  const handleRefresh = React.useCallback(async () => {
-    setIsRefreshing(true);
-    await fetchAuctionItems();
-    setIsRefreshing(false);
-  }, []);
-
-  useEffect(() => {
-    const redirectTimer = setTimeout(() => {
-      if (!isLoggedIn) {
-        router.push("/");
-      }
-    }, 1000);
-
-    return () => clearTimeout(redirectTimer);
-  }, [isLoggedIn, router]);
-
-  const handleBid = (item) => {
-    console.log(`Placing bid on ${item.name}`);
-  };
-
-  const handleSettingsPress = () => {
-    console.log("Settings pressed");
-  };
-
-  const handleUploadPress = () => {
-    console.log("Upload pressed");
-  };
 
   const handleItemPress = (item) => {
     console.log(`Pressed ${item.name}`);
@@ -157,20 +134,13 @@ const Auction = () => {
         <BlurView intensity={50} style={styles.blurContainer}>
           <Header
             username={username}
-            onSettingsPress={handleSettingsPress}
-            onUploadPress={handleUploadPress}
+
           />
           <ScrollView
             style={styles.auctionContainer}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
-                tintColor={COLORS.primary}
-              />
-            }
+
           >
             {auctionItems.map((item) => (
               <Pressable
