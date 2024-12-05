@@ -42,7 +42,7 @@ namespace FarmifyService.Controllers
             {
                 // Set default values or adjust the product object if necessary
                 product.ID = 0; // Let the database generate the ID
-                product.StartTime = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+                product.StartTime = DateTime.SpecifyKind(product.StartTime, DateTimeKind.Unspecified);
                 product.EndTime = DateTime.SpecifyKind(product.EndTime, DateTimeKind.Unspecified);
 
                 // Save the product to the database

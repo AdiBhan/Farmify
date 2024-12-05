@@ -147,7 +147,7 @@ export default function CreateAuctionScreen() {
         description: description,
         StartPrice: parseFloat(startingPrice),
         EndPrice: parseFloat(endingPrice),
-        StartTime: new Date().toISOString(),
+        StartTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
         ImgUrl: primaryImageUrl,
         Quantity: 1,

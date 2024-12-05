@@ -174,7 +174,7 @@ Plan this week:
 
   7. Create trigger for updating seller rating when one of their products is rated 
 
-  
+  8. Add back buttons/navigation to setting pages
 
   8. add display of photogallery images for each product.
 
@@ -191,3 +191,8 @@ Plan this week:
 
 
 
+New Auction needed fixes: (simeon)
+1. how to display and reference gallery images
+2. Add input for quantity of products you can sell
+3. add SellerID instead of userID to create auction args and user store
+4. Fix timezone issues:
