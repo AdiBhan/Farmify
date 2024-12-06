@@ -422,7 +422,7 @@ New Auction needed fixes: (simeon)
 
 8. Add back buttons/navigation to setting pages
 9. Stats page
-10. Display seller rating on details page (add endpoint to get stats for a specific seller)
+10. Display seller rating on details page (add endpoint to get stats for a specific seller) (DONE)
 11. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 12. Category selection on newlisiting
 13. Handle failed payment (after capture phase)
