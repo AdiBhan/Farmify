@@ -16,7 +16,7 @@ import useUser from "@/stores/userStore";
 export default function Checkout() {
   const { username, id, accountType, buyerId, sellerId } = useUser();
   console.log(buyerId);
-  console.log(username)
+  console.log(username);
   const { product, quantity, currentPrice } = useLocalSearchParams();
   const parsedProduct = JSON.parse(product);
   const parsedCurrentPrice = parseFloat(currentPrice) || 0;

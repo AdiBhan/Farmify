@@ -18,17 +18,19 @@ import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
 import { } from "@react-navigation/native";
 import { useCallback } from "react";
+// Helper icons
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 import { IconButton } from "react-native-paper";
 
+// Helper function to calculate time left for an auction
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
   const end = new Date(endTime);
   const diff = Math.floor((end - now) / 1000);
 
   if (diff <= 0) {
-    return "Auction Ended";
+    return "Auction Ended"; // auction is over
   }
 
   // Time units in seconds
@@ -49,6 +51,7 @@ const calculateTimeLeft = (endTime) => {
   }
 };
 
+// Helper function to calculate the current price of an auction item
 const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
   const now = new Date();
   const start = new Date(startTime);
@@ -64,12 +67,14 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
   return startPrice + (endPrice - startPrice) * progress; // Always returns a number
 };
 
+// Main Auction component
 const Auction = () => {
-  const [auctionItems, setAuctionItems] = useState([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [auctionItems, setAuctionItems] = useState([]); // Auction items state
+  const [isRefreshing, setIsRefreshing] = useState(false); // Pull-to-refresh state
   const router = useRouter();
   const { username, isLoggedIn, buyerId, sellerId, profile_image_url } = useUser();
 
+  // Fetch auction items when the page is focused
   useFocusEffect(
     useCallback(() => {
       const fetchAuctionItemsOnFocus = async () => {
@@ -96,6 +101,7 @@ const Auction = () => {
             quantity: item.quantity || 1,
           }));
 
+          // Sort items by start time (newest first)
           const sortedData = formattedData.sort(
             (a, b) => new Date(b.startTime) - new Date(a.startTime)
           );
@@ -110,7 +116,7 @@ const Auction = () => {
     }, [])
   );
 
-
+  // Handle item press to navigate to details page
   const handleItemPress = (item: any) => {
     if (!item?.id) {
       console.error('Invalid item ID');
@@ -123,6 +129,7 @@ const Auction = () => {
     });
   };
 
+  // Redirect to login if user is not logged in
   if (!isLoggedIn) {
     return (
       <View style={styles.loadingContainer}>
@@ -132,6 +139,7 @@ const Auction = () => {
     );
   }
 
+  // Render auction items
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -169,6 +177,7 @@ const Auction = () => {
   );
 };
 
+// Header component
 const Header = ({ username, profile_image_url }) => {
   useEffect(() => {
     console.log("Profile image URL in Header:", profile_image_url);
@@ -227,6 +236,7 @@ const Header = ({ username, profile_image_url }) => {
   );
 };
 
+// AuctionItem component for displaying individual items
 const AuctionItem = ({ item, onBid }) => {
   const isExpired = item.currentBid === null && new Date(item.endTime) < new Date();
   const isNotStarted = item.currentBid === null && new Date(item.startTime) > new Date();
