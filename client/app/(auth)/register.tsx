@@ -18,10 +18,10 @@ import useUser from "@/stores/userStore";
 export default function RegisterScreen() {
   const router = useRouter();
   const {
-    email = "", 
-    password = "", 
-    username = "", 
-    accountType = "", 
+    email = "",
+    password = "",
+    username = "",
+    accountType = "",
     setEmail,
     setPassword,
     setUsername,
@@ -38,12 +38,12 @@ export default function RegisterScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
 
-  
+
   const handleRegister = async () => {
     /**
      * handleRegister() Handles the registration process and navigation
      */
-    
+
     if (!validateForm()) {
       return;
     }
@@ -59,7 +59,7 @@ export default function RegisterScreen() {
         password,
         accountType,
       });
-      
+
       // If registration successful, navigate to the next screen
       router.push("/(auth)/login");
     } catch (err) {
@@ -136,7 +136,7 @@ export default function RegisterScreen() {
               editable={!isLoading}
             />
             <TextInput
-           
+
               onChangeText={setUsername}
               style={formStyles.input}
               placeholder="Enter your username"
@@ -160,7 +160,7 @@ export default function RegisterScreen() {
               value={accountType}
               items={items}
               setOpen={setOpen}
-              setValue={(val) => setAccountType(val)}
+              setValue={(val) => setAccountType(typeof val === "function" ? val() : val)}
               placeholder="Select an Account Type"
               style={formStyles.input}
               disabled={isLoading}
@@ -214,23 +214,23 @@ const formStyles = ({
       android: { elevation: 2 },
     }),
   },
-  link: { 
-    marginTop: 24, 
-    alignItems: "center" 
+  link: {
+    marginTop: 24,
+    alignItems: "center"
   },
-  linkText: { 
-    color: "#2E7D32", 
-    fontSize: 16, 
-    fontWeight: "500" 
+  linkText: {
+    color: "#2E7D32",
+    fontSize: 16,
+    fontWeight: "500"
   },
   errorText: {
-    backgroundColor: '#e8f5e9', 
+    backgroundColor: '#e8f5e9',
     padding: 12,
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#c8e6c9', 
+    borderColor: '#c8e6c9',
     color: '#1b5e20',
     fontSize: 14,
     textAlign: 'center',
