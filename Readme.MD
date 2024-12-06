@@ -11,18 +11,18 @@ Take a quick look at some key features of Farmify in action:
 <div align="center" style="display: flex; gap: 20px; justify-content: center; align-items: center;">
 
   <div style="text-align: center;">
-    <img src="./images/homescreen.gif" alt="Home Screen" width="300"/>
+    <img src="./Images/homescreen.gif" alt="Home Screen" width="300"/>
     <p><i>Home Screen – Explore available products and navigate the app effortlessly.</i></p>
   </div>
 
 
   <div style="text-align: center;">
-    <img src="./images/auction.gif" alt="Auction Page" width="300"/>
+    <img src="./Images/auction.gif" alt="Auction Page" width="300"/>
     <p><i>Auction Page – Seamlessly bid on fresh produce from local sellers.</i></p>
   </div>
 
   <div style="text-align: center;">
-    <img src="./images/purchase.gif" alt="Purchase Flow" width="300"/>
+    <img src="./Images/purchase.gif" alt="Purchase Flow" width="300"/>
     <p><i>Purchase Flow – Confirm purchases with a streamlined checkout process.</i></p>
   </div>
 
