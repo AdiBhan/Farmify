@@ -5,7 +5,6 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
-  StyleSheet,
   Alert,
   ScrollView,
 } from "react-native";
@@ -56,17 +55,17 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
 };
 
 export default function ProductDetails() {
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentPrice, setCurrentPrice] = useState(null);
-  const [timeLeft, setTimeLeft] = useState("");
-  const [amountLeft, setAmountLeft] = useState("");
+  const [product, setProduct] = useState(null); // Store product details
+  const [loading, setLoading] = useState(true); // Indicate if data is being loaded
+  const [quantity, setQuantity] = useState(1); // Track bid quantity
+  const [isSubmitting, setIsSubmitting] = useState(false); // Indicate if a purchase request is in progress
+  const [currentPrice, setCurrentPrice] = useState(null); // Store the current price of the auction
+  const [timeLeft, setTimeLeft] = useState(""); // Store the remaining time for the auction
+  const [amountLeft, setAmountLeft] = useState(""); // Store the remaining time for the auction
 
-  const buyerID = "323e4567-e89b-12d3-a456-426614174002";
-  const { product: productId } = useLocalSearchParams();
-  const router = useRouter();
+  const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
+  const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
+  const router = useRouter(); // For navigation
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -78,7 +77,7 @@ export default function ProductDetails() {
         const data = await response.json();
         setProduct(data);
         setAmountLeft(data.quantity);
-
+        // Calculate initial values
         const price = calculateCurrentPrice(
           data.startPrice,
           data.endPrice,
@@ -105,6 +104,7 @@ export default function ProductDetails() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (product) {
+        // Update current price and time left at regular intervals
         const updatedPrice = calculateCurrentPrice(
           product.startPrice,
           product.endPrice,
@@ -116,7 +116,7 @@ export default function ProductDetails() {
         const updatedTimeLeft = calculateTimeLeft(product.endTime);
         setTimeLeft(updatedTimeLeft);
       }
-    }, 10000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [product]);
@@ -155,19 +155,24 @@ export default function ProductDetails() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Wrap content in a ScrollView to mimic the scrollable element */}
+    <View style={{ flex: 1 }}>
       <ScrollView
-        style={styles.auctionContainer}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 80, alignItems: 'center' }]}
+        contentContainerStyle={[styles.container, { paddingBottom: 150 }]}
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={true}
       >
         <Image
           source={{ uri: product.imgUrl }}
-          style={[styles.image, { alignSelf: 'center' }]}
-          defaultSource={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s' }}
+          style={styles.image}
+          defaultSource={{
+            uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s',
+          }}
+          onError={(error) => {
+            console.error("Error loading image:", error);
+            Alert.alert("Error", "Failed to load product image");
+          }}
         />
-
         <Text style={styles.title}>{product.name}</Text>
         <Text style={styles.description}>{product.description}</Text>
         <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
@@ -188,7 +193,7 @@ export default function ProductDetails() {
           }
           width={200}
           color="#2E7D32"
-          style={[styles.progressBar, { alignSelf: 'center', marginVertical: 20 }]}
+          style={styles.progressBar}
         />
 
         {/* Optional Gallery Display */}
@@ -207,7 +212,7 @@ export default function ProductDetails() {
           </View>
         )}
 
-        <View style={[styles.quantityContainer, { alignSelf: 'center' }]}>
+        <View style={styles.quantityContainer}>
           <Pressable
             onPress={() => setQuantity(Math.max(1, quantity - 1))}
             style={styles.button}
@@ -233,13 +238,14 @@ export default function ProductDetails() {
           </Text>
         </Pressable>
       </ScrollView>
-
     </View>
   );
 }
-
-
 const localStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    overflow: "scroll",
+  },
   galleryContainer: {
     width: '100%',
     marginVertical: 20,
@@ -256,9 +262,5 @@ const localStyles = StyleSheet.create({
     height: 120,
     borderRadius: 10,
     marginRight: 10,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
   },
 });
