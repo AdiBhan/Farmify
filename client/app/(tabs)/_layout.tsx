@@ -68,13 +68,11 @@ export default function TabsLayout() {
                     tabBarIcon: tabBarIcon(Ionicons, 'stats-chart'),
                 }}
             />
-
-            {/* Dynamically include "newlisting" or "transactions" */}
             <Tabs.Screen
                 name="newlisting"
                 options={{
                     title: 'Create Auction',
-                    href: accountType === 'Seller' || accountType === '' ? undefined : null, // Only include for Sellers
+                    href: accountType === 'Seller' || accountType === '' ? undefined : null,
                     tabBarIcon: tabBarIcon(MaterialIcons, 'create'),
                 }}
             />
@@ -82,16 +80,14 @@ export default function TabsLayout() {
                 name="transactions"
                 options={{
                     title: 'Transactions',
-                    href: accountType !== 'Seller' || accountType === undefined ? undefined : null, // Only include for non-Sellers
+                    href: accountType !== 'Seller' || accountType === undefined ? undefined : null,
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="cash-outline" size={size} color={color} />
                     ),
                 }}
             />
 
-
-
-            {/* Hidden tabs - keep as is */}
+            {/* Hidden tabs */}
             <Tabs.Screen name="details" options={{ href: null }} />
             <Tabs.Screen name="checkout" options={{ href: null }} />
             <Tabs.Screen name="tracking" options={{ href: null }} />
@@ -108,11 +104,12 @@ const styles = StyleSheet.create({
         bottom: Platform.OS === 'ios' ? 24 : 16,
         left: 16,
         right: 16,
-        height: 64,
+        height: 72,
         borderRadius: 32,
         borderTopWidth: 0,
         backgroundColor: 'transparent',
         elevation: 0,
+        paddingBottom: Platform.OS === 'ios' ? 8 : 4, 
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
@@ -129,13 +126,16 @@ const styles = StyleSheet.create({
         }),
     },
     tabBarItem: {
-        height: 64,
-        padding: 8,
+        height: 56,
+        paddingBottom: 8,
+        paddingTop: 4,
     },
     tabBarLabel: {
         fontSize: 12,
         fontWeight: '600',
         marginTop: 2,
+        marginBottom: Platform.OS === 'ios' ? 4 : 2,
+        lineHeight: 16,
     },
     iconContainer: {
         width: 36,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 4,
+        marginTop: 2,
     },
     activeIconContainer: {
         backgroundColor: COLORS.primary,

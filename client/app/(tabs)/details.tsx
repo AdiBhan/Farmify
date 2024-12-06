@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Pressable, ActivityIndicator, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { router, useRouter, useLocalSearchParams } from "expo-router"; // For navigation
 import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
-
+import { StyleSheet } from "react-native";
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
   const end = new Date(endTime);
@@ -68,7 +76,6 @@ export default function ProductDetails() {
         }
         const data = await response.json();
         setProduct(data);
-        console.log(data);
         setAmountLeft(data.quantity);
         // Calculate initial values
         const price = calculateCurrentPrice(
@@ -148,11 +155,19 @@ export default function ProductDetails() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
+   <ScrollView
+        contentContainerStyle={[styles.container, { paddingBottom: 150 }]}
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={true}
+      >
       <Image
         source={{ uri: product.imgUrl }}
         style={styles.image}
-        defaultSource={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s' }}
+        defaultSource={{
+          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s',
+        }}
         onError={(error) => {
           console.error("Error loading image:", error);
           Alert.alert("Error", "Failed to load product image");
@@ -173,7 +188,7 @@ export default function ProductDetails() {
         progress={
           product.endTime && product.startTime
             ? (new Date().getTime() - new Date(product.startTime).getTime()) /
-            (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+              (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
             : 0
         }
         width={200}
@@ -206,6 +221,13 @@ export default function ProductDetails() {
           {isSubmitting ? "Processing..." : "Buy Now"}
         </Text>
       </Pressable>
+    </ScrollView>
     </View>
   );
 }
+const localStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    overflow: "scroll",
+  },
+});
