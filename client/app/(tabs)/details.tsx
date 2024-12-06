@@ -12,7 +12,7 @@ import {
 import { router, useRouter, useLocalSearchParams } from "expo-router"; // For navigation
 import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
-
+import { StyleSheet } from "react-native";
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
   const end = new Date(endTime);

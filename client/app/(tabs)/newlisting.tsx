@@ -1,7 +1,16 @@
 // This file defines the "Create Auction" screen for an auction app, allowing users to upload product details and images, and submit auctions.
 
 import React, { useState } from "react";
-import { Text, TextInput, View, Pressable, Image, ScrollView, Platform, Alert } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  Pressable,
+  Image,
+  ScrollView,
+  Platform,
+  Alert,
+} from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter, useFocusEffect } from "expo-router";
@@ -13,9 +22,9 @@ import { decode } from "base64-arraybuffer";
 import { StyleSheet } from "react-native";
 import useUser from "@/stores/userStore";
 
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
 export default function CreateAuctionScreen() {
-  const router = useRouter();// Navigation object for routing between screens
+  const router = useRouter(); // Navigation object for routing between screens
 
   // State variables to manage form data and images
   const [productName, setProductName] = useState("");
@@ -32,6 +41,18 @@ export default function CreateAuctionScreen() {
 
   // Extract user data from custom user store
   const { username, id, accountType, buyerId, sellerId } = useUser();
+
+  function formatCurrency(value) {
+    /**
+     * Helper function converts string to currency representation
+     */
+    if (!value) return ""; // Handle empty inputs gracefully
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+    return formatter.format(value);
+  }
 
   // Helper function to convert blobs to Base64
   function blobToBase64(blob) {
@@ -59,7 +80,7 @@ export default function CreateAuctionScreen() {
         ? `public/gallery/${productId}/${imageName}`
         : `public/primary/${productId}/${imageName}`;
 
-      console.log('Generated file path:', filePath);
+      console.log("Generated file path:", filePath);
 
       const response = await fetch(imageUri);
       const blobData = await response.blob();
@@ -67,18 +88,18 @@ export default function CreateAuctionScreen() {
       const arrayBuffer = decode(base64Data.split(",")[1]);
 
       const { data, error } = await supabase.storage
-        .from('Products')
+        .from("Products")
         .upload(filePath, arrayBuffer, {
-          contentType: 'image/jpeg',
+          contentType: "image/jpeg",
         });
 
       if (error) {
         throw error;
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('Products')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("Products").getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
@@ -102,11 +123,11 @@ export default function CreateAuctionScreen() {
         setPrimaryImage(imageUri);
         const publicUrl = await uploadImageToSupabase(imageUri, false);
         setPrimaryImageUrl(publicUrl);
-        console.log('Primary image uploaded:', publicUrl);
+        console.log("Primary image uploaded:", publicUrl);
       }
     } catch (error) {
-      console.error('Error handling primary image:', error);
-      Alert.alert('Error', 'Failed to upload primary image');
+      console.error("Error handling primary image:", error);
+      Alert.alert("Error", "Failed to upload primary image");
     }
   };
 
@@ -121,8 +142,8 @@ export default function CreateAuctionScreen() {
 
     try {
       if (!result.canceled) {
-        const selectedImages = result.assets.map(asset => asset.uri);
-        setGalleryImages(prevImages => [...prevImages, ...selectedImages]);
+        const selectedImages = result.assets.map((asset) => asset.uri);
+        setGalleryImages((prevImages) => [...prevImages, ...selectedImages]);
 
         // Upload each gallery image to Supabase
         const uploadPromises = selectedImages.map(async (imageUri) => {
@@ -130,27 +151,34 @@ export default function CreateAuctionScreen() {
             const publicUrl = await uploadImageToSupabase(imageUri, true);
             return publicUrl;
           } catch (error) {
-            console.error('Error uploading gallery image:', error);
+            console.error("Error uploading gallery image:", error);
             return null;
           }
         });
 
         const uploadedUrls = await Promise.all(uploadPromises);
-        const validUrls = uploadedUrls.filter(url => url !== null);
+        const validUrls = uploadedUrls.filter((url) => url !== null);
 
-        setGalleryImageUrls(prevUrls => [...prevUrls, ...validUrls]);
-        console.log('Gallery images uploaded:', validUrls);
+        setGalleryImageUrls((prevUrls) => [...prevUrls, ...validUrls]);
+        console.log("Gallery images uploaded:", validUrls);
       }
     } catch (error) {
-      console.error('Error handling gallery images:', error);
-      Alert.alert('Error', 'Failed to upload some gallery images');
+      console.error("Error handling gallery images:", error);
+      Alert.alert("Error", "Failed to upload some gallery images");
     }
   };
 
   // Handle form submission to create an auction
   const handleCreateAuction = async () => {
     try {
-      if (!productName || !description || !startingPrice || !endingPrice || !duration || !primaryImageUrl) {
+      if (
+        !productName ||
+        !description ||
+        !startingPrice ||
+        !endingPrice ||
+        !duration ||
+        !primaryImageUrl
+      ) {
         Alert.alert("Error", "Please fill all required fields.");
         return;
       }
@@ -161,13 +189,15 @@ export default function CreateAuctionScreen() {
         StartPrice: parseFloat(startingPrice),
         EndPrice: parseFloat(endingPrice),
         StartTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-        EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
+        EndTime: new Date(
+          Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000
+        ).toISOString(),
         ImgUrl: primaryImageUrl,
         Quantity: quantity,
         sellerID: sellerId,
         GalleryUrls: galleryImageUrls,
       };
-      console.log('Auction data:', auctionData);
+      console.log("Auction data:", auctionData);
 
       //Sends data to the backend to create a new auction
       const response = await fetch("http://localhost:4000/api/products", {
@@ -181,7 +211,10 @@ export default function CreateAuctionScreen() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Failed to create auction:", errorText);
-        Alert.alert("Error", `Failed to create auction: ${response.statusText}`);
+        Alert.alert(
+          "Error",
+          `Failed to create auction: ${response.statusText}`
+        );
         return;
       }
 
@@ -196,12 +229,16 @@ export default function CreateAuctionScreen() {
     }
   };
 
-
   // Render the form and UI
   return (
-    <ScrollView contentContainerStyle={[formStyles.scrollContainer, { paddingBottom: 80 }]}>
+    <ScrollView
+      contentContainerStyle={[
+        formStyles.scrollContainer,
+        { paddingBottom: 80 },
+      ]}
+    >
       <LinearGradient
-        colors={[COLORS.primary + '15', COLORS.white, COLORS.background]}
+        colors={[COLORS.primary + "15", COLORS.white, COLORS.background]}
         style={formStyles.gradient}
       >
         <Animatable.View
@@ -251,10 +288,12 @@ export default function CreateAuctionScreen() {
               style={formStyles.uploadButton}
             >
               <LinearGradient
-                colors={[COLORS.primary, COLORS.primary + 'E6']}
+                colors={[COLORS.primary, COLORS.primary + "E6"]}
                 style={formStyles.uploadButtonGradient}
               >
-                <Text style={formStyles.uploadButtonText}>Upload Primary Image</Text>
+                <Text style={formStyles.uploadButtonText}>
+                  Upload Primary Image
+                </Text>
               </LinearGradient>
             </Pressable>
 
@@ -263,7 +302,10 @@ export default function CreateAuctionScreen() {
                 animation="fadeIn"
                 style={formStyles.primaryImageContainer}
               >
-                <Image source={{ uri: primaryImage }} style={formStyles.primaryImage} />
+                <Image
+                  source={{ uri: primaryImage }}
+                  style={formStyles.primaryImage}
+                />
               </Animatable.View>
             )}
 
@@ -271,7 +313,9 @@ export default function CreateAuctionScreen() {
               onPress={pickGalleryImages}
               style={[formStyles.uploadButton, formStyles.secondaryButton]}
             >
-              <Text style={formStyles.secondaryButtonText}>Add Gallery Images</Text>
+              <Text style={formStyles.secondaryButtonText}>
+                Add Gallery Images
+              </Text>
             </Pressable>
 
             <ScrollView
@@ -285,7 +329,10 @@ export default function CreateAuctionScreen() {
                   animation="fadeIn"
                   delay={index * 100}
                 >
-                  <Image source={{ uri: imgUri }} style={formStyles.galleryImage} />
+                  <Image
+                    source={{ uri: imgUri }}
+                    style={formStyles.galleryImage}
+                  />
                 </Animatable.View>
               ))}
             </ScrollView>
@@ -295,20 +342,22 @@ export default function CreateAuctionScreen() {
             <Text style={formStyles.inputLabel}>Pricing</Text>
             <View style={formStyles.row}>
               <TextInput
-                onChangeText={setStartingPrice}
+                onChangeText={(text) => setStartingPrice(text)}
                 value={startingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Starting price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
+                onBlur={() => setStartingPrice(formatCurrency(startingPrice))}
               />
               <TextInput
-                onChangeText={setEndingPrice}
+                onChangeText={(text) => setEndingPrice(text)}
                 value={endingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Ending price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
+                onBlur={() => setEndingPrice(formatCurrency(endingPrice))}
               />
             </View>
             <TextInput
@@ -326,7 +375,7 @@ export default function CreateAuctionScreen() {
             style={formStyles.submitButton}
           >
             <LinearGradient
-              colors={[COLORS.primary, COLORS.primary + 'E6']}
+              colors={[COLORS.primary, COLORS.primary + "E6"]}
               style={formStyles.submitButtonGradient}
             >
               <Text style={formStyles.submitButtonText}>Create Auction</Text>
@@ -348,14 +397,14 @@ const formStyles = StyleSheet.create({
   },
   container: {
     padding: 16,
-    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingTop: Platform.OS === "ios" ? 60 : 20,
   },
   headerContainer: {
     marginBottom: 24,
   },
   header: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
     marginBottom: 4,
   },
@@ -369,7 +418,7 @@ const formStyles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
     marginBottom: 12,
   },
@@ -396,14 +445,14 @@ const formStyles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   halfInput: {
-    width: '48%',
+    width: "48%",
   },
   uploadButton: {
     marginBottom: 16,
@@ -411,32 +460,32 @@ const formStyles = StyleSheet.create({
   uploadButtonGradient: {
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   uploadButtonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   secondaryButton: {
     backgroundColor: COLORS.light,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
   secondaryButtonText: {
     color: COLORS.primary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   primaryImageContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 16,
   },
   primaryImage: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 12,
   },
@@ -455,11 +504,11 @@ const formStyles = StyleSheet.create({
   submitButtonGradient: {
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   submitButtonText: {
     color: COLORS.white,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

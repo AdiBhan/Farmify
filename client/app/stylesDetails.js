@@ -15,10 +15,21 @@ const shadowStyle = Platform.select({
 
 const productDetailsStyles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: COLORS.background,
     padding: 20,
     alignItems: "center",
+    scrollbarWidth: "auto", // Ensures the scrollbar is visible
+    overflow: "scroll", // Enables scrolling with the scrollbar on web
+    paddingBottom: 16,
+  },
+  scrollView: {
+    flexGrow: 1,
+    backgroundColor: "#fff",
+    // The following CSS-like properties are supported on React Native Web:
+    scrollbarWidth: "auto", // Ensures the scrollbar is visible
+    overflow: "scroll", // Enables scrolling with the scrollbar on web
+    paddingBottom: 16,
   },
   buttonRow: {
     flexDirection: "row",

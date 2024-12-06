@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Linking,
+  ScrollView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
@@ -161,13 +162,10 @@ export default function Checkout() {
       const paypalWindow = window.open(
         approvalLink,
         "PayPalPayment",
-        "width=800,height=600"
+        "width=400,height=800,top=100,left=100,toolbar=no,menubar=no,scrollbars=no,resizable=no"
       );
-
-      if (!paypalWindow) {
-        Alert.alert("Error", "Failed to open PayPal window. Please try again.");
-        return;
-      }
+      
+  
 
       // Step 4: Poll for window closure and handle payment completion
       const pollTimer = setInterval(() => {
@@ -255,6 +253,15 @@ export default function Checkout() {
 
 
   return (
+    <ScrollView
+    style={styles.scrollView}
+    contentContainerStyle={[
+      styles.scrollContent,
+      { paddingBottom: 100 }, // Add extra space at the bottom
+    ]}
+    showsVerticalScrollIndicator={true}
+    
+  >
     <View style={styles.container}>
       <Text style={styles.title}>Checkout</Text>
       <Image source={{ uri: parsedProduct.imgUrl }} style={styles.image} />
@@ -375,10 +382,19 @@ export default function Checkout() {
         <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
       )}
     </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: "#f8f8f8",
+  },
+  scrollContent: {
+    padding: 16,
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
