@@ -93,6 +93,7 @@ namespace FarmifyService.Controllers
                         p.StartTime,
                         p.EndTime,
                         p.ImgUrl,
+                        p.GalleryUrls,
                         SellerName = p.Seller.SellerName,
                         SellerAddress = p.Seller.Address,
                         SellerDescription = p.Seller.Description
@@ -144,6 +145,7 @@ namespace FarmifyService.Controllers
                         p.StartTime,
                         p.EndTime,
                         p.ImgUrl,
+                        p.GalleryUrls,
                         SellerName = p.Seller.SellerName,
                         SellerDescription = p.Seller.Description,
                         SellerAddress = p.Seller.Address,

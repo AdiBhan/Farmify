@@ -16,7 +16,7 @@ import useUser from "@/stores/userStore";
 import * as Animatable from "react-native-animatable";
 import { BlurView } from "expo-blur";
 import styles, { COLORS } from "../stylesAuction";
-import { useFocusEffect } from "expo-router";
+
 import { useCallback } from "react";
 // Helper icons
 import SettingsIcon from "@/assets/images/settings_icon.webp";

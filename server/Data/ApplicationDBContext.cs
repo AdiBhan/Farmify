@@ -107,7 +107,7 @@ namespace FarmifyService.Data
                     .IsRequired();
 
                 entity.Property(e => e.Description)
-                    .HasColumnType("character varying(255)")
+                    .HasColumnType("character varying(900)")
                     .IsRequired();
 
                 entity.Property(e => e.Category)

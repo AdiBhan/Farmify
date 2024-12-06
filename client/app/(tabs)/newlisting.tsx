@@ -164,7 +164,8 @@ export default function CreateAuctionScreen() {
         EndTime: new Date(Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000).toISOString(),
         ImgUrl: primaryImageUrl,
         Quantity: quantity,
-        sellerID: sellerId, // Replace with the actual SellerID
+        sellerID: sellerId,
+        GalleryUrls: galleryImageUrls,
       };
       console.log('Auction data:', auctionData);
 
@@ -234,14 +235,14 @@ export default function CreateAuctionScreen() {
               numberOfLines={4}
             />
             <TextInput
-            onChangeText={setQuantity}
-            value={quantity}
-            style={formStyles.input}
-            placeholder="Please Enter Quantity available"
-            placeholderTextColor={COLORS.textSecondary}
-          />
-        </View>
-        
+              onChangeText={setQuantity}
+              value={quantity}
+              style={formStyles.input}
+              placeholder="Please Enter Quantity available"
+              placeholderTextColor={COLORS.textSecondary}
+            />
+          </View>
+
           {/* Image Upload */}
           <View style={formStyles.inputGroup}>
             <Text style={formStyles.inputLabel}>Images</Text>

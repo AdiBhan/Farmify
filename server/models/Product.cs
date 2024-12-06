@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+
 namespace FarmifyService.models
 {
     public class Product
@@ -37,6 +39,11 @@ namespace FarmifyService.models
         public DateTime EndTime { get; set; } // Matches timestamp without time zone
 
         public string? ImgUrl { get; set; } // Matches character varying(255)
+
+        // New property for storing gallery URLs as JSON (array of strings).
+        // Ensure the column in Supabase is created as: GalleryUrls json NULL
+        [Column(TypeName = "json")]
+        public string[]? GalleryUrls { get; set; }
 
         // Navigation property
         [JsonIgnore]

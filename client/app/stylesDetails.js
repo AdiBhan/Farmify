@@ -66,6 +66,14 @@ const productDetailsStyles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
   },
+  auctionContainer: {
+    flex: 1,
+    width: "98%",
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 32,
+  },
   button: {
     padding: 10,
     borderWidth: 1,

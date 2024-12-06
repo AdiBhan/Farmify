@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Pressable, ActivityIndicator, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  ActivityIndicator,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { router, useRouter, useLocalSearchParams } from "expo-router"; // For navigation
 import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
@@ -47,17 +56,17 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
 };
 
 export default function ProductDetails() {
-  const [product, setProduct] = useState(null); // Store product details
-  const [loading, setLoading] = useState(true); // Indicate if data is being loaded
-  const [quantity, setQuantity] = useState(1); // Track bid quantity
-  const [isSubmitting, setIsSubmitting] = useState(false); // Indicate if a purchase request is in progress
-  const [currentPrice, setCurrentPrice] = useState(null); // Store the current price of the auction
-  const [timeLeft, setTimeLeft] = useState(""); // Store the remaining time for the auction
-  const [amountLeft, setAmountLeft] = useState(""); // Store the remaining time for the auction
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [timeLeft, setTimeLeft] = useState("");
+  const [amountLeft, setAmountLeft] = useState("");
 
-  const buyerID = "323e4567-e89b-12d3-a456-426614174002"; // Replace with actual buyer ID
-  const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
-  const router = useRouter(); // For navigation
+  const buyerID = "323e4567-e89b-12d3-a456-426614174002";
+  const { product: productId } = useLocalSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -68,9 +77,8 @@ export default function ProductDetails() {
         }
         const data = await response.json();
         setProduct(data);
-        console.log(data);
         setAmountLeft(data.quantity);
-        // Calculate initial values
+
         const price = calculateCurrentPrice(
           data.startPrice,
           data.endPrice,
@@ -97,7 +105,6 @@ export default function ProductDetails() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (product) {
-        // Update current price and time left at regular intervals
         const updatedPrice = calculateCurrentPrice(
           product.startPrice,
           product.endPrice,
@@ -149,63 +156,109 @@ export default function ProductDetails() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={{ uri: product.imgUrl }}
-        style={styles.image}
-        defaultSource={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s' }}
-        onError={(error) => {
-          console.error("Error loading image:", error);
-          Alert.alert("Error", "Failed to load product image");
-        }}
-      />
-      <Text style={styles.title}>{product.name}</Text>
-      <Text style={styles.description}>{product.description}</Text>
-      <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
-      <Text style={styles.description}>About Seller: {product.sellerDescription}</Text>
-
-      <Text style={styles.currentBid}>
-        Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
-      </Text>
-      <Text style={styles.timeRemaining}>Products Remaining: {amountLeft}</Text>
-      <Text style={styles.timeRemaining}>Time Remaining: {timeLeft}</Text>
-
-      <Progress.Bar
-        progress={
-          product.endTime && product.startTime
-            ? (new Date().getTime() - new Date(product.startTime).getTime()) /
-            (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
-            : 0
-        }
-        width={200}
-        color="#2E7D32"
-        style={styles.progressBar}
-      />
-
-      <View style={styles.quantityContainer}>
-        <Pressable
-          onPress={() => setQuantity(Math.max(1, quantity - 1))}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>-</Text>
-        </Pressable>
-        <Text style={styles.quantityText}>{quantity}</Text>
-        <Pressable
-          onPress={() => setQuantity(quantity + 1)}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>+</Text>
-        </Pressable>
-      </View>
-
-      <Pressable
-        style={styles.buyButton}
-        onPress={handleNavigateToCheckout}
-        disabled={isSubmitting}
+      {/* Wrap content in a ScrollView to mimic the scrollable element */}
+      <ScrollView
+        style={styles.auctionContainer}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 80, alignItems: 'center' }]}
+        showsVerticalScrollIndicator={true}
       >
-        <Text style={styles.buyButtonText}>
-          {isSubmitting ? "Processing..." : "Buy Now"}
+        <Image
+          source={{ uri: product.imgUrl }}
+          style={[styles.image, { alignSelf: 'center' }]}
+          defaultSource={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s' }}
+        />
+
+        <Text style={styles.title}>{product.name}</Text>
+        <Text style={styles.description}>{product.description}</Text>
+        <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
+        <Text style={styles.description}>About Seller: {product.sellerDescription}</Text>
+
+        <Text style={styles.currentBid}>
+          Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
         </Text>
-      </Pressable>
+        <Text style={styles.timeRemaining}>Products Remaining: {amountLeft}</Text>
+        <Text style={styles.timeRemaining}>Time Remaining: {timeLeft}</Text>
+
+        <Progress.Bar
+          progress={
+            product.endTime && product.startTime
+              ? (new Date().getTime() - new Date(product.startTime).getTime()) /
+              (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+              : 0
+          }
+          width={200}
+          color="#2E7D32"
+          style={[styles.progressBar, { alignSelf: 'center', marginVertical: 20 }]}
+        />
+
+        {/* Optional Gallery Display */}
+        {product.galleryUrls && product.galleryUrls.length > 0 && (
+          <View style={localStyles.galleryContainer}>
+            <Text style={localStyles.galleryTitle}>Gallery</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {product.galleryUrls.map((url, index) => (
+                <Image
+                  key={index}
+                  source={{ uri: url }}
+                  style={localStyles.galleryImage}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        <View style={[styles.quantityContainer, { alignSelf: 'center' }]}>
+          <Pressable
+            onPress={() => setQuantity(Math.max(1, quantity - 1))}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>-</Text>
+          </Pressable>
+          <Text style={styles.quantityText}>{quantity}</Text>
+          <Pressable
+            onPress={() => setQuantity(quantity + 1)}
+            style={styles.button}
+          >
+            <Text style={styles.buttonText}>+</Text>
+          </Pressable>
+        </View>
+
+        <Pressable
+          style={styles.buyButton}
+          onPress={handleNavigateToCheckout}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buyButtonText}>
+            {isSubmitting ? "Processing..." : "Buy Now"}
+          </Text>
+        </Pressable>
+      </ScrollView>
+
     </View>
   );
 }
+
+
+const localStyles = StyleSheet.create({
+  galleryContainer: {
+    width: '100%',
+    marginVertical: 20,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  galleryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  galleryImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+});
