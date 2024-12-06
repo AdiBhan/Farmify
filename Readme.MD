@@ -372,16 +372,23 @@ Plan this week:
  <br><br>
   Whats left:
 
+  Document stubbing
+    - Written reviews for sellers
+    - Allowing sellers to rate buyers
+    - Allow for non-linear decrease of price in dutch auction (exponential, log, etc)
+    - Messaging buyers/sellers on status updates
+    - Update of delivery status
+    - Category selection
 
-  1. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 
-  2. decide how doordash is going to be used in the project
 
-  3. Store products/auctions in backend when listing is made (newlisting.tsx)
+  2. decide how doordash is going to be used in the project (DONE)
 
-  4. Display photogallery in details.tsx
+  3. Store products/auctions in backend when listing is made (newlisting.tsx) (DONE)
 
-  5. display user profile picture (decide where)
+  4. Display photogallery in details.tsx (DONE)
+
+  5. display user profile picture (decide where) (DONE)
 
   4. Error/Exception handling for all frontend functionality 
       - Make sure only valid inputs for creating bid, auction, etc
@@ -389,27 +396,16 @@ Plan this week:
       - Shouldn't be able to make end price same as start price (at least half value)
       - Minimum duration of auctions
 
-  6. Replace hardcoded userData in frontend by tracking state of which user is logged in
-    - ONLY show past transactions for that user
-  
+  6. Replace hardcoded userData in frontend by tracking state of which user is logged in (DONE)
+    
 
-  7. Create trigger for updating seller rating when one of their products is rated 
+  7. Create trigger for updating seller rating when one of their products is rated (DONE)
 
-  8. Add back buttons/navigation to setting pages
 
-  8. add display of photogallery images for each product.
+
+
 
   9. Add amount remaining to details.tsx page (DONE)  
-
-  10. Document stubbing
-    - Written reviews for sellers
-    - Allowing sellers to rate buyers
-    - Allow for non-linear decrease of price in dutch auction (exponential, log, etc)
-    - Messaging buyers/sellers on status updates
-    - Update of delivery status
-
-  
-
 
 
 New Auction needed fixes: (simeon)
@@ -421,5 +417,12 @@ New Auction needed fixes: (simeon)
 6. don't approve payment or bid if user cancels paypal window. 
 7. add automatic reload after creating acution
 8. add actual buyer to checkout page (DONE)
+
+
+
+8. Add back buttons/navigation to setting pages
 9. Stats page
 10. Display seller rating on details page (add endpoint to get stats for a specific seller)
+11. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
+12. Category selection on newlisiting
+13. Handle failed payment (after capture phase)
