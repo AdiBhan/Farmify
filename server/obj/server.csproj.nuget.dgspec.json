@@ -13,9 +13,6 @@
         "packagesPath": "/Users/simeongluzman/.nuget/packages/",
         "outputPath": "/Users/simeongluzman/Documents/GitHub/Farmify/server/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
           "/Users/simeongluzman/.nuget/NuGet/NuGet.Config"
         ],

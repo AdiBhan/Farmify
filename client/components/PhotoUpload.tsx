@@ -1,100 +1,29 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Platform,
-  Alert,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as ImagePicker from 'expo-image-picker';
-import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
-import { createClient } from '@supabase/supabase-js'
-import { decode } from 'base64-arraybuffer'
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-const PhotoUploadScreen = ({setisUploadPage }) => {
+import { createClient } from '@supabase/supabase-js';
+import useUser from "@/stores/userStore";
+import { useRouter } from 'expo-router';
+const PhotoUploadScreen = ({ setisUploadPage }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const {setProfileImgURL} = useUser();
+  const router = useRouter();
   
-  console.log(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL, " ", process.env.EXPO_PUBLIC_SUPABASE_API_KEY);
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
     String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
   );
-  const [selectedImage, setSelectedImage] = useState(null);
 
-
-
-  const [isUploading, setIsUploading] = useState(false);
-
-
-  const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000';
-
-  const requestPermissions = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission needed',
-          'Sorry, we need camera roll permissions to upload photos.'
-        );
-        return false;
-      }
-      return true;
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    
+      
     }
   };
 
-  const pickImage = async () => {
-    if (await requestPermissions()) {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
-      }
-    }
-  };
-
-  const takePhoto = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission needed',
-          'Sorry, we need camera permissions to take photos.'
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
-      }
-    }
-  };
   const handleUseAsProfile = async () => {
     if (!selectedImage) return;
     setIsUploading(true);
@@ -102,26 +31,13 @@ const PhotoUploadScreen = ({setisUploadPage }) => {
     try {
       console.log('Starting upload process...');
 
-      // Generate unique file path with extension
       const timestamp = Date.now();
       const filePath = `public/${timestamp}.jpg`;
-      console.log('Generated file path:', filePath);
 
-      // Convert image to base64 first
-      console.log('Converting image...');
-      const response = await fetch(selectedImage);
-      const blobData = await response.blob();
-      const base64Data = await blobToBase64(blobData);
-
-      // Decode base64 to ArrayBuffer
-      const arrayBuffer = decode(base64Data.split(',')[1]);
-
-      // Upload to Supabase
-      console.log('Attempting upload to Supabase...');
       const { data, error } = await supabase.storage
         .from('Profiles')
-        .upload(filePath, arrayBuffer, {
-          contentType: 'image/jpeg',
+        .upload(filePath, selectedImage, {
+          contentType: selectedImage.type,
         });
 
       if (error) {
@@ -129,268 +45,248 @@ const PhotoUploadScreen = ({setisUploadPage }) => {
         throw error;
       }
 
-      console.log('Upload successful, getting public URL...');
-
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('Profiles')
         .getPublicUrl(filePath);
 
       console.log('Public URL:', publicUrl);
+      setProfileImgURL(publicUrl);
+      router.push("/(tabs)/auction");
+      alert('Profile photo uploaded successfully!\nURL: ' + publicUrl);
 
-      Alert.alert(
-        'Success',
-        'Profile photo uploaded successfully!\nURL: ' + publicUrl
-      );
-
+     
+      
       setisUploadPage(prev => !prev);
 
     } catch (error) {
-      console.error('Full error details:', {
-        message: error.message,
-        code: error.statusCode,
-        details: error?.details || 'No details available'
-      });
-
-      Alert.alert(
-        'Error',
-        'Upload failed: ' + (error.message || 'Unknown error')
-      );
+      console.error('Upload error:', error);
+      alert('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <LinearGradient
-        colors={['#F5F5F5', '#FFFFFF']}
-        style={styles.container}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity
+    <div style={styles.safeArea}>
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <button
             style={styles.backButton}
-            onPress={() => setisUploadPage(prev => !prev)}
+            onClick={() => setisUploadPage(prev => !prev)}
           >
-            <Ionicons name="chevron-back" size={24} color="#666" />
+            ← Back
+          </button>
+          <span style={styles.headerText}>Upload Photo</span>
+          <div style={{ width: 40 }} />
+        </div>
 
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Upload Photo</Text>
-          <View style={{ width: 40 }} />
-        </View>
-
-        <View style={styles.uploadArea}>
-          {selectedImage ? (
-            <View style={styles.imagePreviewContainer}>
-              <Image
-                source={{ uri: selectedImage }}
+        <div style={styles.uploadArea}>
+          {previewUrl ? (
+            <div style={styles.imagePreviewContainer}>
+              <img
+                src={previewUrl}
                 style={styles.imagePreview}
-                resizeMode="contain"
+                alt="Preview"
               />
-              <View style={styles.imageActions}>
-                <TouchableOpacity
+              <div style={styles.imageActions}>
+                <button
                   style={styles.removeButton}
-                  onPress={() => setSelectedImage(null)}
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setPreviewUrl(null);
+                  }}
                 >
-                  <Ionicons name="trash-outline" size={20} color="#FFF" />
-                  <Text style={styles.removeButtonText}>Remove</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                  <span style={styles.removeButtonText}>Remove</span>
+                </button>
+                <button
                   style={styles.useAsProfileButton}
-                  onPress={handleUseAsProfile}
+                  onClick={handleUseAsProfile}
+                  disabled={isUploading}
                 >
-                  <Ionicons name="person-circle-outline" size={20} color="#FFF" />
-                  <Text style={styles.useAsProfileText}>Use as Profile</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                  <span style={styles.useAsProfileText}>
+                    {isUploading ? 'Uploading...' : 'Use as Profile'}
+                  </span>
+                </button>
+              </div>
+            </div>
           ) : (
-            <View style={styles.uploadPrompt}>
-              <Ionicons name="cloud-upload-outline" size={48} color="#666" />
-              <Text style={styles.uploadText}>Tap to choose a photo</Text>
-              <Text style={styles.supportedFormats}>
+            <div style={styles.uploadPrompt}>
+              <div style={{ fontSize: 48, color: '#666' }}>☁️</div>
+              <p style={styles.uploadText}>Tap to choose a photo</p>
+              <p style={styles.supportedFormats}>
                 Supports: JPG, PNG, GIF
-              </Text>
-            </View>
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                style={styles.fileInput}
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                style={styles.uploadButton}
+              >
+                <span style={styles.uploadButtonText}>Upload Photo</span>
+              </label>
+            </div>
           )}
-        </View>
-
-        {!selectedImage && (
-          <View style={styles.actionButtons}>
-
-            <TouchableOpacity
-              style={[styles.button, styles.cameraButton]}
-              onPress={takePhoto}
-            >
-              <Ionicons name="camera-outline" size={24} color="#666" />
-              <Text style={styles.buttonText}>Take Photo!!!!!!</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.uploadButton]}
-              onPress={pickImage}
-            >
-              <Ionicons name="cloud-upload-outline" size={24} color="#FFF" />
-              <Text style={[styles.buttonText, styles.uploadButtonText]}>
-                Upload Photo
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </LinearGradient>
-    </SafeAreaView>
+        </div>
+      </div>
+    </div>
   );
 };
+export const COLORS = {
+  primary: '#2E7D32',
+  secondary: '#4a7c59',
+  light: '#f5f9f6',
+  white: '#ffffff',
+  text: '#1a1c1a',
+  textLight: '#4b4f4b',
+  border: '#e8ebe8',
+  success: '#43a047',
+  background: '#f0f4f1',
+  cardBg: 'rgba(255, 255, 255, 0.98)',
+  shadow: '#000000',
+  accent: '#81c784',
+  textSecondary: '#6B7280',
+  error: '#DC2626'
+};
 
-const styles = StyleSheet.create({
+
+const styles = {
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.background,
+    minHeight: '100vh',
   },
   container: {
     flex: 1,
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-    paddingHorizontal: 16,
+    width: '90%',
+    height: '100%',
+    padding: '16px',
+    backgroundColor: COLORS.cardBg,
+    borderRadius: '12px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   header: {
-    flexDirection: 'row',
+    display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    paddingTop: Platform.OS === 'android' ? 20 : 0,
+    marginBottom: '24px',
     width: '100%',
   },
   headerText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: '20px',
+    fontWeight: '700',
+    color: COLORS.text,
     textAlign: 'center',
   },
   backButton: {
-    flexDirection: 'row',
+    display: 'flex',
     alignItems: 'center',
-    padding: 8,
-  },
-  backText: {
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 4,
+    padding: '8px',
+    border: 'none',
+    background: 'none',
+    cursor: 'pointer',
+    color: COLORS.primary,
   },
   uploadArea: {
     flex: 1,
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
-    borderStyle: 'dashed',
+    backgroundColor: COLORS.light,
+    borderRadius: '12px',
+    padding: '20px',
+    marginBottom: '24px',
+    border: `2px dashed ${COLORS.border}`,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    minHeight: '400px',
   },
   uploadPrompt: {
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
   },
   uploadText: {
-    fontSize: 16,
+    fontSize: '16px',
     fontWeight: '600',
-    color: '#666',
-    marginTop: 12,
+    color: COLORS.textLight,
+    marginTop: '12px',
   },
   supportedFormats: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 8,
+    fontSize: '12px',
+    color: COLORS.textSecondary,
+    marginTop: '8px',
   },
   imagePreviewContainer: {
     width: '100%',
     height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   imagePreview: {
     width: '100%',
     height: '80%',
-    borderRadius: 8,
+    borderRadius: '8px',
+    objectFit: 'contain',
   },
   imageActions: {
-    flexDirection: 'row',
+    display: 'flex',
     justifyContent: 'center',
-    gap: 12,
-    marginTop: 16,
+    gap: '12px',
+    marginTop: '16px',
     position: 'absolute',
-    bottom: 20,
+    bottom: '20px',
   },
   removeButton: {
-    flexDirection: 'row',
+    display: 'flex',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: '#FF4444',
-    borderRadius: 8,
-    gap: 8,
+    padding: '8px 16px',
+    backgroundColor: COLORS.error,
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
   },
   removeButtonText: {
-    color: '#FFF',
+    color: COLORS.white,
     fontWeight: '600',
   },
   useAsProfileButton: {
-    flexDirection: 'row',
+    display: 'flex',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    gap: 8,
+    padding: '8px 16px',
+    backgroundColor: COLORS.success,
+    borderRadius: '8px',
+    border: 'none',
+    cursor: 'pointer',
   },
   useAsProfileText: {
-    color: '#FFF',
+    color: COLORS.white,
     fontWeight: '600',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 16,
-  },
-  button: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
-  },
-  cameraButton: {
-    backgroundColor: '#FFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+  fileInput: {
+    display: 'none',
   },
   uploadButton: {
-    backgroundColor: '#007AFF',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '16px',
+    backgroundColor: COLORS.accent,
+    borderRadius: '12px',
+    marginTop: '16px',
+    cursor: 'pointer',
   },
   uploadButtonText: {
-    color: '#FFF',
+    fontSize: '16px',
+    fontWeight: '600',
+    color: COLORS.white,
   },
-});
-
+};
 export default PhotoUploadScreen;

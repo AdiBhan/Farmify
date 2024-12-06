@@ -46,11 +46,22 @@ const auctionStyles = StyleSheet.create({
     width: '100%',
   },
   headerContainer: {
-    width: '100%',
-    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingTop: Platform.OS === 'ios' ? 0 : 20,
     paddingBottom: 16,
-    backgroundColor: COLORS.white,
-    ...shadowStyle,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.shadow,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
   },
   headerSurface: {
     backgroundColor: COLORS.white,
@@ -392,10 +403,11 @@ const auctionStyles = StyleSheet.create({
     paddingTop: 12,
   },
   headerTopSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    flexDirection: 'column', 
+    alignItems: 'center',     
+    justifyContent: 'center',
+   
+    width: '100%',       
   },
   iconButtonContainer: {
     alignItems: 'center',
@@ -432,52 +444,54 @@ const auctionStyles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 16,
   },
   titleMain: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: '700',
     color: COLORS.primary,
     letterSpacing: -0.5,
   },
   titleSub: {
-    fontSize: 12,
+    fontSize: 14,  // Slightly larger
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginTop: 2,
+    letterSpacing: 4,  // Increased letter spacing
+    marginTop: 4,
+    fontWeight: '500',
   },
   welcomeInfo: {
     flex: 1,
   },
-
   nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 4,
+    gap: 12,  
   },
-
   welcomeName: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: '700',
     color: COLORS.text,
+    letterSpacing: -0.5,
   },
 
   profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: COLORS.white,
+    width: 42,
+    height: 42,
+    borderRadius: 15,
+    borderWidth: 3, 
+    borderColor:  '#eaffea',
+    backgroundColor: COLORS.light,
     ...Platform.select({
       ios: {
         shadowColor: COLORS.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
       },
       android: {
-        elevation: 2,
+        elevation: 4,
       },
     }),
   },
@@ -486,7 +500,9 @@ const auctionStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -529,10 +545,10 @@ const auctionStyles = StyleSheet.create({
     gap: 12,
   },
   welcomeLabel: {
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 16, // Add some spacing from the top
-    letterSpacing: 0.5, // Slightly increase spacing for readability
+    fontSize: 15,
+    color: COLORS.textSecondary,
+    letterSpacing: 0.5,
+    marginBottom: 4,
   },
 });
 
