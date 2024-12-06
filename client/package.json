@@ -59,11 +59,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@react-native-community/cli": "latest",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-native": "^0.72.8",
     "@types/react-test-renderer": "^18.0.7",
-    "@react-native-community/cli": "latest",
     "jest": "^29.2.1",
     "jest-expo": "~52.0.2",
     "metro-react-native-babel-preset": "^0.77.0",
