@@ -26,7 +26,9 @@ namespace FarmifyService.models
         public string PPID { get; set; } = string.Empty;
 
         public string PPsecret { get; set; } = string.Empty;
-        [ForeignKey("UserID")]
+
+        public decimal? SellerRating { get; set; } = null;
+        
         public virtual User User { get; set; } = null!;
     }
 }

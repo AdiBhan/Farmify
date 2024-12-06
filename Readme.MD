@@ -426,3 +426,4 @@ New Auction needed fixes: (simeon)
 11. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 12. Category selection on newlisiting
 13. Handle failed payment (after capture phase)
+14. Hide buy now and place bid buttons if acccount is seller

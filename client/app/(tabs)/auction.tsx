@@ -215,18 +215,19 @@ const Header = ({ username, profile_image_url }) => {
                     source={{ uri: profile_image_url || 'https://via.placeholder.com/100' }}
                     style={styles.profileImage}
                   />
+                  <View style={styles.statsContainer}>
+                    <View style={styles.statBox}>
+                      <Text style={styles.statValue}>24</Text>
+                      <Text style={styles.statLabel}>Active</Text>
+                    </View>
+                    <View style={[styles.statBox, styles.statBoxBorder]}>
+                      <Text style={styles.statValue}>12</Text>
+                      <Text style={styles.statLabel}>Bids</Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
 
-              <View style={styles.statsContainer}>
-                <View style={styles.statBox}>
-                  <Text style={styles.statValue}>24</Text>
-                  <Text style={styles.statLabel}>Active</Text>
-                </View>
-                <View style={[styles.statBox, styles.statBoxBorder]}>
-                  <Text style={styles.statValue}>12</Text>
-                  <Text style={styles.statLabel}>Bids</Text>
-                </View>
+
               </View>
             </View>
           </View>
