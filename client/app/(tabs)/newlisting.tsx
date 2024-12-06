@@ -186,8 +186,8 @@ export default function CreateAuctionScreen() {
       const auctionData = {
         name: productName,
         description: description,
-        StartPrice: parseFloat(startingPrice),
-        EndPrice: parseFloat(endingPrice),
+        StartPrice: parseFloat(startingPrice.substring(1)),
+        EndPrice: parseFloat(endingPrice.substring(1)),
         StartTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
         EndTime: new Date(
           Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000

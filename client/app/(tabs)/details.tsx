@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -67,6 +67,7 @@ export default function ProductDetails() {
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
   const router = useRouter(); // For navigation
 
+
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
@@ -119,8 +120,15 @@ export default function ProductDetails() {
       }
     }, 5000);
 
+
+
     return () => clearInterval(interval);
   }, [product]);
+
+  const imageSource = useMemo(
+    () => (product && product.imgUrl ? { uri: product.imgUrl } : null),
+    [product?.imgUrl]
+  );
 
   const handleNavigateToCheckout = () => {
     if (!product || currentPrice === null) {
@@ -155,6 +163,7 @@ export default function ProductDetails() {
     );
   }
 
+
   return (
     <View style={{ flex: 1, overflow: 'hidden' }}>
       <View style={styles.headerWrapper}>
@@ -180,11 +189,9 @@ export default function ProductDetails() {
         showsVerticalScrollIndicator={true}
       >
         <Image
-          source={{ uri: product.imgUrl }}
+          key={imageSource?.uri}
           style={styles.image}
-          defaultSource={{
-            uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI0Oc9tGIzrpArxdS1fwqz1vI8jrVMefimow&s',
-          }}
+          source={imageSource}
           onError={(error) => {
             console.error("Error loading image:", error);
             Alert.alert("Error", "Failed to load product image");
