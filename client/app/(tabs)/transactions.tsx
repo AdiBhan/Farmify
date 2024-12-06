@@ -18,9 +18,11 @@ import styles, { COLORS } from "../stylesAuction";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 
+// URLs for star icons used in the rating system
 const FilledStarIcon = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
 const EmptyStarIcon = "https://cdn-icons-png.flaticon.com/512/1828/1828970.png";
 
+// Header component for the page, includes a title and icons for settings and upload
 const Header = ({ onSettingsPress, onUploadPress }) => (
   <Animatable.View animation="fadeIn" style={styles.headerContainer}>
     <View style={styles.headerSurface}>
@@ -33,12 +35,14 @@ const Header = ({ onSettingsPress, onUploadPress }) => (
   </Animatable.View>
 );
 
+// Reusable button component for displaying icons
 const IconButton = ({ icon, onPress }) => (
   <TouchableOpacity style={styles.iconButton} onPress={onPress}>
     <Image source={icon} style={styles.icon} defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }} />
   </TouchableOpacity>
 );
 
+// StarRating component to display and update transaction ratings
 const StarRating = ({ rating, setTempRating }) => (
   <View style={transactionStyles.starContainer}>
     {[...Array(5)].map((_, index) => (
@@ -53,12 +57,14 @@ const StarRating = ({ rating, setTempRating }) => (
   </View>
 );
 
+// Component to render individual transaction details and allow rating
 const TransactionItem = ({ transaction, onRate }) => {
-  const [tempRating, setTempRating] = useState(transaction.rating || 0);
+  const [tempRating, setTempRating] = useState(transaction.rating || 0); // Track temporary rating
+
 
   const handleRatePress = () => {
     console.log(`Rating ${tempRating} for transaction ID: ${transaction.id}`);
-    onRate(transaction.id, tempRating);
+    onRate(transaction.id, tempRating); // Send updated rating to the parent component
   };
 
   return (
@@ -94,11 +100,13 @@ const TransactionItem = ({ transaction, onRate }) => {
   );
 };
 
+// Main Transactions component
 export default function Transactions() {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState([]); // Holds all transactions
+  const [loading, setLoading] = useState(true); // Tracks loading state
   const router = useRouter();
 
+  // Fetch transactions from the backend
   const fetchTransactions = async () => {
     try {
       setLoading(true); // Start loading
@@ -124,11 +132,7 @@ export default function Transactions() {
       fetchTransactions();
     }, [])
   );
-
-
-
-
-
+  // Handle rating updates
   const handleRate = async (transactionId, rating) => {
     try {
       // Optimistically update the rating in the frontend

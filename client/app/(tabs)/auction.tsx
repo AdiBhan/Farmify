@@ -49,6 +49,7 @@ const calculateTimeLeft = (endTime) => {
   }
 };
 
+//calculate current price the for product
 const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
   const now = new Date();
   const start = new Date(startTime);
