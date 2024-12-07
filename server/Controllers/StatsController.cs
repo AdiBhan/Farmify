@@ -75,6 +75,74 @@ namespace FarmifyService.Controllers
                 var activeListings = await _context.Products
                     .CountAsync(p => p.EndTime > nowWithoutKind);
 
+                // Highest sale price
+                var highestSalePrice = allBids.Any()
+                    ? allBids.Max(b => (decimal)b.Amount * b.Price)
+                    : 0;
+
+                // Most popular category
+                var mostPopularCategory = await _context.Products
+                    .GroupBy(p => p.Category)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => new { Category = g.Key, Count = g.Count() })
+                    .FirstOrDefaultAsync();
+
+                // Total revenue
+                var totalRevenue = allBids.Any()
+                    ? allBids.Sum(b => (decimal)b.Amount * b.Price)
+                    : 0;
+
+                // Average time to sale
+                var averageTimeToSale = await _context.Products
+                    .Where(p => p.EndTime <= nowWithoutKind)
+                    .Select(p => (p.EndTime - p.StartTime).TotalMinutes)
+                    .AverageAsync();
+
+                // Buyer with most bids
+                var topBuyer = await _context.Bids
+                    .GroupBy(b => b.BuyerID)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => new { BuyerID = g.Key, BidCount = g.Count() })
+                    .FirstOrDefaultAsync();
+
+                // Highest-rated seller
+                var highestRatedSeller = await _context.Sellers
+                    .Where(s => s.SellerRating.HasValue)
+                    .OrderByDescending(s => s.SellerRating)
+                    .Select(s => new { s.SellerName, s.SellerRating })
+                    .FirstOrDefaultAsync();
+
+                // Listings without bids
+                var listingsWithoutBids = await _context.Products
+                    .Where(p => !_context.Bids.Any(b => b.AuctionID == p.ID))
+                    .CountAsync();
+
+                // Average number of bids per listing
+                var averageBidsPerListing = totalListings > 0
+                    ? (double)totalBids / totalListings
+                    : 0;
+
+                // Most expensive active listing
+                var mostExpensiveActiveListing = await _context.Products
+                    .Where(p => p.EndTime > nowWithoutKind)
+                    .OrderByDescending(p => p.StartPrice)
+                    .Select(p => new { p.Name, p.StartPrice })
+                    .FirstOrDefaultAsync();
+
+                // Most frequent bid time
+                var mostFrequentBidHour = await _context.Bids
+                    .GroupBy(b => b.TimeStamp.Hour)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => new { Hour = g.Key, Count = g.Count() })
+                    .FirstOrDefaultAsync();
+
+                // Top-selling product
+                var topSellingProduct = await _context.Bids
+                    .GroupBy(b => b.AuctionID)
+                    .OrderByDescending(g => g.Sum(b => b.Amount))
+                    .Select(g => new { ProductID = g.Key, TotalSold = g.Sum(b => b.Amount) })
+                    .FirstOrDefaultAsync();
+
                 // Constructing the response
                 var stats = new
                 {
@@ -83,7 +151,18 @@ namespace FarmifyService.Controllers
                     AverageRating = averageRating,
                     MostActiveSeller = sellerInfo ?? new { SellerName = "N/A", Description = "No active seller found" },
                     TotalListings = totalListings,
-                    ActiveListings = activeListings
+                    ActiveListings = activeListings,
+                    HighestSalePrice = highestSalePrice,
+                    MostPopularCategory = mostPopularCategory?.Category ?? "N/A",
+                    TotalRevenue = totalRevenue,
+                    AverageTimeToSale = averageTimeToSale,
+                    BuyerWithMostBids = topBuyer ?? new { BuyerID = "N/A", BidCount = 0 },
+                    HighestRatedSeller = highestRatedSeller ?? new { SellerName = "N/A", SellerRating = (decimal?)0 },
+                    ListingsWithoutBids = listingsWithoutBids,
+                    AverageBidsPerListing = averageBidsPerListing,
+                    MostExpensiveActiveListing = mostExpensiveActiveListing ?? new { Name = "N/A", StartPrice = 0m },
+                    MostFrequentBidHour = mostFrequentBidHour?.Hour ?? -1,
+                    TopSellingProduct = topSellingProduct ?? new { ProductID = 0L, TotalSold = 0 }
                 };
 
                 return Ok(stats);

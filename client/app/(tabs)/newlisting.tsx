@@ -168,15 +168,6 @@ export default function CreateAuctionScreen() {
     }
   };
 
-   // Validation function to ensure input is numeric
-   const handleNumericInput = (input, setState) => {
-    if (/^\d*\.?\d*$/.test(input)) {
-      setState(input);
-    } else {
-      Alert.alert("Invalid Input", "Please enter only numeric values.");
-    }
-  };
-
   // Handle form submission to create an auction
   const handleCreateAuction = async () => {
     try {
@@ -192,22 +183,6 @@ export default function CreateAuctionScreen() {
         return;
       }
 
-      // Convert input strings to numbers for further processing
-      const numericQuantity = parseFloat(quantity);
-      const numericStartingPrice = parseFloat(startingPrice);
-      const numericEndingPrice = parseFloat(endingPrice);
-      const numericDuration = parseInt(duration);
-
-      if (
-        isNaN(numericQuantity) ||
-        isNaN(numericStartingPrice) ||
-        isNaN(numericEndingPrice) ||
-        isNaN(numericDuration)
-      ) {
-        Alert.alert("Error", "All fields must be valid numeric values.");
-        return;
-      }
-
       const auctionData = {
         name: productName,
         description: description,
@@ -219,8 +194,7 @@ export default function CreateAuctionScreen() {
         ).toISOString(),
         ImgUrl: primaryImageUrl,
         Quantity: quantity,
-        sellerID: sellerId,
-        GalleryUrls: galleryImageUrls,
+        sellerID: sellerId, // Replace with the actual SellerID
       };
       console.log("Auction data:", auctionData);
 
@@ -297,12 +271,11 @@ export default function CreateAuctionScreen() {
               numberOfLines={4}
             />
             <TextInput
-              onChangeText={(text) => handleNumericInput(text, setQuantity)} // Use the validation function
+              onChangeText={setQuantity}
               value={quantity}
               style={formStyles.input}
               placeholder="Please Enter Quantity available"
               placeholderTextColor={COLORS.textSecondary}
-              keyboardType="numeric"
             />
           </View>
 
@@ -367,31 +340,31 @@ export default function CreateAuctionScreen() {
           <View style={formStyles.inputGroup}>
             <Text style={formStyles.inputLabel}>Pricing</Text>
             <View style={formStyles.row}>
-            <TextInput
-                onChangeText={(text) => handleNumericInput(text, setStartingPrice)}
+              <TextInput
+                onChangeText={(text) => setStartingPrice(text)}
                 value={startingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Starting price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
+                onBlur={() => setStartingPrice(formatCurrency(startingPrice))}
               />
-
               <TextInput
-                onChangeText={(text) => handleNumericInput(text, setEndingPrice)}
+                onChangeText={(text) => setEndingPrice(text)}
                 value={endingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Ending price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
+                onBlur={() => setEndingPrice(formatCurrency(endingPrice))}
               />
             </View>
             <TextInput
-              onChangeText={(text) => handleNumericInput(text, setDuration)}
+              onChangeText={setDuration}
               value={duration}
               style={formStyles.input}
               placeholder="Duration (e.g., 7 days)"
               placeholderTextColor={COLORS.textSecondary}
-              keyboardType="numeric"
             />
           </View>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Text, TextInput, View, Pressable, Alert, StyleSheet, Platform} from "react-native";
+import { Text, TextInput, View, Pressable, Alert, StyleSheet, Platform } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -21,12 +21,13 @@ export default function UpdateBuyerContact() {
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
+        console.log("sessionID", sessionID);
         const response = await axios.get(
           `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/details`,
           { headers: { sessionID } }
         );
         const userData = response.data.data;
-
+        console.log(userData);
         setName(userData.name || "");
         setEmail(userData.email || "");
         setPhoneNumber(userData.phoneNumber || "");

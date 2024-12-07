@@ -1,80 +1,137 @@
-import React from "react";
-import {View, Text, ScrollView, StyleSheet, Dimensions, Platform} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView, StyleSheet, Platform, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
-
+import detailStyles from "../stylesDetails";
 import * as Animatable from "react-native-animatable";
-import { commonStyles, settingsStyles, COLORS } from '@/app/stylesPages';
-const statisticsData = [
-  { label: "Total Sales", value: "$124,000" },
-  { label: "Total Products Sold", value: "5,200" },
-  { label: "Average Sale Price", value: "$23.85" },
-  { label: "Top-Selling Category", value: "Organic Vegetables" },
-  { label: "Most Active Seller", value: "Green Acres" },
-  { label: "Top-Rated Product", value: "Farm Fresh Eggs" },
-  { label: "Highest Single Sale", value: "$2,300" },
-];
+import { commonStyles, COLORS } from '@/app/stylesPages';
 
 export default function SitewideStatistics() {
-  return (
-      <View style={commonStyles.container}>
-        <LinearGradient
-            colors={[COLORS.primary + '15', COLORS.white]}
-            style={commonStyles.gradient}
-        >
-          <BlurView intensity={50} style={commonStyles.blurContainer}>
-            <Animatable.View
-                animation="fadeIn"
-                duration={600}
-                style={commonStyles.headerContainer}
-            >
-              <Text style={commonStyles.headerTitle}>Statistics</Text>
-              <Text style={commonStyles.subtitle}>Market Performance Overview</Text>
-            </Animatable.View>
+  const [statistics, setStatistics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-            <ScrollView
-                contentContainerStyle={statisticsStyles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-              {statisticsData.map((stat, index) => (
-                  <Animatable.View
-                      key={index}
-                      animation="fadeInUp"
-                      delay={index * 100}
-                      duration={600}
-                  >
-                    <View style={statisticsStyles.statCard}>
-                      <View style={statisticsStyles.statContent}>
-                        <View style={statisticsStyles.statInfo}>
-                          <Text style={statisticsStyles.statLabel}>{stat.label}</Text>
-                          <Text style={statisticsStyles.statValue}>{stat.value}</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </Animatable.View>
-              ))}
-            </ScrollView>
-          </BlurView>
-        </LinearGradient>
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/stats"); // Replace with your backend API URL
+        const data = await response.json();
+        setStatistics(data);
+      } catch (err) {
+        setError("Failed to load statistics.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={commonStyles.container}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={commonStyles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  const statisticsData = [
+    { label: "Total Bids", value: statistics.totalBids ?? "N/A" },
+    { label: "Average Sale Price", value: `$${(statistics.averageSalePrice ?? 0).toFixed(2)}` },
+    { label: "Average Rating", value: `${(statistics.averageRating ?? 0).toFixed(1)} Stars` },
+    { label: "Most Active Seller", value: statistics.mostActiveSeller?.sellerName ?? "N/A" },
+    { label: "Total Listings", value: statistics.totalListings ?? "N/A" },
+    { label: "Active Listings", value: statistics.activeListings ?? "N/A" },
+    { label: "Highest Sale Price", value: `$${(statistics.highestSalePrice ?? 0).toFixed(2)}` },
+    { label: "Most Popular Category", value: statistics.mostPopularCategory ?? "N/A" },
+    { label: "Total Revenue", value: `$${(statistics.totalRevenue ?? 0).toFixed(2)}` },
+    { label: "Buyer With Most Bids", value: statistics.buyerWithMostBids?.buyerID ?? "N/A" },
+    {
+      label: "Highest Rated Seller", value: statistics.highestRatedSeller ?
+        `${statistics.highestRatedSeller.sellerName} (${statistics.highestRatedSeller.sellerRating.toFixed(2)})` : "N/A"
+    },
+    { label: "Listings Without Bids", value: statistics.listingsWithoutBids ?? "N/A" },
+    { label: "Average Bids Per Listing", value: (statistics.averageBidsPerListing ?? 0).toFixed(2) },
+    {
+      label: "Most Expensive Active Listing", value: statistics.mostExpensiveActiveListing ?
+        `${statistics.mostExpensiveActiveListing.name} ($${statistics.mostExpensiveActiveListing.startPrice.toFixed(2)})` : "N/A"
+    },
+    { label: "Most Frequent Bid Hour", value: `${statistics.mostFrequentBidHour ?? "N/A"}:00` },
+    {
+      label: "Top-Selling Product", value: statistics.topSellingProduct ?
+        `Product ID ${statistics.topSellingProduct.productID} (${statistics.topSellingProduct.totalSold} sold)` : "N/A"
+    },
+  ];
+
+  return (
+    <View style={commonStyles.container}>
+      <LinearGradient
+        colors={[COLORS.primary + '15', COLORS.white]}
+        style={commonStyles.gradient}
+      >
+        <BlurView intensity={50} style={commonStyles.blurContainer}>
+          <Animatable.View
+            animation="fadeIn"
+            duration={600}
+            style={commonStyles.headerContainer}
+          >
+            <View style={detailStyles.headerWrapper}>
+              {/* Top Section */}
+              <View style={detailStyles.headerTopSection}>
+
+
+                <View style={detailStyles.titleContainer}>
+                  <Text style={detailStyles.titleMain}>Farmify🌽</Text>
+                  <Text style={detailStyles.titleSub}>Market</Text>
+                </View>
+
+
+
+              </View>
+
+
+            </View>
+            <Text style={commonStyles.headerTitle}>Statistics</Text>
+            <Text style={commonStyles.subtitle}>Market Performance Overview</Text>
+          </Animatable.View>
+
+          <ScrollView
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 }]} // Add bottom padding here
+            showsVerticalScrollIndicator={false}
+          >
+            {statisticsData.map((stat, index) => (
+              <Animatable.View
+                key={index}
+                animation="fadeInUp"
+                delay={index * 100}
+                duration={600}
+              >
+                <View style={styles.statCard}>
+                  <View style={styles.statContent}>
+                    <View style={styles.statInfo}>
+                      <Text style={styles.statLabel}>{stat.label}</Text>
+                      <Text style={styles.statValue}>{stat.value}</Text>
+                    </View>
+                  </View>
+                </View>
+              </Animatable.View>
+            ))}
+          </ScrollView>
+        </BlurView>
+      </LinearGradient>
+    </View>
   );
 }
-const statisticsStyles = StyleSheet.create({
-  headerContainer: {
-    padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 60 : 20,
-  },
-  mainTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    letterSpacing: 0.5,
-  },
+
+const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingTop: 10,
@@ -111,5 +168,11 @@ const statisticsStyles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.primary,
     letterSpacing: 0.5,
+  },
+  errorText: {
+    fontSize: 16,
+    color: COLORS.error,
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
