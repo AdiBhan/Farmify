@@ -95,6 +95,7 @@ namespace FarmifyService.Controllers
                         p.ImgUrl,
                         p.GalleryUrls,
                         SellerName = p.Seller.SellerName,
+                        SellerRating = p.Seller.SellerRating,
                         SellerAddress = p.Seller.Address,
                         SellerDescription = p.Seller.Description
                     })
@@ -147,6 +148,7 @@ namespace FarmifyService.Controllers
                         p.ImgUrl,
                         p.GalleryUrls,
                         SellerName = p.Seller.SellerName,
+                        SellerRating = p.Seller.SellerRating,
                         SellerDescription = p.Seller.Description,
                         SellerAddress = p.Seller.Address,
                         PPID = p.Seller.PPID, // PayPal ID

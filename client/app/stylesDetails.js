@@ -37,8 +37,8 @@ const productDetailsStyles = StyleSheet.create({
     width: "60%", // Percentage values stay as strings
   },
   image: {
-    width: 48,
-    height: 48,
+    width: 200,
+    height: 150,
     borderRadius: 12,
     marginRight: 16,
     backgroundColor: COLORS.primary + '08', // Changed from template literal to concatenation
@@ -51,8 +51,40 @@ const productDetailsStyles = StyleSheet.create({
     letterSpacing: -0.3,
     textAlign: "center",
   },
+  headerWrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  headerTopSection: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    width: '100%',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 16,
+  },
+  titleMain: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: COLORS.primary,
+    letterSpacing: -0.5,
+  },
+  titleSub: {
+    fontSize: 14,  // Slightly larger
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 4,  // Increased letter spacing
+    marginTop: 4,
+    fontWeight: '500',
+  },
   description: {
     fontSize: 16,
+    flex: 1,
+    width: "90%",
     color: COLORS.text,
     lineHeight: 24,
     marginVertical: 10,

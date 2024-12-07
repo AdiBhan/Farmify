@@ -403,11 +403,11 @@ const auctionStyles = StyleSheet.create({
     paddingTop: 12,
   },
   headerTopSection: {
-    flexDirection: 'column', 
-    alignItems: 'center',     
+    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'center',
-   
-    width: '100%',       
+
+    width: '100%',
   },
   iconButtonContainer: {
     alignItems: 'center',
@@ -463,11 +463,12 @@ const auctionStyles = StyleSheet.create({
   },
   welcomeInfo: {
     flex: 1,
+    marginBottom: 16,
   },
   nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,  
+    gap: 12,
   },
   welcomeName: {
     fontSize: 24,
@@ -480,8 +481,8 @@ const auctionStyles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 15,
-    borderWidth: 3, 
-    borderColor:  '#eaffea',
+    borderWidth: 3,
+    borderColor: '#eaffea',
     backgroundColor: COLORS.light,
     ...Platform.select({
       ios: {
@@ -497,11 +498,11 @@ const auctionStyles = StyleSheet.create({
   },
 
   welcomeSection: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 4,
     paddingBottom: 8,
   },
   statsContainer: {
