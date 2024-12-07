@@ -122,12 +122,11 @@ export default function Checkout() {
 
   const handlePurchase = async () => {
     if (!product || currentPrice === null) {
-      Alert.alert("Error", "Cannot place a bid at this time.");
+      window.alert("Error: Cannot place a bid at this time.");
       return;
     }
 
     try {
-
       // Step 2: Create PayPal order
       const orderRequest = {
         ClientId: parsedProduct.ppid,
@@ -136,7 +135,7 @@ export default function Checkout() {
         Currency: "USD", // Adjust currency as needed
         Name: parsedProduct.name,
       };
-      console.log(orderRequest);
+      console.log("order req", orderRequest);
 
       const createOrderResponse = await fetch(
         "http://localhost:4000/api/paypal/create-order",
@@ -152,7 +151,7 @@ export default function Checkout() {
       if (!createOrderResponse.ok) {
         const errorData = await createOrderResponse.json();
         console.error("Error creating PayPal order:", errorData);
-        Alert.alert("Error", "Failed to initiate payment. Please try again.");
+        window.alert("Failed to initiate payment. Please try again.");
         return;
       }
 
@@ -164,8 +163,6 @@ export default function Checkout() {
         "PayPalPayment",
         "width=400,height=800,top=100,left=100,toolbar=no,menubar=no,scrollbars=no,resizable=no"
       );
-      
-  
 
       // Step 4: Poll for window closure and handle payment completion
       const pollTimer = setInterval(() => {
@@ -174,19 +171,18 @@ export default function Checkout() {
 
           // Step 5: Capture the order
           capturePayPalOrder(orderId, parsedProduct.ppid, parsedProduct.pPsecret);
-          window.alert("Payment Successful!");
-
         }
       }, 500);
     } catch (error) {
       console.error("Error during purchase process:", error);
-      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      window.alert("An unexpected error occurred. Please try again.");
     }
   };
 
   // Helper function to capture the PayPal order
   const capturePayPalOrder = async (orderId, clientId, clientSecret) => {
     try {
+      console.log("Capture Order:", clientId, clientSecret, orderId);
       const captureOrderResponse = await fetch(
         "http://localhost:4000/api/paypal/capture-order",
         {
@@ -203,19 +199,25 @@ export default function Checkout() {
       );
 
       if (captureOrderResponse.ok) {
-        Alert.alert("Success", "Payment captured successfully!");
-        // Proceed with bid creation logic here
-        createBid();
+        window.alert("Payment captured successfully!");
+        console.log("Payment captured successfully!");
+        createBid(); // Proceed with bid creation logic here
+        router.push("/transactions"); // Redirect to transactions page
       } else {
         const errorData = await captureOrderResponse.json();
         console.error("Failed to capture PayPal order:", errorData);
-        Alert.alert("Error", "Payment capture failed. Please try again.");
+        window.alert(
+          "Payment failed. Please try again. Don't worry, your money was instantly returned!"
+        );
       }
     } catch (error) {
       console.error("Error capturing payment:", error);
-      Alert.alert("Error", "An unexpected error occurred while capturing payment.");
+      window.alert(
+        "An unexpected error occurred while capturing payment. Don't worry, your money was instantly returned! Please try again."
+      );
     }
   };
+
 
   // Helper function to create the bid
   const createBid = async () => {
@@ -254,134 +256,134 @@ export default function Checkout() {
 
   return (
     <ScrollView
-    style={styles.scrollView}
-    contentContainerStyle={[
-      styles.scrollContent,
-      { paddingBottom: 100 }, // Add extra space at the bottom
-    ]}
-    showsVerticalScrollIndicator={true}
-    
-  >
-    <View style={styles.container}>
-      <Text style={styles.title}>Checkout</Text>
-      <Image source={{ uri: parsedProduct.imgUrl }} style={styles.image} />
-      <Text style={styles.description}>{parsedProduct.name}</Text>
-      <Text style={styles.seller}>Sold by: {parsedProduct.sellerName}</Text>
-      <Text style={styles.currentBid}>
-        Current Price: ${parsedCurrentPrice.toFixed(2)}
-      </Text>
-      <Text style={styles.quantity}>Quantity: {parsedQuantity}</Text>
-      <Text style={styles.totalPrice}>Total Price: ${totalPrice.toFixed(2)}</Text>
+      style={styles.scrollView}
+      contentContainerStyle={[
+        styles.scrollContent,
+        { paddingBottom: 100 }, // Add extra space at the bottom
+      ]}
+      showsVerticalScrollIndicator={true}
 
-      {/* Delivery Method Selection */}
-      <Text style={styles.subtitle}>Choose Delivery Method:</Text>
-      <View style={styles.radioContainer}>
-        <Pressable
-          style={[styles.radio, deliveryMethod === "pickup" && styles.radioSelected]}
-          onPress={() => setDeliveryMethod("pickup")}
-        >
-          <Text>Pickup</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.radio, deliveryMethod === "delivery" && styles.radioSelected]}
-          onPress={() => setDeliveryMethod("delivery")}
-        >
-          <Text>Delivery</Text>
-        </Pressable>
-      </View>
-
-      {/* Display Seller's Address for Pickup */}
-      {deliveryMethod === "pickup" && (
-        <View style={styles.pickupInfo}>
-          <Text style={styles.pickupTitle}>Pickup Location:</Text>
-          <Text style={styles.pickupDetails}>{parsedProduct.sellerAddress}</Text>
-        </View>
-      )}
-
-      {/* Delivery Form */}
-      {deliveryMethod === "delivery" && (
-        <View style={styles.deliveryForm}>
-          <TextInput
-            style={styles.input}
-            placeholder="Dropoff Address"
-            value={deliveryDetails.dropoff_address}
-            onChangeText={(text) =>
-              setDeliveryDetails({ ...deliveryDetails, dropoff_address: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Business Name (Optional)"
-            value={deliveryDetails.dropoff_business_name}
-            onChangeText={(text) =>
-              setDeliveryDetails({ ...deliveryDetails, dropoff_business_name: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            value={deliveryDetails.dropoff_phone_number}
-            onChangeText={(text) =>
-              setDeliveryDetails({ ...deliveryDetails, dropoff_phone_number: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Instructions (Optional)"
-            value={deliveryDetails.dropoff_instructions}
-            onChangeText={(text) =>
-              setDeliveryDetails({ ...deliveryDetails, dropoff_instructions: text })
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Tip Amount (Optional)"
-            keyboardType="numeric"
-            value={tipAmount.toString()}
-            onChangeText={(text) => setTipAmount(text)}
-          />
-        </View>
-      )}
-
-      <Pressable
-        style={styles.buyButton}
-        onPress={async () => {
-          setIsSubmitting(true);
-          try {
-            await handlePurchase(); // Call PayPal payment first
-            await handleGenerateDelivery(); // then Call generate delivery   
-          } catch (error) {
-            console.error("Error during payment or delivery:", error);
-            Alert.alert("Error", "An unexpected error occurred. Please try again.");
-          } finally {
-            setIsSubmitting(false); // Reset the loading state
-          }
-        }}
-        disabled={isSubmitting}
-      >
-        <Text style={styles.buyButtonText}>
-          {isSubmitting ? "Processing..." : "Pay Now"}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Checkout</Text>
+        <Image source={{ uri: parsedProduct.imgUrl }} style={styles.image} />
+        <Text style={styles.description}>{parsedProduct.name}</Text>
+        <Text style={styles.seller}>Sold by: {parsedProduct.sellerName}</Text>
+        <Text style={styles.currentBid}>
+          Current Price: ${parsedCurrentPrice.toFixed(2)}
         </Text>
-      </Pressable>
+        <Text style={styles.quantity}>Quantity: {parsedQuantity}</Text>
+        <Text style={styles.totalPrice}>Total Price: ${totalPrice.toFixed(2)}</Text>
 
-      {trackingUrl && (
+        {/* Delivery Method Selection */}
+        <Text style={styles.subtitle}>Choose Delivery Method:</Text>
+        <View style={styles.radioContainer}>
+          <Pressable
+            style={[styles.radio, deliveryMethod === "pickup" && styles.radioSelected]}
+            onPress={() => setDeliveryMethod("pickup")}
+          >
+            <Text>Pickup</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.radio, deliveryMethod === "delivery" && styles.radioSelected]}
+            onPress={() => setDeliveryMethod("delivery")}
+          >
+            <Text>Delivery</Text>
+          </Pressable>
+        </View>
+
+        {/* Display Seller's Address for Pickup */}
+        {deliveryMethod === "pickup" && (
+          <View style={styles.pickupInfo}>
+            <Text style={styles.pickupTitle}>Pickup Location:</Text>
+            <Text style={styles.pickupDetails}>{parsedProduct.sellerAddress}</Text>
+          </View>
+        )}
+
+        {/* Delivery Form */}
+        {deliveryMethod === "delivery" && (
+          <View style={styles.deliveryForm}>
+            <TextInput
+              style={styles.input}
+              placeholder="Dropoff Address"
+              value={deliveryDetails.dropoff_address}
+              onChangeText={(text) =>
+                setDeliveryDetails({ ...deliveryDetails, dropoff_address: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Business Name (Optional)"
+              value={deliveryDetails.dropoff_business_name}
+              onChangeText={(text) =>
+                setDeliveryDetails({ ...deliveryDetails, dropoff_business_name: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={deliveryDetails.dropoff_phone_number}
+              onChangeText={(text) =>
+                setDeliveryDetails({ ...deliveryDetails, dropoff_phone_number: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Instructions (Optional)"
+              value={deliveryDetails.dropoff_instructions}
+              onChangeText={(text) =>
+                setDeliveryDetails({ ...deliveryDetails, dropoff_instructions: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tip Amount (Optional)"
+              keyboardType="numeric"
+              value={tipAmount.toString()}
+              onChangeText={(text) => setTipAmount(text)}
+            />
+          </View>
+        )}
+
         <Pressable
           style={styles.buyButton}
-          onPress={() => {
-            // Open the tracking URL in the browser
-            Linking.openURL(trackingUrl).catch(err =>
-              console.error("Failed to open tracking URL:", err)
-            );
+          onPress={async () => {
+            setIsSubmitting(true);
+            try {
+              await handlePurchase(); // Call PayPal payment first
+              await handleGenerateDelivery(); // then Call generate delivery   
+            } catch (error) {
+              console.error("Error during payment or delivery:", error);
+              Alert.alert("Error", "An unexpected error occurred. Please try again.");
+            } finally {
+              setIsSubmitting(false); // Reset the loading state
+            }
           }}
+          disabled={isSubmitting}
         >
-          <Text style={styles.buyButtonText}>Track Delivery</Text>
+          <Text style={styles.buyButtonText}>
+            {isSubmitting ? "Processing..." : "Pay Now"}
+          </Text>
         </Pressable>
-      )}
 
-      {isSubmitting && (
-        <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
-      )}
-    </View>
+        {trackingUrl && (
+          <Pressable
+            style={styles.buyButton}
+            onPress={() => {
+              // Open the tracking URL in the browser
+              Linking.openURL(trackingUrl).catch(err =>
+                console.error("Failed to open tracking URL:", err)
+              );
+            }}
+          >
+            <Text style={styles.buyButtonText}>Track Delivery</Text>
+          </Pressable>
+        )}
+
+        {isSubmitting && (
+          <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+        )}
+      </View>
     </ScrollView>
   );
 }
