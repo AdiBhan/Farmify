@@ -409,21 +409,19 @@ Plan this week:
 
 
 New Auction needed fixes: (simeon)
-1. display and reference gallery images in details.tsx (DONE)
-2. Add input for quantity of products you can sell (DONE)
-3. add SellerID instead of userID to create auction args and user store (DONE)
-4. Fix timezone issues: (DONE)
-5. display only transactions for that user 
-6. don't approve payment or bid if user cancels paypal window. 
-7. add automatic reload after creating acution
+1. display and reference gallery images in details.tsx (DONE) - Simeon 
+2. Add input for quantity of products you can sell (DONE) - Tommy 
+3. add SellerID instead of userID to create auction args and user store (DONE) - simeon
+4. Fix timezone issues: (DONE) - Simeon 
+6. don't approve payment or bid if user cancels paypal window. (done)
+7. add automatic reload after creating acution (done)
 8. add actual buyer to checkout page (DONE)
-
-
-
-8. Add back buttons/navigation to setting pages
-9. Stats page
+9. Stats page (Done)
 10. Display seller rating on details page (add endpoint to get stats for a specific seller) (DONE)
-11. Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
-12. Category selection on newlisiting
-13. Handle failed payment (after capture phase)
-14. Hide buy now and place bid buttons if acccount is seller
+
+display only transactions for that user (add toggle)
+Add back buttons/navigation to setting pages
+Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
+Category selection on newlisiting
+Hide buy now and place bid buttons if acccount is seller
+FIX UPDATECONTANTINFO!
