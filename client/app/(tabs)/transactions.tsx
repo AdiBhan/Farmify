@@ -8,10 +8,11 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
+  Switch,
 } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo-linear-gradient";
-
+import useUser from "@/stores/userStore";
 import { useCallback } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import { BlurView } from "expo-blur";
@@ -39,7 +40,7 @@ const Header = ({ onSettingsPress, onUploadPress }) => (
 // Reusable button component for displaying icons
 const IconButton = ({ icon, onPress }) => (
   <TouchableOpacity style={styles.iconButton} onPress={onPress}>
-    <Image source={icon} style={styles.icon} defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }} />
+    <Image source={icon} style={styles.icon} />
   </TouchableOpacity>
 );
 
@@ -51,7 +52,6 @@ const StarRating = ({ rating, setTempRating }) => (
         <Image
           source={{ uri: rating > index ? FilledStarIcon : EmptyStarIcon }}
           style={transactionStyles.starIcon}
-          defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
         />
       </TouchableOpacity>
     ))}
@@ -60,20 +60,18 @@ const StarRating = ({ rating, setTempRating }) => (
 
 // Component to render individual transaction details and allow rating
 const TransactionItem = ({ transaction, onRate }) => {
-  const [tempRating, setTempRating] = useState(transaction.rating || 0); // Track temporary rating
-
+  const [tempRating, setTempRating] = useState(transaction.rating || 0);
 
   const handleRatePress = () => {
     console.log(`Rating ${tempRating} for transaction ID: ${transaction.id}`);
-    onRate(transaction.id, tempRating); // Send updated rating to the parent component
+    onRate(transaction.id, tempRating);
   };
 
   return (
     <View style={transactionStyles.itemCard}>
       <Image
-        source={{ uri: transaction.product.imgUrl || "https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww" }}
+        source={{ uri: transaction.product.imgUrl }}
         style={transactionStyles.itemImage}
-        defaultSource={{ uri: 'https://plus.unsplash.com/premium_photo-1666901328734-3c6eb9b6b979?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cmFuZG9tfGVufDB8fDB8fHww' }}
         onError={(error) => console.error("Error loading transaction image:", error)}
       />
       <View style={transactionStyles.detailsContainer}>
@@ -103,14 +101,17 @@ const TransactionItem = ({ transaction, onRate }) => {
 
 // Main Transactions component
 export default function Transactions() {
-  const [transactions, setTransactions] = useState([]); // Holds all transactions
-  const [loading, setLoading] = useState(true); // Tracks loading state
+  const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showMyTransactions, setShowMyTransactions] = useState(false);
+  const { username, id, accountType, buyerId, sellerId } = useUser();
   const router = useRouter();
 
   // Fetch transactions from the backend
   const fetchTransactions = async () => {
     try {
-      setLoading(true); // Start loading
+      setLoading(true);
       const response = await fetch("http://localhost:4000/api/bids");
       const data = await response.json();
 
@@ -120,56 +121,33 @@ export default function Transactions() {
       );
 
       setTransactions(sortedData);
+      setFilteredTransactions(sortedData); // Default to showing all transactions
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  // Use useFocusEffect to refresh transactions on page focus
+  // Toggle between "My Transactions" and "All Transactions"
+  const handleToggleChange = (value) => {
+    setShowMyTransactions(value);
+    console.log('transactions', transactions);
+    if (value) {
+      const myTransactions = transactions.filter(
+        (transaction) => transaction.buyer.buyerID === buyerId
+      );
+      setFilteredTransactions(myTransactions);
+    } else {
+      setFilteredTransactions(transactions);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchTransactions();
     }, [])
   );
-  // Handle rating updates
-  const handleRate = async (transactionId, rating) => {
-    try {
-      // Optimistically update the rating in the frontend
-      setTransactions((prevTransactions) =>
-        prevTransactions.map((transaction) =>
-          transaction.id === transactionId ? { ...transaction, rating } : transaction
-        )
-      );
-
-      // Send the updated rating to the backend
-      const response = await fetch(`http://localhost:4000/api/bids/${transactionId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ rating }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update the rating on the backend.");
-      }
-
-      console.log(`Transaction ID: ${transactionId} successfully updated with Rating: ${rating}`);
-    } catch (error) {
-      console.error("Error updating rating:", error);
-    }
-  };
-
-
-  const handleSettingsPress = () => {
-    console.log("Settings pressed");
-  };
-
-  const handleUploadPress = () => {
-    console.log("Upload pressed");
-  };
 
   if (loading) {
     return (
@@ -184,13 +162,43 @@ export default function Transactions() {
     <View style={styles.container}>
       <LinearGradient colors={[COLORS.light, COLORS.white]} style={styles.gradient}>
         <BlurView intensity={80} style={styles.blurContainer}>
-          <Header onSettingsPress={handleSettingsPress} onUploadPress={handleUploadPress} />
+          <Header onSettingsPress={() => console.log("Settings pressed")} onUploadPress={() => console.log("Upload pressed")} />
+
+          {/* Toggle Switch */}
+          <View style={styles.toggleContainer}>
+            <Text style={styles.toggleLabel}>
+              {showMyTransactions ? "Showing My Transactions" : "Showing All Transactions"}
+            </Text>
+            <Switch
+              value={showMyTransactions}
+              onValueChange={handleToggleChange}
+              trackColor={{ false: COLORS.lightGray, true: COLORS.accent }}
+              thumbColor={showMyTransactions ? COLORS.accent : COLORS.gray}
+            />
+          </View>
+
           <ScrollView style={styles.auctionContainer} contentContainerStyle={styles.scrollContent}>
-            {transactions.map((transaction) => (
+            {filteredTransactions.map((transaction) => (
               <TransactionItem
                 key={transaction.id}
                 transaction={transaction}
-                onRate={handleRate}
+                onRate={async (transactionId, rating) => {
+                  try {
+                    await fetch(`http://localhost:4000/api/bids/${transactionId}`, {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ rating }),
+                    });
+
+                    setFilteredTransactions((prev) =>
+                      prev.map((t) =>
+                        t.id === transactionId ? { ...t, rating } : t
+                      )
+                    );
+                  } catch (error) {
+                    console.error("Error updating rating:", error);
+                  }
+                }}
               />
             ))}
           </ScrollView>
@@ -200,18 +208,6 @@ export default function Transactions() {
   );
 }
 
-const shadowStyle = Platform.select({
-  ios: {
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-  },
-  android: {
-    elevation: 4,
-  },
-});
-
 const transactionStyles = StyleSheet.create({
   itemCard: {
     flexDirection: "row",
@@ -220,7 +216,6 @@ const transactionStyles = StyleSheet.create({
     backgroundColor: COLORS.cardBg,
     borderRadius: 16,
     padding: 20,
-    ...shadowStyle,
   },
   itemImage: {
     width: 50,

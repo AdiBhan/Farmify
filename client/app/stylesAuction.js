@@ -37,6 +37,22 @@ const auctionStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  toggleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: COLORS.cardBg,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginBottom: 10,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    color: COLORS.text,
+    fontWeight: "bold",
+  },
   blurContainer: {
     flex: 1,
     backgroundColor: COLORS.background,

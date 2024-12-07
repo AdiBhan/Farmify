@@ -179,6 +179,54 @@ namespace FarmifyService.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+                // GET: api/bids/buyer/{buyerId}
+        // Fetch all bids for a specific buyer by their ID
+        [HttpGet("buyer/{buyerId}")]
+        public async Task<IActionResult> GetBidsByBuyerId(string buyerId)
+        {
+            try
+            {
+                var bids = await _context.Bids
+                    .Where(b => b.BuyerID == buyerId)
+                    .Include(b => b.Product)
+                        .ThenInclude(p => p.Seller)
+                    .Select(b => new
+                    {
+                        b.ID,
+                        b.Amount,
+                        b.TimeStamp,
+                        b.AuctionID,
+                        b.Price,
+                        b.DeliveryStatus,
+                        b.Rating,
+                        Product = new
+                        {
+                            b.Product.ID,
+                            b.Product.Name,
+                            b.Product.Description,
+                            b.Product.ImgUrl,
+                            b.Product.StartPrice,
+                            b.Product.EndPrice,
+                            SellerName = b.Product.Seller.SellerName,
+                            SellerDescription = b.Product.Seller.Description
+                        }
+                    })
+                    .ToListAsync();
+
+                if (bids == null || bids.Count == 0)
+                {
+                    return NotFound("No bids found for the specified buyer."); // Return 404 if no bids found
+                }
+
+                return Ok(bids); // Return bids as HTTP 200 with JSON response
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 
 
