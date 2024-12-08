@@ -46,7 +46,7 @@ export default function SitewideStatistics() {
   const statisticsData = [
     { label: "Total Bids", value: statistics.totalBids ?? "N/A" },
     { label: "Average Sale Price", value: `$${(statistics.averageSalePrice ?? 0).toFixed(2)}` },
-    { label: "Average Rating", value: `${(statistics.averageRating ?? 0).toFixed(1)} Stars` },
+    { label: "Average Rating", value: `${(statistics.averageRating ?? 0).toFixed(1)} ⭐` },
     { label: "Most Active Seller", value: statistics.mostActiveSeller?.sellerName ?? "N/A" },
     { label: "Total Listings", value: statistics.totalListings ?? "N/A" },
     { label: "Active Listings", value: statistics.activeListings ?? "N/A" },
@@ -104,7 +104,7 @@ export default function SitewideStatistics() {
           </Animatable.View>
 
           <ScrollView
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 }]} // Add bottom padding here
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 }]} 
             showsVerticalScrollIndicator={false}
           >
             {statisticsData.map((stat, index) => (

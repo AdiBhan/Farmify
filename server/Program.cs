@@ -76,6 +76,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+
+
 app.MapGet("/", (HttpContext httpContext) =>
 {
     return new
@@ -88,4 +91,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+// Check if we're running in Docker (you can set this env var in your Dockerfile)
+if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+{
+    app.Run("http://0.0.0.0:4000");
+}
+else
+{
+    // Regular local development
+    app.Run("http://localhost:4000");
+}

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
+import { formatCurrency,formatPhoneNumber } from "../../stores/utilities";
 
 export default function Checkout() {
   const { username, id, accountType, buyerId, sellerId } = useUser();
@@ -49,7 +50,9 @@ export default function Checkout() {
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch product details: ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch product details: ${response.statusText}`
+          );
         }
 
         const data = await response.json();
@@ -58,7 +61,10 @@ export default function Checkout() {
         setSellerAddress(data.SellerAddress || "Address not available"); // Handle empty address
       } catch (error) {
         console.error("Error fetching product details:", error);
-        Alert.alert("Error", "Failed to load product details. Please try again.");
+        Alert.alert(
+          "Error",
+          "Failed to load product details. Please try again."
+        );
       }
     };
 
@@ -80,23 +86,31 @@ export default function Checkout() {
       pickupPhoneNumber: "+16505555555", // Example phone number
       pickupInstructions: "Enter gate code 1234 on the callbox.",
       pickupReferenceTag: `Order number ${Date.now()}`,
-      dropoffAddress: deliveryDetails.dropoff_address.trim() || "3 ashford ct, Allston, MA 02134",
-      dropoffBusinessName: deliveryDetails.dropoff_business_name.trim() || "Test",
-      dropoffPhoneNumber: `+1${deliveryDetails.dropoff_phone_number.trim()}` || "+15628443147",
-      dropoffInstructions: deliveryDetails.dropoff_instructions.trim() || "Leave at door",
+      dropoffAddress:
+        deliveryDetails.dropoff_address.trim() ||
+        "3 ashford ct, Allston, MA 02134",
+      dropoffBusinessName:
+        deliveryDetails.dropoff_business_name.trim() || "Test",
+      dropoffPhoneNumber:
+        `+1${deliveryDetails.dropoff_phone_number.trim()}` || "+15628443147",
+      dropoffInstructions:
+        deliveryDetails.dropoff_instructions.trim() || "Leave at door",
       orderValue: orderValue, // Add total order value
       tip: parsedTip || 0,
     };
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:4000/api/deliveries/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(deliveryRequest),
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/deliveries/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(deliveryRequest),
+        }
+      );
 
       const result = await response.json();
       console.log("Delivery Created:", result);
@@ -110,7 +124,10 @@ export default function Checkout() {
             console.error(`Field: ${error.field}, Error: ${error.message}`)
           );
         }
-        Alert.alert("Error", "Failed to create delivery. Check the console for details.");
+        Alert.alert(
+          "Error",
+          "Failed to create delivery. Check the console for details."
+        );
       }
     } catch (error) {
       console.error("Error creating delivery:", error);
@@ -170,7 +187,11 @@ export default function Checkout() {
           clearInterval(pollTimer);
 
           // Step 5: Capture the order
-          capturePayPalOrder(orderId, parsedProduct.ppid, parsedProduct.pPsecret);
+          capturePayPalOrder(
+            orderId,
+            parsedProduct.ppid,
+            parsedProduct.pPsecret
+          );
         }
       }, 500);
     } catch (error) {
@@ -218,7 +239,6 @@ export default function Checkout() {
     }
   };
 
-
   // Helper function to create the bid
   const createBid = async () => {
     const bidData = {
@@ -249,10 +269,12 @@ export default function Checkout() {
       }
     } catch (error) {
       console.error("Error creating bid:", error);
-      Alert.alert("Error", "An unexpected error occurred while placing your bid.");
+      Alert.alert(
+        "Error",
+        "An unexpected error occurred while placing your bid."
+      );
     }
   };
-
 
   return (
     <ScrollView
@@ -262,7 +284,6 @@ export default function Checkout() {
         { paddingBottom: 100 }, // Add extra space at the bottom
       ]}
       showsVerticalScrollIndicator={true}
-
     >
       <View style={styles.container}>
         <Text style={styles.title}>Checkout</Text>
@@ -273,19 +294,27 @@ export default function Checkout() {
           Current Price: ${parsedCurrentPrice.toFixed(2)}
         </Text>
         <Text style={styles.quantity}>Quantity: {parsedQuantity}</Text>
-        <Text style={styles.totalPrice}>Total Price: ${totalPrice.toFixed(2)}</Text>
+        <Text style={styles.totalPrice}>
+          Total Price: ${totalPrice.toFixed(2)}
+        </Text>
 
         {/* Delivery Method Selection */}
         <Text style={styles.subtitle}>Choose Delivery Method:</Text>
         <View style={styles.radioContainer}>
           <Pressable
-            style={[styles.radio, deliveryMethod === "pickup" && styles.radioSelected]}
+            style={[
+              styles.radio,
+              deliveryMethod === "pickup" && styles.radioSelected,
+            ]}
             onPress={() => setDeliveryMethod("pickup")}
           >
             <Text>Pickup</Text>
           </Pressable>
           <Pressable
-            style={[styles.radio, deliveryMethod === "delivery" && styles.radioSelected]}
+            style={[
+              styles.radio,
+              deliveryMethod === "delivery" && styles.radioSelected,
+            ]}
             onPress={() => setDeliveryMethod("delivery")}
           >
             <Text>Delivery</Text>
@@ -296,7 +325,9 @@ export default function Checkout() {
         {deliveryMethod === "pickup" && (
           <View style={styles.pickupInfo}>
             <Text style={styles.pickupTitle}>Pickup Location:</Text>
-            <Text style={styles.pickupDetails}>{parsedProduct.sellerAddress}</Text>
+            <Text style={styles.pickupDetails}>
+              {parsedProduct.sellerAddress}
+            </Text>
           </View>
         )}
 
@@ -308,7 +339,10 @@ export default function Checkout() {
               placeholder="Dropoff Address"
               value={deliveryDetails.dropoff_address}
               onChangeText={(text) =>
-                setDeliveryDetails({ ...deliveryDetails, dropoff_address: text })
+                setDeliveryDetails({
+                  ...deliveryDetails,
+                  dropoff_address: text,
+                })
               }
             />
             <TextInput
@@ -316,31 +350,46 @@ export default function Checkout() {
               placeholder="Business Name (Optional)"
               value={deliveryDetails.dropoff_business_name}
               onChangeText={(text) =>
-                setDeliveryDetails({ ...deliveryDetails, dropoff_business_name: text })
+                setDeliveryDetails({
+                  ...deliveryDetails,
+                  dropoff_business_name: text,
+                })
               }
             />
             <TextInput
               style={styles.input}
               placeholder="Phone Number"
+              keyboardType="numeric" // Ensures only numeric input is allowed
               value={deliveryDetails.dropoff_phone_number}
-              onChangeText={(text) =>
-                setDeliveryDetails({ ...deliveryDetails, dropoff_phone_number: text })
-              }
+              onChangeText={(text) => {
+                const formatted = formatPhoneNumber(text); // Format the phone number
+                setDeliveryDetails({
+                  ...deliveryDetails,
+                  dropoff_phone_number: formatted,
+                });
+              }}
             />
             <TextInput
               style={styles.input}
               placeholder="Instructions (Optional)"
               value={deliveryDetails.dropoff_instructions}
               onChangeText={(text) =>
-                setDeliveryDetails({ ...deliveryDetails, dropoff_instructions: text })
+                setDeliveryDetails({
+                  ...deliveryDetails,
+                  dropoff_instructions: text,
+                })
               }
             />
             <TextInput
               style={styles.input}
               placeholder="Tip Amount (Optional)"
               keyboardType="numeric"
-              value={tipAmount.toString()}
-              onChangeText={(text) => setTipAmount(text)}
+              value={tipAmount}
+              onChangeText={(text) => {
+                const parsed = parseFloat(text) || 0; // Parse the input as a float
+                setTipAmount(parsed.toString()); // Update the state with the parsed value
+              }}
+              onBlur={() => setTipAmount(formatCurrency(tipAmount))}
             />
           </View>
         )}
@@ -351,10 +400,13 @@ export default function Checkout() {
             setIsSubmitting(true);
             try {
               await handlePurchase(); // Call PayPal payment first
-              await handleGenerateDelivery(); // then Call generate delivery   
+              await handleGenerateDelivery(); // then Call generate delivery
             } catch (error) {
               console.error("Error during payment or delivery:", error);
-              Alert.alert("Error", "An unexpected error occurred. Please try again.");
+              Alert.alert(
+                "Error",
+                "An unexpected error occurred. Please try again."
+              );
             } finally {
               setIsSubmitting(false); // Reset the loading state
             }
@@ -371,7 +423,7 @@ export default function Checkout() {
             style={styles.buyButton}
             onPress={() => {
               // Open the tracking URL in the browser
-              Linking.openURL(trackingUrl).catch(err =>
+              Linking.openURL(trackingUrl).catch((err) =>
                 console.error("Failed to open tracking URL:", err)
               );
             }}
@@ -381,7 +433,11 @@ export default function Checkout() {
         )}
 
         {isSubmitting && (
-          <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={styles.loadingIndicator}
+          />
         )}
       </View>
     </ScrollView>

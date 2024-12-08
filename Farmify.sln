@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoorDashAPI", "DoorDashAPI\DoorDashAPI.csproj", "{D11D66FA-14A2-4229-90E9-906EC755A542}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaypalTest", "PaypalTest\PaypalTest.csproj", "{D5F7DABA-7A33-4BCC-90D1-975BE124A7B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server", "server\server.csproj", "{2E9215F7-4729-419D-AAB9-1761D6DDEDE5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D11D66FA-14A2-4229-90E9-906EC755A542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D11D66FA-14A2-4229-90E9-906EC755A542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D11D66FA-14A2-4229-90E9-906EC755A542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D11D66FA-14A2-4229-90E9-906EC755A542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5F7DABA-7A33-4BCC-90D1-975BE124A7B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5F7DABA-7A33-4BCC-90D1-975BE124A7B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5F7DABA-7A33-4BCC-90D1-975BE124A7B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5F7DABA-7A33-4BCC-90D1-975BE124A7B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E9215F7-4729-419D-AAB9-1761D6DDEDE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9215F7-4729-419D-AAB9-1761D6DDEDE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9215F7-4729-419D-AAB9-1761D6DDEDE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9215F7-4729-419D-AAB9-1761D6DDEDE5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FC4A343A-E0A8-4A9B-9D8D-CE8F6CF97A09}
+	EndGlobalSection
+EndGlobal
