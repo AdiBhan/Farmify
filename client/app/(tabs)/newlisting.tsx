@@ -23,6 +23,9 @@ import { StyleSheet } from "react-native";
 import useUser from "@/stores/userStore";
 
 import * as Animatable from "react-native-animatable";
+
+
+import {formatCurrency, allowOnlyNumbers} from "../../stores/utilities";
 export default function CreateAuctionScreen() {
   const router = useRouter(); // Navigation object for routing between screens
 
@@ -42,17 +45,7 @@ export default function CreateAuctionScreen() {
   // Extract user data from custom user store
   const { username, id, accountType, buyerId, sellerId } = useUser();
 
-  function formatCurrency(value) {
-    /**
-     * Helper function converts string to currency representation
-     */
-    if (!value) return ""; // Handle empty inputs gracefully
-    const formatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
-    return formatter.format(value);
-  }
+
 
   // Helper function to convert blobs to Base64
   function blobToBase64(blob) {
@@ -271,7 +264,9 @@ export default function CreateAuctionScreen() {
               numberOfLines={4}
             />
             <TextInput
-              onChangeText={setQuantity}
+     
+              onChangeText={(text) => setQuantity(allowOnlyNumbers(text))}
+              keyboardType="numeric"
               value={quantity}
               style={formStyles.input}
               placeholder="Please Enter Quantity available"
@@ -360,9 +355,10 @@ export default function CreateAuctionScreen() {
               />
             </View>
             <TextInput
-              onChangeText={setDuration}
+              onChangeText={(text) => setDuration(allowOnlyNumbers(text))}
               value={duration}
               style={formStyles.input}
+              keyboardType="numeric"
               placeholder="Duration (e.g., 7 days)"
               placeholderTextColor={COLORS.textSecondary}
             />

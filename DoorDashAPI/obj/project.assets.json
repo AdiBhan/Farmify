@@ -293,23 +293,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kanghuanxu\\.nuget\\packages\\": {},
+    "C:\\Users\\adity\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Mac\\Home\\Desktop\\Cs392doordashAPI\\DoorDashAPI\\DoorDashAPI.csproj",
+      "projectUniqueName": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\DoorDashAPI\\DoorDashAPI.csproj",
       "projectName": "DoorDashAPI",
-      "projectPath": "C:\\Mac\\Home\\Desktop\\Cs392doordashAPI\\DoorDashAPI\\DoorDashAPI.csproj",
-      "packagesPath": "C:\\Users\\kanghuanxu\\.nuget\\packages\\",
-      "outputPath": "C:\\Mac\\Home\\Desktop\\Cs392doordashAPI\\DoorDashAPI\\obj\\",
+      "projectPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\DoorDashAPI\\DoorDashAPI.csproj",
+      "packagesPath": "C:\\Users\\adity\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\adity\\Downloads\\Fall2024\\Farmify\\DoorDashAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\kanghuanxu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\adity\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

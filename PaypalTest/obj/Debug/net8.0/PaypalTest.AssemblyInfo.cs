@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PaypalTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fcc772804545c269302aaebdf44239762ea92094")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d52e2f1dea64fa85aa7dd40f2b19596085f85c45")]
 [assembly: System.Reflection.AssemblyProductAttribute("PaypalTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PaypalTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
