@@ -366,7 +366,7 @@ Plan this week:
 4. Redesigned `Readme.md` to include more detailed instructions on how to setup, endpoint descriptions, scrum updates,  pictures of the app working
 5. Added currency formatting for startPrice and endPrice through use of new utility function in newlisting.tsx
 6. Added scrollbar on product detail  and checkout pages to scroll past long descriptions and have access to submit buttons
-
+7. Added Utility functions to format phone numbers, currency, startPrice, endPrice and prevent non numeric values for Quantity and Time inputs.
 
 ##
  <br><br>
