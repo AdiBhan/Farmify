@@ -271,5 +271,12 @@ const transactionStyles = StyleSheet.create({
   rateButtonText: {
     color: COLORS.white,
     fontSize: 14,
+  },divider: {
+    marginTop: 12,
+    marginBottom: 24,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    opacity: 0.6,
+    alignSelf: "stretch", // Full width
   },
 });

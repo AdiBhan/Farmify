@@ -242,6 +242,7 @@ export default function CreateAuctionScreen() {
           <View style={formStyles.headerContainer}>
             <Text style={formStyles.header}>Create Auction</Text>
             <Text style={formStyles.subheader}>List your product for sale</Text>
+            <View style={formStyles.divider} />
           </View>
 
           {/* Input Fields */}
@@ -251,7 +252,7 @@ export default function CreateAuctionScreen() {
               onChangeText={setProductName}
               value={productName}
               style={formStyles.input}
-              placeholder="Product name"
+              placeholder="Enter Product Name"
               placeholderTextColor={COLORS.textSecondary}
             />
             <TextInput
@@ -269,7 +270,7 @@ export default function CreateAuctionScreen() {
               keyboardType="numeric"
               value={quantity}
               style={formStyles.input}
-              placeholder="Please Enter Quantity available"
+              placeholder="Please enter quantity available"
               placeholderTextColor={COLORS.textSecondary}
             />
           </View>
@@ -505,5 +506,12 @@ const formStyles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 18,
     fontWeight: "600",
+  },divider: {
+    marginTop: 12,
+    marginBottom: 24,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    opacity: 0.6,
+    alignSelf: "stretch", // Full width
   },
 });

@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet, Platform, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { BlurView } from "expo-blur";
 import detailStyles from "../stylesDetails";
 import * as Animatable from "react-native-animatable";
-import { commonStyles, COLORS } from '@/app/stylesPages';
+import { commonStyles, COLORS } from "@/app/stylesPages";
 
 export default function SitewideStatistics() {
   const [statistics, setStatistics] = useState(null);
@@ -45,36 +52,76 @@ export default function SitewideStatistics() {
 
   const statisticsData = [
     { label: "Total Bids", value: statistics.totalBids ?? "N/A" },
-    { label: "Average Sale Price", value: `$${(statistics.averageSalePrice ?? 0).toFixed(2)}` },
-    { label: "Average Rating", value: `${(statistics.averageRating ?? 0).toFixed(1)} ⭐` },
-    { label: "Most Active Seller", value: statistics.mostActiveSeller?.sellerName ?? "N/A" },
+    {
+      label: "Average Sale Price",
+      value: `$${(statistics.averageSalePrice ?? 0).toFixed(2)}`,
+    },
+    {
+      label: "Average Rating",
+      value: `${(statistics.averageRating ?? 0).toFixed(1)} ⭐`,
+    },
+    {
+      label: "Most Active Seller",
+      value: statistics.mostActiveSeller?.sellerName ?? "N/A",
+    },
     { label: "Total Listings", value: statistics.totalListings ?? "N/A" },
     { label: "Active Listings", value: statistics.activeListings ?? "N/A" },
-    { label: "Highest Sale Price", value: `$${(statistics.highestSalePrice ?? 0).toFixed(2)}` },
-    { label: "Most Popular Category", value: statistics.mostPopularCategory ?? "N/A" },
-    { label: "Total Revenue", value: `$${(statistics.totalRevenue ?? 0).toFixed(2)}` },
-    { label: "Buyer With Most Bids", value: statistics.buyerWithMostBids?.buyerID ?? "N/A" },
     {
-      label: "Highest Rated Seller", value: statistics.highestRatedSeller ?
-        `${statistics.highestRatedSeller.sellerName} (${statistics.highestRatedSeller.sellerRating.toFixed(2)})` : "N/A"
+      label: "Highest Sale Price",
+      value: `$${(statistics.highestSalePrice ?? 0).toFixed(2)}`,
     },
-    { label: "Listings Without Bids", value: statistics.listingsWithoutBids ?? "N/A" },
-    { label: "Average Bids Per Listing", value: (statistics.averageBidsPerListing ?? 0).toFixed(2) },
     {
-      label: "Most Expensive Active Listing", value: statistics.mostExpensiveActiveListing ?
-        `${statistics.mostExpensiveActiveListing.name} ($${statistics.mostExpensiveActiveListing.startPrice.toFixed(2)})` : "N/A"
+      label: "Most Popular Category",
+      value: statistics.mostPopularCategory ?? "N/A",
     },
-    { label: "Most Frequent Bid Hour", value: `${statistics.mostFrequentBidHour ?? "N/A"}:00` },
     {
-      label: "Top-Selling Product", value: statistics.topSellingProduct ?
-        `Product ID ${statistics.topSellingProduct.productID} (${statistics.topSellingProduct.totalSold} sold)` : "N/A"
+      label: "Total Revenue",
+      value: `$${(statistics.totalRevenue ?? 0).toFixed(2)}`,
+    },
+    {
+      label: "Buyer With Most Bids",
+      value: statistics.buyerWithMostBids?.buyerID ?? "N/A",
+    },
+    {
+      label: "Highest Rated Seller",
+      value: statistics.highestRatedSeller
+        ? `${
+            statistics.highestRatedSeller.sellerName
+          } (${statistics.highestRatedSeller.sellerRating.toFixed(2)})`
+        : "N/A",
+    },
+    {
+      label: "Listings Without Bids",
+      value: statistics.listingsWithoutBids ?? "N/A",
+    },
+    {
+      label: "Average Bids Per Listing",
+      value: (statistics.averageBidsPerListing ?? 0).toFixed(2),
+    },
+    {
+      label: "Most Expensive Active Listing",
+      value: statistics.mostExpensiveActiveListing
+        ? `${
+            statistics.mostExpensiveActiveListing.name
+          } ($${statistics.mostExpensiveActiveListing.startPrice.toFixed(2)})`
+        : "N/A",
+    },
+    {
+      label: "Most Frequent Bid Hour",
+      value: `${statistics.mostFrequentBidHour ?? "N/A"}:00`,
+    },
+    {
+      label: "Top-Selling Product",
+      value: statistics.topSellingProduct
+        ? `Product ID ${statistics.topSellingProduct.productID} (${statistics.topSellingProduct.totalSold} sold)`
+        : "N/A",
     },
   ];
 
   return (
     <View style={commonStyles.container}>
       <LinearGradient
-        colors={[COLORS.primary + '15', COLORS.white]}
+        colors={[COLORS.primary + "15", COLORS.white]}
         style={commonStyles.gradient}
       >
         <BlurView intensity={50} style={commonStyles.blurContainer}>
@@ -86,25 +133,24 @@ export default function SitewideStatistics() {
             <View style={detailStyles.headerWrapper}>
               {/* Top Section */}
               <View style={detailStyles.headerTopSection}>
-
-
                 <View style={detailStyles.titleContainer}>
                   <Text style={detailStyles.titleMain}>Farmify🌽</Text>
                   <Text style={detailStyles.titleSub}>Market</Text>
                 </View>
-
-
-
               </View>
-
-
             </View>
-            <Text style={commonStyles.headerTitle}>Statistics</Text>
-            <Text style={commonStyles.subtitle}>Market Performance Overview</Text>
+            <Text style={commonStyles.headerTitle}>Market Statistics</Text>
+            <Text style={commonStyles.subtitle}>
+              Comprehensive Performance Insights
+            </Text>
+            <View style={styles.divider} />
           </Animatable.View>
 
           <ScrollView
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 }]} 
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: 120 },
+            ]}
             showsVerticalScrollIndicator={false}
           >
             {statisticsData.map((stat, index) => (
@@ -154,25 +200,33 @@ const styles = StyleSheet.create({
   statContent: {
     padding: 20,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
   },
   statLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.textSecondary,
     marginBottom: 8,
     letterSpacing: 0.3,
   },
   statValue: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.primary,
     letterSpacing: 0.5,
   },
   errorText: {
     fontSize: 16,
     color: COLORS.error,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
+  },
+  divider: {
+    marginTop: 12,
+    marginBottom: 24,
+    height: 1,
+    backgroundColor: "#E0E0E0",
+    opacity: 0.6,
+    alignSelf: "stretch", // Full width
   },
 });

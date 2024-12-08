@@ -47,7 +47,7 @@ export const commonStyles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 20,
     },
     headerTitle: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: '700',
         color: COLORS.text,
         marginBottom: 8,
