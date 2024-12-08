@@ -226,7 +226,7 @@ export default function CreateAuctionScreen() {
     <ScrollView
       contentContainerStyle={[
         formStyles.scrollContainer,
-        { paddingBottom: 80 },
+        { paddingBottom: 100 },
       ]}
     >
       <LinearGradient
@@ -391,7 +391,7 @@ const formStyles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    padding: 16,
+    padding: 35,
     paddingTop: Platform.OS === "ios" ? 60 : 20,
   },
   headerContainer: {

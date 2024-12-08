@@ -26,7 +26,7 @@ export default function RegisterScreen() {
     setPassword,
     setUsername,
     setAccountType,
-    register
+    register,
   } = useUser();
 
   const [open, setOpen] = useState(false);
@@ -37,8 +37,6 @@ export default function RegisterScreen() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-
-
   const handleRegister = async () => {
     /**
      * handleRegister() Handles the registration process and navigation
@@ -47,7 +45,6 @@ export default function RegisterScreen() {
     if (!validateForm()) {
       return;
     }
-
 
     setError("");
     setIsLoading(true);
@@ -64,13 +61,10 @@ export default function RegisterScreen() {
       router.push("/(auth)/login");
     } catch (err) {
       // Handle registration error
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage =
+        err instanceof Error ? err.message : "Registration failed";
       setError(errorMessage);
-      Alert.alert(
-        "Registration Error",
-        errorMessage,
-        [{ text: "OK" }]
-      );
+      Alert.alert("Registration Error", errorMessage, [{ text: "OK" }]);
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +73,7 @@ export default function RegisterScreen() {
   const validateForm = () => {
     /**
      * validFormate() checks if user inputted all necessary fields, and filled fields with valid values
-     * 
+     *
      */
 
     if (!email || !password || !accountType) {
@@ -91,7 +85,7 @@ export default function RegisterScreen() {
       setError("Email is required");
       return false;
     }
-    if (!email.includes('@')) {
+    if (!email.includes("@")) {
       setError("Please enter a valid email address");
       return false;
     }
@@ -120,37 +114,34 @@ export default function RegisterScreen() {
             <Text style={styles.subheader}>Create your account</Text>
           </View>
 
-          {error ? (
-            <Text style={formStyles.errorText}>{error}</Text>
-          ) : null}
+          {error ? <Text style={formStyles.errorText}>{error}</Text> : null}
 
           <View style={styles.buttonContainer}>
             <TextInput
               onChangeText={setEmail}
               style={formStyles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="#666"
+              placeholder="Enter your Email"
+              placeholderTextColor="#999"
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
               editable={!isLoading}
             />
             <TextInput
-
               onChangeText={setUsername}
               style={formStyles.input}
-              placeholder="Enter your username"
-              placeholderTextColor="#666"
+              placeholder="Enter your Username"
+              placeholderTextColor="#999"
               autoCapitalize="none"
+              value={username}
               editable={!isLoading}
             />
-
             <TextInput
               onChangeText={setPassword}
               style={formStyles.input}
-              placeholder="Enter your password"
-              placeholderTextColor="#666"
-              secureTextEntry={true}
+              placeholder="Enter your Password"
+              placeholderTextColor="#999"
+              secureTextEntry
               value={password}
               editable={!isLoading}
             />
@@ -160,7 +151,9 @@ export default function RegisterScreen() {
               value={accountType}
               items={items}
               setOpen={setOpen}
-              setValue={(val) => setAccountType(typeof val === "function" ? val() : val)}
+              setValue={(val) =>
+                setAccountType(typeof val === "function" ? val() : val)
+              }
               placeholder="Select an Account Type"
               style={formStyles.input}
               disabled={isLoading}
@@ -171,7 +164,7 @@ export default function RegisterScreen() {
               style={[
                 styles.button,
                 styles.primaryButton,
-                isLoading && styles.buttonDisabled
+                isLoading && styles.buttonDisabled,
               ]}
               disabled={isLoading}
             >
@@ -193,7 +186,7 @@ export default function RegisterScreen() {
   );
 }
 
-const formStyles = ({
+const formStyles = {
   input: {
     width: "100%",
     backgroundColor: "white",
@@ -216,23 +209,23 @@ const formStyles = ({
   },
   link: {
     marginTop: 24,
-    alignItems: "center"
+    alignItems: "center",
   },
   linkText: {
     color: "#2E7D32",
     fontSize: 16,
-    fontWeight: "500"
+    fontWeight: "500",
   },
   errorText: {
-    backgroundColor: '#e8f5e9',
+    backgroundColor: "#e8f5e9",
     padding: 12,
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#c8e6c9',
-    color: '#1b5e20',
+    borderColor: "#c8e6c9",
+    color: "#1b5e20",
     fontSize: 14,
-    textAlign: 'center',
-  }
-});
+    textAlign: "center",
+  },
+};

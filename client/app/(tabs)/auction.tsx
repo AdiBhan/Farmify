@@ -9,6 +9,7 @@ import {
   Pressable,
   ActivityIndicator,
   SafeAreaView,
+  Switch,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -22,7 +23,7 @@ import { useCallback } from "react";
 import SettingsIcon from "@/assets/images/settings_icon.webp";
 import UploadIcon from "@/assets/images/upload_photo.webp";
 import { IconButton } from "react-native-paper";
-
+import { MaterialIcons } from "@expo/vector-icons"; 
 // Helper function to calculate time left for an auction
 const calculateTimeLeft = (endTime) => {
   const now = new Date();
@@ -69,15 +70,15 @@ const calculateCurrentPrice = (startPrice, endPrice, startTime, endTime) => {
 
 // Main Auction component
 const Auction = () => {
-  const [auctionItems, setAuctionItems] = useState([]); // Auction items state
-  const [isRefreshing, setIsRefreshing] = useState(false); // Pull-to-refresh state
+  const [auctionItems, setAuctionItems] = useState([]);
+  const [sortOrder, setSortOrder] = useState("latest"); // Default to "latest"
   const router = useRouter();
-  const { username, isLoggedIn, buyerId, sellerId, profile_image_url } = useUser();
+  const { username, isLoggedIn, profileImgUrl } = useUser();
 
-  // Fetch auction items when the page is focused
+  // Fetch auction items
   useFocusEffect(
-    useCallback(() => {
-      const fetchAuctionItemsOnFocus = async () => {
+    React.useCallback(() => {
+      const fetchAuctionItems = async () => {
         try {
           const response = await fetch("http://localhost:4000/api/products");
           const data = await response.json();
@@ -93,7 +94,6 @@ const Auction = () => {
               item.endTime
             ),
             timeLeft: calculateTimeLeft(item.endTime),
-            totalBids: 0,
             seller: item.sellerName,
             description: item.description,
             startTime: item.startTime,
@@ -101,22 +101,24 @@ const Auction = () => {
             quantity: item.quantity || 1,
           }));
 
-          // Sort items by start time (newest first)
-          const sortedData = formattedData.sort(
-            (a, b) => new Date(b.startTime) - new Date(a.startTime)
-          );
-
-          setAuctionItems(sortedData);
+          setAuctionItems(formattedData);
         } catch (error) {
           console.error("Error fetching auction items:", error);
         }
       };
 
-      fetchAuctionItemsOnFocus();
+      fetchAuctionItems();
     }, [])
   );
 
-  // Handle item press to navigate to details page
+  // Sort items based on the selected sort order
+  const sortedItems = auctionItems.sort((a, b) => {
+    if (sortOrder === "latest") {
+      return new Date(b.endTime) - new Date(a.endTime); // Latest first
+    } else {
+      return new Date(a.endTime) - new Date(b.endTime); // Earliest first
+    }
+  });
   const handleItemPress = (item: any) => {
     if (!item?.id) {
       console.error('Invalid item ID');
@@ -128,37 +130,45 @@ const Auction = () => {
       params: { product: item.id }
     });
   };
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "latest" ? "earliest" : "latest"));
+  };
 
-  // Redirect to login if user is not logged in
   if (!isLoggedIn) {
     return (
       <View style={styles.loadingContainer}>
-        <View style={styles.loadingSpinner} />
         <Text style={styles.loadingText}>Redirecting...</Text>
       </View>
     );
   }
 
-  // Render auction items
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={[COLORS.background, COLORS.white, COLORS.background]}
-        style={styles.gradient}
-      >
+      <LinearGradient colors={[COLORS.background, COLORS.white]} style={styles.gradient}>
         <BlurView intensity={50} style={styles.blurContainer}>
-          <Header
-            username={username}
-            profile_image_url={profile_image_url}
+          <Header username={username} profileImgUrl={profileImgUrl} />
 
-          />
+          {/* Sort Toggle Button */}
+          <View style={styles.sortOrderContainer}>
+            <TouchableOpacity
+              onPress={toggleSortOrder}
+              style={styles.sortToggleButton}
+            >
+              <MaterialIcons
+                name={sortOrder === "latest" ? "arrow-downward" : "arrow-upward"}
+                size={24}
+                color={COLORS.text}
+              />
+            </TouchableOpacity>
+          </View>
+
           <ScrollView
             style={styles.auctionContainer}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
-
           >
-            {auctionItems.map((item) => (
+             {sortedItems.map((item) => (
               <Pressable
                 key={item.id}
                 onPress={() => handleItemPress(item)}
@@ -176,12 +186,11 @@ const Auction = () => {
     </View>
   );
 };
-
 // Header component
-const Header = ({ username, profile_image_url }) => {
+const Header = ({ username, profileImgUrl }) => {
   useEffect(() => {
-    console.log("Profile image URL in Header:", profile_image_url);
-  }, [profile_image_url]);
+    console.log("Profile image URL in Header:", profileImgUrl);
+  }, [profileImgUrl]);
 
   return (
 
@@ -212,7 +221,7 @@ const Header = ({ username, profile_image_url }) => {
                 <View style={styles.nameContainer}>
                   <Text style={styles.welcomeName}>{username}</Text>
                   <Image
-                    source={{ uri: profile_image_url || 'https://via.placeholder.com/100' }}
+                    source={{ uri: profileImgUrl || 'https://via.placeholder.com/100' }}
                     style={styles.profileImage}
                   />
                   <View style={styles.statsContainer}>

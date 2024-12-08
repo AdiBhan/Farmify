@@ -567,6 +567,29 @@ const auctionStyles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 4,
   },
+  sortOrderContainer: {
+    alignItems: "flex-end", // Align to the right
+    margin: 10,
+    padding: 10,
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 1,
+  },
+  sortToggleButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.cardBackground,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  
 });
 
 export default auctionStyles;

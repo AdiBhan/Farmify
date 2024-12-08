@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {View, Text, Image, TouchableOpacity, Platform} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import styles from "../app/styles";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -16,34 +16,27 @@ export default function GoogleAuth(): JSX.Element | null {
         console.error('Required dependencies not loaded');
         return null;
     }
+
     const [loading, setLoading] = useState(false);
-    const {
-        setEmail,
-        setIsLoggedIn,
-        username,
-        setUsername,
-        setProfileImgURL,
-        
-    } = useUser();
+    const { setEmail, setIsLoggedIn, username, setUsername, setProfileImgUrl } = useUser();
 
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: "843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com",
-        webClientId: "843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com",
+        clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
         redirectUri: Platform.OS === 'android'
-            ? "com.googleusercontent.apps.843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4:/oauth2redirect"
-            : "http://localhost:8081/oauth2redirect",
+            ? process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI_ANDROID
+            : process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI_WEB,
         scopes: ['profile', 'email'],
         useProxy: false
     });
-
-
 
     useEffect(() => {
         if (response?.type === 'success') {
             const { authentication } = response;
             async function handleAuth() {
+                setLoading(true); // Start loading
                 await getUserInfo(authentication.accessToken);
-              
+                setLoading(false); // Stop loading
             }
             handleAuth();
         }
@@ -65,35 +58,22 @@ export default function GoogleAuth(): JSX.Element | null {
                 return;
             }
 
-            // Set email and username from Google user info
             setEmail(userInfo.email);
 
-            // Safer username extraction
-            let username = userInfo.given_name;
-            if (!username && userInfo.email) {
-                username = userInfo.email.split('@')[0];
-            }
-            if (!username) {
-                username = 'User'; // Default fallback
-            }
-
-            // Set profile image first and wait for it to complete
+            let username = userInfo.given_name || userInfo.email.split('@')[0] || 'User';
             if (userInfo.picture) {
                 console.log("Setting profile image URL to:", userInfo.picture);
-                setProfileImgURL(userInfo.picture);
+                setProfileImgUrl(userInfo.picture);
             }
+  
             setUsername(username);
             setIsLoggedIn(true);
 
             // Wait for state updates to complete
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Log the current state before navigation
-            console.log("Before navigation - Profile URL:", userInfo.picture);
-
-            // Only navigate after everything is set
-            router.push("/(tabs)/auction");
-
+            console.log("Navigating to /tabs/auction");
+            await router.push("/(tabs)/auction"); // Use await to ensure proper handling
         } catch (error) {
             console.error('Error fetching user info:', error);
         }
@@ -136,7 +116,6 @@ export default function GoogleAuth(): JSX.Element | null {
                     onError={(error) => console.error('Error loading Google icon:', error)}
                     style={styles.socialIcon}
                 />
-                
                 <Text style={styles.socialButtonText}>
                     {loading ? 'Loading...' : 'Continue with Google'}
                 </Text>

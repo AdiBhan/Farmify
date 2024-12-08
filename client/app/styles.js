@@ -1,19 +1,19 @@
 import { StyleSheet, Platform, Dimensions } from "react-native";
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 export const COLORS = {
-  primary: '#2E7D32',
-  secondary: '#4a7c59',
-  light: '#f5f9f6',
-  white: '#ffffff',
-  text: '#1a1c1a',
-  textLight: '#4b4f4b',
-  border: '#e8ebe8',
-  success: '#43a047',
-  background: '#f0f4f1',
-  shadow: '#000000',
-  accent: '#81c784',
-  textSecondary: '#6B7280',
+  primary: "#2E7D32",
+  secondary: "#4a7c59",
+  light: "#f5f9f6",
+  white: "#ffffff",
+  text: "#1a1c1a",
+  textLight: "#4b4f4b",
+  border: "#e8ebe8",
+  success: "#43a047",
+  background: "#f0f4f1",
+  shadow: "#000000",
+  accent: "#81c784",
+  textSecondary: "#6B7280",
 };
 
 const styles = StyleSheet.create({
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   contentContainer: {
     flex: 1,
@@ -35,14 +35,14 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: "center",
     marginBottom: 40,
-    width: '100%',
+    width: "100%",
   },
   header: {
     fontSize: 42,
     fontWeight: "800",
     color: COLORS.primary,
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: -0.5,
     ...Platform.select({
       ios: {
@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
   subheader: {
     fontSize: 16,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: 1.2,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     ...Platform.select({
       ios: {
         fontFamily: "System",
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 30,
     backgroundColor: COLORS.white,
-    alignItems: 'center',
+    alignItems: "center",
     ...Platform.select({
       ios: {
         shadowColor: COLORS.shadow,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   primaryButton: {
     backgroundColor: COLORS.primary,
@@ -203,6 +203,32 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: "center",
     letterSpacing: 0.2,
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#f9f9f9",
+  },
+  dropdownContainer: {
+    marginBottom: 12,
+  },
+  dropdownList: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+  },
+  placeholder: {
+    color: "#999",
+    fontSize: 16,
+  },
+  formContainer: {
+    padding: 15,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    elevation: 2, // Adds subtle shadow for a card-like look
   },
 });
 

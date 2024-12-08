@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 import useUser from "@/stores/userStore";
 import { useRouter } from 'expo-router';
+
 const PhotoUploadScreen = ({ setisUploadPage }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const {setProfileImgURL} = useUser();
+  const { sessionID, setProfileImgUrl } = useUser();
   const router = useRouter();
-  
+
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
     String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
@@ -19,8 +21,31 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
     if (file) {
       setSelectedImage(file);
       setPreviewUrl(URL.createObjectURL(file));
-    
-      
+    }
+  };
+
+  const updateProfileImageInBackend = async (profileImgUrl) => {
+    try {
+      const response = await fetch("http://localhost:4000/api/users/updateProfileImage", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionID,
+          profileImgUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Profile image updated successfully:", data);
+      } else {
+        console.error("Failed to update profile image:", data.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile image:", error);
     }
   };
 
@@ -30,7 +55,6 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
 
     try {
       console.log('Starting upload process...');
-
       const timestamp = Date.now();
       const filePath = `public/${timestamp}.jpg`;
 
@@ -50,12 +74,13 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
         .getPublicUrl(filePath);
 
       console.log('Public URL:', publicUrl);
-      setProfileImgURL(publicUrl);
+      setProfileImgUrl(publicUrl);
+
+      await updateProfileImageInBackend(publicUrl);
+
       router.push("/(tabs)/auction");
       alert('Profile photo uploaded successfully!\nURL: ' + publicUrl);
 
-     
-      
       setisUploadPage(prev => !prev);
 
     } catch (error) {
@@ -67,55 +92,51 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
   };
 
   return (
-    <div style={styles.safeArea}>
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <button
+    <ScrollView contentContainerStyle={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
             style={styles.backButton}
-            onClick={() => setisUploadPage(prev => !prev)}
+            onPress={() => setisUploadPage(prev => !prev)}
           >
-            ← Back
-          </button>
-          <span style={styles.headerText}>Upload Photo</span>
-          <div style={{ width: 40 }} />
-        </div>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Upload Photo</Text>
+          <View style={{ width: 40 }} />
+        </View>
 
-        <div style={styles.uploadArea}>
+        <View style={styles.uploadArea}>
           {previewUrl ? (
-            <div style={styles.imagePreviewContainer}>
-              <img
-                src={previewUrl}
+            <View style={styles.imagePreviewContainer}>
+              <Image
+                source={{ uri: previewUrl }}
                 style={styles.imagePreview}
-                alt="Preview"
               />
-              <div style={styles.imageActions}>
-                <button
+              <View style={styles.imageActions}>
+                <TouchableOpacity
                   style={styles.removeButton}
-                  onClick={() => {
+                  onPress={() => {
                     setSelectedImage(null);
                     setPreviewUrl(null);
                   }}
                 >
-                  <span style={styles.removeButtonText}>Remove</span>
-                </button>
-                <button
+                  <Text style={styles.removeButtonText}>Remove</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={styles.useAsProfileButton}
-                  onClick={handleUseAsProfile}
+                  onPress={handleUseAsProfile}
                   disabled={isUploading}
                 >
-                  <span style={styles.useAsProfileText}>
+                  <Text style={styles.useAsProfileText}>
                     {isUploading ? 'Uploading...' : 'Use as Profile'}
-                  </span>
-                </button>
-              </div>
-            </div>
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           ) : (
-            <div style={styles.uploadPrompt}>
-              <div style={{ fontSize: 48, color: '#666' }}>☁️</div>
-              <p style={styles.uploadText}>Tap to choose a photo</p>
-              <p style={styles.supportedFormats}>
-                Supports: JPG, PNG, GIF
-              </p>
+            <View style={styles.uploadPrompt}>
+              <Text style={styles.uploadText}>Tap to choose a photo</Text>
+              <Text style={styles.supportedFormats}>Supports: JPG, PNG, GIF</Text>
               <input
                 type="file"
                 accept="image/*"
@@ -123,170 +144,127 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
                 style={styles.fileInput}
                 id="file-upload"
               />
-              <label
-                htmlFor="file-upload"
-                style={styles.uploadButton}
-              >
-                <span style={styles.uploadButtonText}>Upload Photo</span>
+              <label htmlFor="file-upload" style={styles.uploadButton}>
+                <Text style={styles.uploadButtonText}>Upload Photo</Text>
               </label>
-            </div>
+            </View>
           )}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
-export const COLORS = {
-  primary: '#2E7D32',
-  secondary: '#4a7c59',
-  light: '#f5f9f6',
-  white: '#ffffff',
-  text: '#1a1c1a',
-  textLight: '#4b4f4b',
-  border: '#e8ebe8',
-  success: '#43a047',
-  background: '#f0f4f1',
-  cardBg: 'rgba(255, 255, 255, 0.98)',
-  shadow: '#000000',
-  accent: '#81c784',
-  textSecondary: '#6B7280',
-  error: '#DC2626'
-};
 
-
-const styles = {
+const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    minHeight: '100vh',
+    flexGrow: 1,
+    backgroundColor: '#f0f4f1',
+    padding: 16,
   },
   container: {
-    flex: 1,
-    width: '90%',
-    height: '100%',
-    padding: '16px',
-    backgroundColor: COLORS.cardBg,
-    borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   header: {
-    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px',
-    width: '100%',
+    marginBottom: 16,
   },
   headerText: {
-    fontSize: '20px',
+    fontSize: 20,
     fontWeight: '700',
-    color: COLORS.text,
+    color: '#1a1c1a',
     textAlign: 'center',
+    flex: 1,
   },
   backButton: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px',
-    border: 'none',
-    background: 'none',
-    cursor: 'pointer',
-    color: COLORS.primary,
+    padding: 8,
+  },
+  backText: {
+    color: '#2E7D32',
+    fontSize: 16,
   },
   uploadArea: {
-    flex: 1,
-    backgroundColor: COLORS.light,
-    borderRadius: '12px',
-    padding: '20px',
-    marginBottom: '24px',
-    border: `2px dashed ${COLORS.border}`,
-    display: 'flex',
-    justifyContent: 'center',
+    backgroundColor: '#f5f9f6',
+    borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
-    minHeight: '400px',
+    borderWidth: 2,
+    borderColor: '#e8ebe8',
+    minHeight: 300,
   },
   uploadPrompt: {
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
   },
   uploadText: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: COLORS.textLight,
-    marginTop: '12px',
+    fontSize: 16,
+    color: '#4b4f4b',
+    marginBottom: 8,
   },
   supportedFormats: {
-    fontSize: '12px',
-    color: COLORS.textSecondary,
-    marginTop: '8px',
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 16,
   },
   imagePreviewContainer: {
     width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
   },
   imagePreview: {
     width: '100%',
-    height: '80%',
-    borderRadius: '8px',
-    objectFit: 'contain',
+    height: 200,
+    borderRadius: 8,
+    resizeMode: 'contain',
+    marginBottom: 16,
   },
   imageActions: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '12px',
-    marginTop: '16px',
-    position: 'absolute',
-    bottom: '20px',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   removeButton: {
-    display: 'flex',
+    flex: 1,
+    marginRight: 8,
+    padding: 12,
+    backgroundColor: '#DC2626',
+    borderRadius: 8,
     alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: COLORS.error,
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
   },
   removeButtonText: {
-    color: COLORS.white,
+    color: '#fff',
     fontWeight: '600',
   },
   useAsProfileButton: {
-    display: 'flex',
+    flex: 1,
+    marginLeft: 8,
+    padding: 12,
+    backgroundColor: '#43a047',
+    borderRadius: 8,
     alignItems: 'center',
-    padding: '8px 16px',
-    backgroundColor: COLORS.success,
-    borderRadius: '8px',
-    border: 'none',
-    cursor: 'pointer',
   },
   useAsProfileText: {
-    color: COLORS.white,
+    color: '#fff',
     fontWeight: '600',
   },
   fileInput: {
     display: 'none',
   },
   uploadButton: {
-    display: 'flex',
+    padding: 12,
+    backgroundColor: '#81c784',
+    borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: '16px',
-    backgroundColor: COLORS.accent,
-    borderRadius: '12px',
-    marginTop: '16px',
-    cursor: 'pointer',
   },
   uploadButtonText: {
-    fontSize: '16px',
+    color: '#fff',
     fontWeight: '600',
-    color: COLORS.white,
   },
-};
+});
+
 export default PhotoUploadScreen;

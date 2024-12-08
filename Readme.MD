@@ -367,6 +367,13 @@ Plan this week:
 5. Added currency formatting for startPrice and endPrice through use of new utility function in newlisting.tsx
 6. Added scrollbar on product detail  and checkout pages to scroll past long descriptions and have access to submit buttons
 7. Added Utility functions to format phone numbers, currency, startPrice, endPrice and prevent non numeric values for Quantity and Time inputs.
+8. Fixed issue with Google OAuth taking you to screen not found for 2-3 seconds before re-directing
+9. Formatted phone number input in details.tsx page (For updating phone numbers)
+10. Added clientID, webClientID & redirectURI to .env instead of hardcoding for security purposes
+11. Added sort by endDate button and logic for auction listings so users can find most recent auctions or browse ended auctions
+12. Re-designed checkout page
+13. Updated placeholder labels and color scheme
+
 
 ##
  <br><br>
@@ -419,7 +426,7 @@ New Auction needed fixes: (simeon)
 9. Stats page (Done)
 10. Display seller rating on details page (add endpoint to get stats for a specific seller) (DONE)
 
-display only transactions for that user (add toggle)
+display only transactions for that user add toggle (DONE)
 Add back buttons/navigation to setting pages
 Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 Category selection on newlisiting

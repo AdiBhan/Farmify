@@ -74,16 +74,16 @@ export default function LoginScreen() {
             <TextInput
               onChangeText={setEmail}
               style={formStyles.input}
-              placeholder="Enter your email address"
-              placeholderTextColor="#666"
+              placeholder="Enter your Email Address"
+              placeholderTextColor="#999"
               keyboardType="email-address"
               autoCapitalize="none"
             />
             <TextInput
               onChangeText={setPassword}
               style={formStyles.input}
-              placeholder="Enter your password"
-              placeholderTextColor="#666"
+              placeholder="Enter your Password"
+              placeholderTextColor="#999"
               secureTextEntry={true}
             />
             <Pressable

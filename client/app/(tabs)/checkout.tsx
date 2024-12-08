@@ -14,6 +14,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
 import { formatCurrency,formatPhoneNumber } from "../../stores/utilities";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Checkout() {
   const { username, id, accountType, buyerId, sellerId } = useUser();
@@ -276,18 +277,21 @@ export default function Checkout() {
     }
   };
 
-  return (
+ return (
     <ScrollView
       style={styles.scrollView}
-      contentContainerStyle={[
-        styles.scrollContent,
-        { paddingBottom: 100 }, // Add extra space at the bottom
-      ]}
-      showsVerticalScrollIndicator={true}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>
         <Text style={styles.title}>Checkout</Text>
-        <Image source={{ uri: parsedProduct.imgUrl }} style={styles.image} />
+
+        {/* Product Image */}
+        <View style={styles.imageWrapper}>
+          <Image source={{ uri: parsedProduct.imgUrl }} style={styles.image} />
+        </View>
+
+        {/* Product Details */}
         <Text style={styles.description}>{parsedProduct.name}</Text>
         <Text style={styles.seller}>Sold by: {parsedProduct.sellerName}</Text>
         <Text style={styles.currentBid}>
@@ -308,7 +312,8 @@ export default function Checkout() {
             ]}
             onPress={() => setDeliveryMethod("pickup")}
           >
-            <Text>Pickup</Text>
+            <MaterialIcons name="store" size={24} color="#2E7D32" />
+            <Text style={styles.radioText}>Pickup</Text>
           </Pressable>
           <Pressable
             style={[
@@ -317,19 +322,10 @@ export default function Checkout() {
             ]}
             onPress={() => setDeliveryMethod("delivery")}
           >
-            <Text>Delivery</Text>
+            <MaterialIcons name="local-shipping" size={24} color="#2E7D32" />
+            <Text style={styles.radioText}>Delivery</Text>
           </Pressable>
         </View>
-
-        {/* Display Seller's Address for Pickup */}
-        {deliveryMethod === "pickup" && (
-          <View style={styles.pickupInfo}>
-            <Text style={styles.pickupTitle}>Pickup Location:</Text>
-            <Text style={styles.pickupDetails}>
-              {parsedProduct.sellerAddress}
-            </Text>
-          </View>
-        )}
 
         {/* Delivery Form */}
         {deliveryMethod === "delivery" && (
@@ -339,10 +335,7 @@ export default function Checkout() {
               placeholder="Dropoff Address"
               value={deliveryDetails.dropoff_address}
               onChangeText={(text) =>
-                setDeliveryDetails({
-                  ...deliveryDetails,
-                  dropoff_address: text,
-                })
+                setDeliveryDetails({ ...deliveryDetails, dropoff_address: text })
               }
             />
             <TextInput
@@ -359,15 +352,14 @@ export default function Checkout() {
             <TextInput
               style={styles.input}
               placeholder="Phone Number"
-              keyboardType="numeric" // Ensures only numeric input is allowed
+              keyboardType="numeric"
               value={deliveryDetails.dropoff_phone_number}
-              onChangeText={(text) => {
-                const formatted = formatPhoneNumber(text); // Format the phone number
+              onChangeText={(text) =>
                 setDeliveryDetails({
                   ...deliveryDetails,
-                  dropoff_phone_number: formatted,
-                });
-              }}
+                  dropoff_phone_number: text,
+                })
+              }
             />
             <TextInput
               style={styles.input}
@@ -380,65 +372,13 @@ export default function Checkout() {
                 })
               }
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Tip Amount (Optional)"
-              keyboardType="numeric"
-              value={tipAmount}
-              onChangeText={(text) => {
-                const parsed = parseFloat(text) || 0; // Parse the input as a float
-                setTipAmount(parsed.toString()); // Update the state with the parsed value
-              }}
-              onBlur={() => setTipAmount(formatCurrency(tipAmount))}
-            />
           </View>
         )}
 
-        <Pressable
-          style={styles.buyButton}
-          onPress={async () => {
-            setIsSubmitting(true);
-            try {
-              await handlePurchase(); // Call PayPal payment first
-              await handleGenerateDelivery(); // then Call generate delivery
-            } catch (error) {
-              console.error("Error during payment or delivery:", error);
-              Alert.alert(
-                "Error",
-                "An unexpected error occurred. Please try again."
-              );
-            } finally {
-              setIsSubmitting(false); // Reset the loading state
-            }
-          }}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.buyButtonText}>
-            {isSubmitting ? "Processing..." : "Pay Now"}
-          </Text>
+        {/* Purchase Button */}
+        <Pressable style={styles.buyButton} onPress={handlePurchase}>
+          <Text style={styles.buyButtonText}>Pay Now</Text>
         </Pressable>
-
-        {trackingUrl && (
-          <Pressable
-            style={styles.buyButton}
-            onPress={() => {
-              // Open the tracking URL in the browser
-              Linking.openURL(trackingUrl).catch((err) =>
-                console.error("Failed to open tracking URL:", err)
-              );
-            }}
-          >
-            <Text style={styles.buyButtonText}>Track Delivery</Text>
-          </Pressable>
-        )}
-
-        {isSubmitting && (
-          <ActivityIndicator
-            size="large"
-            color="#0000ff"
-            style={styles.loadingIndicator}
-          />
-        )}
       </View>
     </ScrollView>
   );
@@ -450,32 +390,49 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f8f8",
   },
   scrollContent: {
-    padding: 16,
+    padding: 36,
     flexGrow: 1,
+    paddingBottom: 100,
   },
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#333",
+    textAlign: "center",
+  },
+  imageWrapper: {
+    alignItems: "center",
+    marginBottom: 20,
+    borderRadius: 15,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
   },
   image: {
     width: "100%",
     height: 200,
-    resizeMode: "contain",
-    marginBottom: 20,
-    padding: 30,
+    resizeMode: "cover",
+    borderRadius: 15,
   },
   description: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
+    color: "#444",
   },
   seller: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 10,
     color: "#666",
   },
@@ -489,14 +446,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   totalPrice: {
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 20,
     fontWeight: "bold",
+    color: "#2E7D32",
   },
   subtitle: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#555",
   },
   radioContainer: {
     flexDirection: "row",
@@ -504,14 +463,26 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   radio: {
+    alignItems: "center",
     padding: 10,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     borderColor: "#ccc",
+    width: "45%",
+    backgroundColor: "#f9f9f9",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   radioSelected: {
     borderColor: "#2E7D32",
-    backgroundColor: "#c8f0c8",
+    backgroundColor: "#dff0df",
+  },
+  radioText: {
+    marginTop: 5,
+    fontSize: 14,
+    color: "#333",
   },
   deliveryForm: {
     marginVertical: 20,
@@ -519,22 +490,28 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 5,
+    borderRadius: 10,
     padding: 10,
     marginBottom: 10,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
   buyButton: {
     backgroundColor: "#2E7D32",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   buyButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  loadingIndicator: {
-    marginTop: 20,
   },
 });

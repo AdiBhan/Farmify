@@ -59,6 +59,7 @@ const stylesSettings = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+    padding: 10,
   },
   gradient: {
     flex: 1,

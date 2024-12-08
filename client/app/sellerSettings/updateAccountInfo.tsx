@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Pressable, Alert, StyleSheet, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import axios from 'axios';
-import useUser from '@/stores/userStore';
-import styles from "@/app/stylesSettings"
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Alert,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
+import useUser from "@/stores/userStore";
+import styles from "@/app/stylesSettings";
+import { formatPhoneNumber } from "@/stores/utilities";
 export default function UpdateAccountInfo() {
   const router = useRouter();
   const { sessionID } = useUser();
@@ -20,12 +29,14 @@ export default function UpdateAccountInfo() {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/account`,
+          `${
+            process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:4000"
+          }/api/seller/account`,
           { headers: { sessionID } }
         );
 
         const accountData = response.data.data;
-        console.log(accountData)
+        console.log(accountData);
         setEmail(accountData.email || "");
         setPhoneNumber(accountData.phoneNumber || "");
       } catch (err) {
@@ -53,9 +64,11 @@ export default function UpdateAccountInfo() {
       };
 
       const response = await axios.put(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/seller/account`,
+        `${
+          process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:4000"
+        }/api/seller/account`,
         payload,
-        { headers: { sessionID, 'Content-Type': 'application/json' } }
+        { headers: { sessionID, "Content-Type": "application/json" } }
       );
 
       if (response.data.message === "Account updated successfully") {
@@ -63,7 +76,9 @@ export default function UpdateAccountInfo() {
           { text: "OK", onPress: () => router.back() },
         ]);
       } else {
-        throw new Error(response.data.message || "Failed to update account information.");
+        throw new Error(
+          response.data.message || "Failed to update account information."
+        );
       }
     } catch (err) {
       console.error("Update failed:", err);
@@ -75,7 +90,9 @@ export default function UpdateAccountInfo() {
 
   const validateForm = () => {
     if (!email || !phoneNumber || (password && password.length < 6)) {
-      setError("Please complete all fields and ensure the password is at least 6 characters long.");
+      setError(
+        "Please complete all fields and ensure the password is at least 6 characters long."
+      );
       return false;
     }
     if (!email.includes("@")) {
@@ -95,7 +112,9 @@ export default function UpdateAccountInfo() {
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
             <Text style={styles.header}>Update Account Information</Text>
-            <Text style={styles.subheader}>Edit your account details below</Text>
+            <Text style={styles.subheader}>
+              Edit your account details below
+            </Text>
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -104,18 +123,18 @@ export default function UpdateAccountInfo() {
             <TextInput
               onChangeText={setEmail}
               style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#666"
+              placeholder="Email Address"
+              placeholderTextColor="#999"
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setPhoneNumber}
+              onChangeText={(text) => setPhoneNumber(formatPhoneNumber(text))}
               style={styles.input}
-              placeholder="Phone Number"
-              placeholderTextColor="#666"
+              placeholder="Phone Number (e.g., +1234567890)"
+              placeholderTextColor="#999"
               keyboardType="phone-pad"
               value={phoneNumber}
               editable={!isLoading}
@@ -123,8 +142,8 @@ export default function UpdateAccountInfo() {
             <TextInput
               onChangeText={setPassword}
               style={styles.input}
-              placeholder="New Password"
-              placeholderTextColor="#666"
+              placeholder="Create New Password"
+              placeholderTextColor="#999"
               secureTextEntry
               value={password}
               editable={!isLoading}

@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import {View, Text, TextInput, Pressable, Alert, StyleSheet, Platform} from 'react-native';
-import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import useUser from '@/stores/userStore';
-import styles from "@/app/stylesSettings"
-import axios from 'axios';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Alert,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import useUser from "@/stores/userStore";
+import styles from "@/app/stylesSettings";
+import axios from "axios";
 export default function UpdateAccountInfo() {
   const router = useRouter();
   const {
@@ -31,16 +39,17 @@ export default function UpdateAccountInfo() {
 
     try {
       const response = await axios.put(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:4000'}/api/users/update`,
+        `${
+          process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:4000"
+        }/api/users/update`,
         {
           email,
           username,
           password: password || undefined,
           sessionID,
         },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { "Content-Type": "application/json" } }
       );
-      
 
       if (response.data.success) {
         setEmail(email);
@@ -50,7 +59,9 @@ export default function UpdateAccountInfo() {
           { text: "OK", onPress: () => router.back() },
         ]);
       } else {
-        throw new Error(response.data.message || "Failed to update account information.");
+        throw new Error(
+          response.data.message || "Failed to update account information."
+        );
       }
     } catch (err) {
       console.error("Update failed:", err);
@@ -62,7 +73,9 @@ export default function UpdateAccountInfo() {
 
   const validateForm = () => {
     if (!email || !username || (password && password.length < 6)) {
-      setError("Please complete all fields and ensure the password is at least 6 characters long.");
+      setError(
+        "Please complete all fields and ensure the password is at least 6 characters long."
+      );
       return false;
     }
     if (!email.includes("@")) {
@@ -78,7 +91,9 @@ export default function UpdateAccountInfo() {
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
             <Text style={styles.header}>Update Account Information</Text>
-            <Text style={styles.subheader}>Edit your account details below</Text>
+            <Text style={styles.subheader}>
+              Edit your account details below
+            </Text>
           </View>
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -87,8 +102,8 @@ export default function UpdateAccountInfo() {
             <TextInput
               onChangeText={setEmailInput}
               style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#666"
+              placeholder="Email Address"
+              placeholderTextColor="#999"
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
@@ -98,15 +113,15 @@ export default function UpdateAccountInfo() {
               onChangeText={setUsernameInput}
               style={styles.input}
               placeholder="Username"
-              placeholderTextColor="#666"
+              placeholderTextColor="#999"
               value={username}
               editable={!isLoading}
             />
             <TextInput
               onChangeText={setPasswordInput}
               style={styles.input}
-              placeholder="New Password (optional)"
-              placeholderTextColor="#666"
+              placeholder="Create New Password (optional)"
+              placeholderTextColor="#999"
               secureTextEntry
               value={password}
               editable={!isLoading}
