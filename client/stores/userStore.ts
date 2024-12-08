@@ -9,7 +9,7 @@ interface UserState {
   sessionID: string;
   accountType: string;
   isLoggedIn: boolean;
-  profile_image_url: string;
+  profileImgUrl: string;
   error: string;
   buyerId: string | null; // Add buyerId
   sellerId: string | null;
@@ -20,6 +20,7 @@ interface UserState {
   setSessionID: (sessionID: string) => void;
   setAccountType: (accountType: string) => void;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
+  setProfileImgUrl: (profileImgUrl: string) => void;
   setError: (error: string) => void;
   login: (email?: string, password?: string) => Promise<void>;
   logout: () => void;
@@ -45,11 +46,11 @@ const useUser = create<UserState>((set) => ({
   sessionID: "",
   accountType: "",
   isLoggedIn: false,
-  profile_image_url: "",
+  profileImgUrl: "",
   error: "",
   buyerId: null, // Initialize buyerId as null
   sellerId: null,
-  setProfileImgURL: (url: string) => set({ profile_image_url: url }),
+  setProfileImgUrl: (url: string) => set({ profileImgUrl: url }),
   setEmail: (email: string) => set({ email }),
   setId: (id: string) => set({ id }),
   setUsername: (username: string) => set({ username }),
@@ -72,9 +73,10 @@ const useUser = create<UserState>((set) => ({
       console.log('Login response:', response.data);
 
       if (response.data && response.data.data) {
-        const { email, id, username, sessionId, accountType, buyerId, sellerId } = response.data.data;
+        const { email, id, username, sessionId, accountType, buyerId, sellerId, profileImgUrl } = response.data.data;
         console.log('buyerID:', buyerId);
         console.log('sellerID:', sellerId);
+        console.log('profileUrl:', profileImgUrl);
         set({
           email,
           id,
@@ -86,6 +88,7 @@ const useUser = create<UserState>((set) => ({
           error: "", // Clear any previous errors on successful login
           buyerId: buyerId || null, // Set buyerId if provided
           sellerId: sellerId || null,
+          profileImgUrl: profileImgUrl || null,
         });
       }
     } catch (error) {
@@ -118,7 +121,7 @@ const useUser = create<UserState>((set) => ({
       console.log('Registration response:', response.data);
 
       if (response.data) {
-        const { email, id, username, sessionId, accountType, buyerId, sellerId } = response.data.data;
+        const { email, id, username, sessionId, accountType, buyerId, sellerId, profileImgUrl } = response.data.data;
         set({
           email,
           id,
@@ -130,6 +133,7 @@ const useUser = create<UserState>((set) => ({
           error: "", // Clear any previous errors
           buyerId: buyerId || null, // Set buyerId if provided
           sellerId: sellerId || null,
+          profileImgUrl: profileImgUrl || null,
         });
       }
     } catch (error) {
@@ -156,6 +160,7 @@ const useUser = create<UserState>((set) => ({
     error: "", // Clear any errors on logout
     buyerId: null, // Clear buyerId on logout
     sellerId: null,
+    profileImgUrl: "",
   }),
 }));
 

@@ -6,9 +6,9 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const {setProfileImgURL} = useUser();
+  const { sessionID, setProfileImgUrl } = useUser();
   const router = useRouter();
-  
+
   const supabase = createClient(
     String(process.env.EXPO_PUBLIC_SUPABASE_PROJECT_URL),
     String(process.env.EXPO_PUBLIC_SUPABASE_API_KEY)
@@ -19,10 +19,38 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
     if (file) {
       setSelectedImage(file);
       setPreviewUrl(URL.createObjectURL(file));
-    
-      
+
+
     }
   };
+
+  const updateProfileImageInBackend = async (profileImgUrl) => {
+    try {
+      // Adjust this to retrieve the session ID
+
+      const response = await fetch("http://localhost:4000/api/users/updateProfileImage", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionID,
+          profileImgUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Profile image updated successfully:", data);
+      } else {
+        console.error("Failed to update profile image:", data.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+    }
+  };
+
 
   const handleUseAsProfile = async () => {
     if (!selectedImage) return;
@@ -50,12 +78,15 @@ const PhotoUploadScreen = ({ setisUploadPage }) => {
         .getPublicUrl(filePath);
 
       console.log('Public URL:', publicUrl);
-      setProfileImgURL(publicUrl);
+      setProfileImgUrl(publicUrl);
+
+      await updateProfileImageInBackend(publicUrl);
+
       router.push("/(tabs)/auction");
       alert('Profile photo uploaded successfully!\nURL: ' + publicUrl);
 
-     
-      
+
+
       setisUploadPage(prev => !prev);
 
     } catch (error) {

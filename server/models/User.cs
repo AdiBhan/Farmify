@@ -31,6 +31,8 @@ namespace FarmifyService.models
         
         public string? PhoneNumber { get; set; } = string.Empty;
 
+        public string? ProfileImgUrl { get; set; } 
+
         // Navigation properties
         public virtual Buyer? Buyer { get; set; }
         public virtual Seller? Seller { get; set; }

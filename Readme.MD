@@ -419,7 +419,7 @@ New Auction needed fixes: (simeon)
 9. Stats page (Done)
 10. Display seller rating on details page (add endpoint to get stats for a specific seller) (DONE)
 
-display only transactions for that user (add toggle)
+display only transactions for that user add toggle (DONE)
 Add back buttons/navigation to setting pages
 Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
 Category selection on newlisiting

@@ -72,7 +72,7 @@ const Auction = () => {
   const [auctionItems, setAuctionItems] = useState([]); // Auction items state
   const [isRefreshing, setIsRefreshing] = useState(false); // Pull-to-refresh state
   const router = useRouter();
-  const { username, isLoggedIn, buyerId, sellerId, profile_image_url } = useUser();
+  const { username, isLoggedIn, buyerId, sellerId, profileImgUrl } = useUser();
 
   // Fetch auction items when the page is focused
   useFocusEffect(
@@ -149,7 +149,7 @@ const Auction = () => {
         <BlurView intensity={50} style={styles.blurContainer}>
           <Header
             username={username}
-            profile_image_url={profile_image_url}
+            profileImgUrl={profileImgUrl}
 
           />
           <ScrollView
@@ -178,10 +178,10 @@ const Auction = () => {
 };
 
 // Header component
-const Header = ({ username, profile_image_url }) => {
+const Header = ({ username, profileImgUrl }) => {
   useEffect(() => {
-    console.log("Profile image URL in Header:", profile_image_url);
-  }, [profile_image_url]);
+    console.log("Profile image URL in Header:", profileImgUrl);
+  }, [profileImgUrl]);
 
   return (
 
@@ -212,7 +212,7 @@ const Header = ({ username, profile_image_url }) => {
                 <View style={styles.nameContainer}>
                   <Text style={styles.welcomeName}>{username}</Text>
                   <Image
-                    source={{ uri: profile_image_url || 'https://via.placeholder.com/100' }}
+                    source={{ uri: profileImgUrl || 'https://via.placeholder.com/100' }}
                     style={styles.profileImage}
                   />
                   <View style={styles.statsContainer}>

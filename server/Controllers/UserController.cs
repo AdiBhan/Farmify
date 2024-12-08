@@ -89,6 +89,7 @@ namespace FarmifyService.Controllers
                     // Retrieve Buyer or Seller ID based on AccountType
                     string? buyerId = null;
                     string? sellerId = null;
+                    string? profileImgUrl = user.ProfileImgUrl;
 
                     if (user.AccountType.Equals("buyer", StringComparison.OrdinalIgnoreCase))
                     {
@@ -122,7 +123,8 @@ namespace FarmifyService.Controllers
                             credits = user.Credits,
                             accountType = user.AccountType,
                             buyerId, // Add buyerId
-                            sellerId // Add sellerId
+                            sellerId, // Add sellerId
+                            profileImgUrl
                         }
                     });
                 }
@@ -208,7 +210,8 @@ namespace FarmifyService.Controllers
                         Password = password,
                         sessionID = Guid.NewGuid().ToString(),
                         Credits = 0,
-                        AccountType = accountType
+                        AccountType = accountType,
+                        ProfileImgUrl = "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"
                     };
 
                     _logger.LogInformation("Adding user to context");
@@ -228,6 +231,7 @@ namespace FarmifyService.Controllers
                             Address = "Default Address", // Replace with actual data
                             Status = "Active",
                             PhoneNumber = "000-000-0000" // Replace with actual data
+                            
                         };
                         await _context.Buyers.AddAsync(newBuyer);
                         await _context.SaveChangesAsync();
@@ -244,7 +248,8 @@ namespace FarmifyService.Controllers
                                 sessionId = newUser.sessionID,
                                 credits = newUser.Credits,
                                 accountType = newUser.AccountType,
-                                buyerId = newBuyer.ID
+                                buyerId = newBuyer.ID,
+                                profileImgUrl = newUser.ProfileImgUrl
                             }
                         });
                     }
@@ -260,6 +265,7 @@ namespace FarmifyService.Controllers
                             SellerName = username, // Example use, adjust as needed
                             PPID = "DefaultPPID", // Replace with actual data
                             PPsecret = "DefaultPPSecret" // Replace with actual data
+                            
                         };
                         await _context.Sellers.AddAsync(newSeller);
                         await _context.SaveChangesAsync();
@@ -276,7 +282,8 @@ namespace FarmifyService.Controllers
                                 sessionId = newUser.sessionID,
                                 credits = newUser.Credits,
                                 accountType = newUser.AccountType,
-                                sellerId = newSeller.ID
+                                sellerId = newSeller.ID,
+                                profileImgUrl = newUser.ProfileImgUrl
                             }
                         });
                     }
@@ -292,7 +299,8 @@ namespace FarmifyService.Controllers
                             username = newUser.Username,
                             sessionId = newUser.sessionID,
                             credits = newUser.Credits,
-                            accountType = newUser.AccountType
+                            accountType = newUser.AccountType,
+                            profileImgUrl = newUser.ProfileImgUrl
                         }
                     });
                 }
@@ -403,6 +411,82 @@ namespace FarmifyService.Controllers
                 }
             });
         }
+
+        // PUT: api/users/updateProfileImage
+        [HttpPut("updateProfileImage")]
+        public async Task<IActionResult> UpdateProfileImage()
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    using var reader = new StreamReader(Request.Body);
+                    var body = await reader.ReadToEndAsync();
+                    _logger.LogInformation($"Received profile image update request with body: {body}");
+
+                    var jsonDocument = JsonDocument.Parse(body);
+                    var root = jsonDocument.RootElement;
+
+                    var sessionID = root.TryGetProperty("sessionID", out var sessionIdElement)
+                        ? sessionIdElement.GetString() ?? string.Empty
+                        : string.Empty;
+
+                    if (string.IsNullOrWhiteSpace(sessionID))
+                    {
+                        _logger.LogWarning("Session ID is missing");
+                        return BadRequest("Session ID is required");
+                    }
+
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.sessionID == sessionID);
+
+                    if (user == null)
+                    {
+                        _logger.LogWarning($"No user found with session ID: {sessionID}");
+                        return NotFound(new { message = "User not found" });
+                    }
+
+                    var newProfileImgUrl = root.TryGetProperty("profileImgUrl", out var profileImgUrlElement)
+                        ? profileImgUrlElement.GetString()
+                        : null;
+
+                    if (string.IsNullOrWhiteSpace(newProfileImgUrl))
+                    {
+                        _logger.LogWarning("Profile image URL is missing");
+                        return BadRequest("Profile image URL is required");
+                    }
+
+                    // Update profile image URL
+                    user.ProfileImgUrl = newProfileImgUrl;
+                    _logger.LogInformation($"Updating profile image for user with session ID: {sessionID}");
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    _logger.LogInformation("Transaction committed for profile image update");
+
+                    return Ok(new
+                    {
+                        message = "Profile image updated successfully",
+                        data = new
+                        {
+                            id = user.ID,
+                            email = user.Email,
+                            username = user.Username,
+                            profileImgUrl = user.ProfileImgUrl
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError($"Unexpected error during profile image update: {ex.Message}");
+                    return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+                }
+            });
+        }
+
 
     }
 }
