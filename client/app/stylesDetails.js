@@ -17,35 +17,37 @@ const productDetailsStyles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: COLORS.background,
-    padding: 20,
-    alignItems: "center",
-    scrollbarWidth: "auto", // Ensures the scrollbar is visible
-    overflow: "scroll", // Enables scrolling with the scrollbar on web
+    paddingHorizontal: 20, // Adjusted padding
+    paddingVertical: 20,
+    alignItems: "stretch", // Changed from "center" to "stretch"
+    scrollbarWidth: "auto",
+    overflow: "scroll",
     paddingBottom: 16,
+    width: "100%",
   },
   scrollView: {
     flexGrow: 1,
     backgroundColor: "#fff",
-    // The following CSS-like properties are supported on React Native Web:
-    scrollbarWidth: "auto", // Ensures the scrollbar is visible
-    overflow: "scroll", // Enables scrolling with the scrollbar on web
+    scrollbarWidth: "auto",
+    overflow: "scroll",
     paddingBottom: 16,
+    width: "100%",
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "60%", // Percentage values stay as strings
+    // width: "60%", // Removed
   },
   image: {
-    width: 200,
-    height: 150,
+    width: "100%", // Changed from fixed width to full width
+    height: 180,
     borderRadius: 12,
     marginRight: 16,
-    backgroundColor: COLORS.primary + '08', // Changed from template literal to concatenation
+    backgroundColor: COLORS.primary + '08',
   },
   title: {
     fontSize: 24,
-    fontWeight: "700", // Already correct
+    fontWeight: "700",
     color: COLORS.text,
     marginVertical: 10,
     letterSpacing: -0.3,
@@ -59,7 +61,6 @@ const productDetailsStyles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-
     width: '100%',
   },
   titleContainer: {
@@ -74,44 +75,66 @@ const productDetailsStyles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   titleSub: {
-    fontSize: 14,  // Slightly larger
+    fontSize: 14,
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
-    letterSpacing: 4,  // Increased letter spacing
+    letterSpacing: 4,
     marginTop: 4,
     fontWeight: '500',
   },
   description: {
     fontSize: 16,
     flex: 1,
-    width: "90%",
+    // width: "90%", // Removed
     color: COLORS.text,
     lineHeight: 24,
     marginVertical: 10,
     textAlign: "center",
     letterSpacing: 0.1,
   },
+  boxContainer: {
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+    marginVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   seller: {
-    fontSize: 15,
+    fontSize: 17,
     color: COLORS.textLight,
     marginBottom: 10,
     textAlign: "center",
   },
   currentBid: {
     fontSize: 18,
-    fontWeight: "700", // Changed from "bold" to "700"
+    fontWeight: "700",
     color: COLORS.primary,
-    marginBottom: 20,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  about: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.primary,
+    marginBottom: 0,
+    marginTop: 10,
     textAlign: "center",
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginVertical: 20,
   },
   auctionContainer: {
     flex: 1,
-    width: "98%",
+    // width: "98%", // Removed
   },
   scrollContent: {
     padding: 16,
@@ -122,13 +145,14 @@ const productDetailsStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     borderColor: COLORS.border,
+    backgroundColor: '#c8c8c8',
     width: 40,
     justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: "700", // Changed from "bold" to "700"
+    fontWeight: "700",
     color: COLORS.text,
   },
   quantityText: {
@@ -142,13 +166,15 @@ const productDetailsStyles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 12,
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 10,
     ...shadowStyle,
+    alignSelf: 'center', // Center the button if needed
   },
   buyButtonText: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: "700", // Already correct
+    fontWeight: "700",
     letterSpacing: 0.2,
   },
 });

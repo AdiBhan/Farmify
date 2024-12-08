@@ -165,29 +165,23 @@ export default function ProductDetails() {
 
 
   return (
-    <View style={{ flex: 1, overflow: 'hidden' }}>
+    <View style={{ flex: 1 }}>
       <View style={styles.headerWrapper}>
         {/* Top Section */}
         <View style={styles.headerTopSection}>
-
-
           <View style={styles.titleContainer}>
             <Text style={styles.titleMain}>Farmify🌽</Text>
             <Text style={styles.titleSub}>Market</Text>
           </View>
-
-
-
         </View>
-
-
       </View>
       <ScrollView
-        contentContainerStyle={[styles.container, { paddingBottom: 150, overflow: 'hidden' }]}
+        contentContainerStyle={[styles.container, { paddingBottom: 150 }]}
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={true}
       >
+        <Text style={styles.title}>{product.name}</Text>
         <Image
           key={imageSource?.uri}
           style={styles.image}
@@ -197,48 +191,38 @@ export default function ProductDetails() {
             Alert.alert("Error", "Failed to load product image");
           }}
         />
-        <Text style={styles.title}>{product.name}</Text>
+        <View style={{ width: '90%', height: 1, backgroundColor: '#CED0CE', alignSelf: 'center', marginVertical: 10 }} />
+
         <Text style={styles.seller}>Sold by: {product.sellerName}</Text>
         <Text style={styles.currentBid}>
           Seller Rating: {product.sellerRating !== null ? product.sellerRating.toFixed(2) : "No Rating"}
         </Text>
+        <View style={{ width: '90%', height: 1, backgroundColor: '#CED0CE', alignSelf: 'center', marginVertical: 10 }} />
+
+        <Text style={styles.about}>About The Product</Text>
         <Text style={styles.description}>{product.description}</Text>
-        <Text style={styles.currentBid}> About The Seller </Text>
-        <Text style={styles.description}>{product.sellerDescription}</Text>
 
-        <Text style={styles.currentBid}>
-          Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "N/A"}
-        </Text>
-        <Text style={styles.timeRemaining}>Products Remaining: {amountLeft}</Text>
-        <Text style={styles.timeRemaining}>Time Remaining: {timeLeft}</Text>
+        <View style={{ width: '90%', height: 1, backgroundColor: '#CED0CE', alignSelf: 'center', marginVertical: 10 }} />
 
-        <Progress.Bar
-          progress={
-            product.endTime && product.startTime
-              ? (new Date().getTime() - new Date(product.startTime).getTime()) /
-              (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
-              : 0
-          }
-          width={200}
-          color="#2E7D32"
-          style={styles.progressBar}
-        />
+        <View style={styles.boxContainer}>
+          <Text style={styles.currentBid}>
+            Current Price: ${currentPrice !== null ? currentPrice.toFixed(2) : "0.00"}
+          </Text>
+          <Text style={styles.currentBid}>Products Remaining: {amountLeft}</Text>
+          <Text style={styles.currentBid}>Ends in: {timeLeft}</Text>
 
-        {/* Optional Gallery Display */}
-        {product.galleryUrls && product.galleryUrls.length > 0 && (
-          <View style={localStyles.galleryContainer}>
-            <Text style={localStyles.galleryTitle}>Gallery</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {product.galleryUrls.map((url, index) => (
-                <Image
-                  key={index}
-                  source={{ uri: url }}
-                  style={localStyles.galleryImage}
-                />
-              ))}
-            </ScrollView>
-          </View>
-        )}
+          <Progress.Bar
+            progress={
+              product.endTime && product.startTime
+                ? (new Date().getTime() - new Date(product.startTime).getTime()) /
+                (new Date(product.endTime).getTime() - new Date(product.startTime).getTime())
+                : 0
+            }
+            width={null} // Make progress bar take full width
+            color="#2E7D32"
+            style={styles.progressBar}
+          />
+        </View>
 
         <View style={styles.quantityContainer}>
           <Pressable
@@ -265,17 +249,41 @@ export default function ProductDetails() {
             {isSubmitting ? "Processing..." : "Buy Now"}
           </Text>
         </Pressable>
+
+        {/* Optional Gallery Display */}
+        {product.galleryUrls && product.galleryUrls.length > 0 && (
+          <View style={localStyles.galleryContainer}>
+            <Text style={localStyles.galleryTitle}>Gallery</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {product.galleryUrls.map((url, index) => (
+                <Image
+                  key={index}
+                  source={{ uri: url }}
+                  style={localStyles.galleryImage}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+
+        <View style={{ width: '90%', height: 1, backgroundColor: '#CED0CE', alignSelf: 'center', marginVertical: 10 }} />
+        <View style={styles.boxContainer}>
+          <Text style={styles.about}> About The Seller </Text>
+          <Text style={styles.description}>{product.sellerDescription}</Text>
+        </View>
+
       </ScrollView>
     </View>
   );
-}
-const localStyles = StyleSheet.create({
+
+} const localStyles = StyleSheet.create({
   scrollView: {
     flex: 1,
     overflow: "scroll",
   },
   galleryContainer: {
-    width: '100%',
+    width: '100%', // Ensure full width
     marginVertical: 20,
     alignItems: 'center',
     paddingHorizontal: 20,
