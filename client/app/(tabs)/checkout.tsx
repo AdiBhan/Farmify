@@ -38,6 +38,7 @@ export default function Checkout() {
   });
   const [tipAmount, setTipAmount] = useState("");
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
+  const [deliveryStatus,setDeliveryStatus] = useState("Order confirmed");
 
   // Replace with actual buyer ID
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
@@ -77,6 +78,15 @@ export default function Checkout() {
       Alert.alert("Error", "Delivery is not selected.");
       return;
     }
+      // Validate required inputs
+  if (!deliveryDetails.dropoff_address || deliveryDetails.dropoff_address.trim() === "") {
+    Alert.alert("Error", "Drop-off address cannot be empty.");
+    return;
+  }
+  if (!deliveryDetails.dropoff_phone_number || deliveryDetails.dropoff_phone_number.trim() === "") {
+    Alert.alert("Error", "Drop-off phone number cannot be empty.");
+    return;
+  }
     const parsedTip = parseFloat(tipAmount) * 100 || 0; // Ensure tip is a valid number
     const orderValue = parseFloat(totalPrice.toFixed(2)) * 100; // Ensures a float with 2 decimal places
 
@@ -117,6 +127,7 @@ export default function Checkout() {
 
       if (response.ok) {
         setTrackingUrl(result.tracking_url);
+        setDeliveryStatus(result.dropoff_time_estimated)
         Alert.alert("Success", "Delivery created successfully!");
       } else {
         if (result.field_errors) {
@@ -382,10 +393,41 @@ export default function Checkout() {
           </View>
         )}
 
-        {/* Purchase Button */}
-        <Pressable style={styles.buyButton} onPress={handlePurchase}>
-          <Text style={styles.buyButtonText}>Pay Now</Text>
+      <Pressable
+        style={styles.buyButton}
+        onPress={async () => {
+          setIsSubmitting(true);
+          try {
+            await handlePurchase(); // Call PayPal payment first
+            await handleGenerateDelivery(); // then Call generate delivery   
+          } catch (error) {
+            console.error("Error during payment or delivery:", error);
+            Alert.alert("Error", "An unexpected error occurred. Please try again.");
+          } finally {
+            setIsSubmitting(false); // Reset the loading state
+          }
+        }}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.buyButtonText}>
+          {isSubmitting ? "Processing..." : "Pay Now"}
+        </Text>
+      </Pressable>
+
+      {trackingUrl && (
+        <Pressable
+          style={styles.buyButton}
+          onPress={() => {
+            // Open the tracking URL in the browser
+            Linking.openURL(trackingUrl).catch(err =>
+              console.error("Failed to open tracking URL:", err)
+            );
+          }}
+        >
+          <Text style={styles.buyButtonText}>Track Delivery</Text>
         </Pressable>
+      )}
+
       </View>
     </ScrollView>
   );
