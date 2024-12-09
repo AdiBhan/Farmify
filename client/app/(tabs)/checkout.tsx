@@ -88,12 +88,11 @@ export default function Checkout() {
       pickupInstructions: "Enter gate code 1234 on the callbox.",
       pickupReferenceTag: `Order number ${Date.now()}`,
       dropoffAddress:
-        deliveryDetails.dropoff_address.trim() ||
-        "3 ashford ct, Allston, MA 02134",
+        deliveryDetails.dropoff_address.trim(),
       dropoffBusinessName:
-        deliveryDetails.dropoff_business_name.trim() || "Test",
+        deliveryDetails.dropoff_business_name.trim() ,
       dropoffPhoneNumber:
-        `+1${deliveryDetails.dropoff_phone_number.trim()}` || "+15628443147",
+        `+1${deliveryDetails.dropoff_phone_number.trim()}`,
       dropoffInstructions:
         deliveryDetails.dropoff_instructions.trim() || "Leave at door",
       orderValue: orderValue, // Add total order value
@@ -149,7 +148,7 @@ export default function Checkout() {
       const orderRequest = {
         ClientId: parsedProduct.ppid,
         ClientSecret: parsedProduct.pPsecret,
-        Amount: currentPrice * quantity,
+        Amount: currentPrice * quantity + tipAmount,
         Currency: "USD", // Adjust currency as needed
         Name: parsedProduct.name,
       };
@@ -360,6 +359,13 @@ export default function Checkout() {
                   dropoff_phone_number: text,
                 })
               }
+            />
+            <TextInput
+            style={styles.input}
+            placeholder="Tip Amount (Optional)"
+            keyboardType="numeric"
+            value={tipAmount.toString()}
+            onChangeText={(text) => setTipAmount(text)}
             />
             <TextInput
               style={styles.input}
