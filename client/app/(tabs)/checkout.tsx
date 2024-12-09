@@ -143,12 +143,13 @@ export default function Checkout() {
       return;
     }
 
+    const parsedTip = parseFloat(tipAmount) || 0;
     try {
       // Step 2: Create PayPal order
       const orderRequest = {
         ClientId: parsedProduct.ppid,
         ClientSecret: parsedProduct.pPsecret,
-        Amount: currentPrice * quantity + tipAmount,
+        Amount: currentPrice * quantity + parsedTip,
         Currency: "USD", // Adjust currency as needed
         Name: parsedProduct.name,
       };
