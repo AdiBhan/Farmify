@@ -23,6 +23,7 @@ export default function SitewideStatistics() {
       try {
         const response = await fetch("http://localhost:4000/api/stats"); // Replace with your backend API URL
         const data = await response.json();
+        console.log('data', data);
         setStatistics(data);
       } catch (err) {
         setError("Failed to load statistics.");
@@ -71,23 +72,14 @@ export default function SitewideStatistics() {
       value: `$${(statistics.highestSalePrice ?? 0).toFixed(2)}`,
     },
     {
-      label: "Most Popular Category",
-      value: statistics.mostPopularCategory ?? "N/A",
-    },
-    {
       label: "Total Revenue",
       value: `$${(statistics.totalRevenue ?? 0).toFixed(2)}`,
     },
     {
-      label: "Buyer With Most Bids",
-      value: statistics.buyerWithMostBids?.buyerID ?? "N/A",
-    },
-    {
       label: "Highest Rated Seller",
       value: statistics.highestRatedSeller
-        ? `${
-            statistics.highestRatedSeller.sellerName
-          } (${statistics.highestRatedSeller.sellerRating.toFixed(2)})`
+        ? `${statistics.highestRatedSeller.sellerName
+        } (${statistics.highestRatedSeller.sellerRating.toFixed(2)})`
         : "N/A",
     },
     {
@@ -101,9 +93,8 @@ export default function SitewideStatistics() {
     {
       label: "Most Expensive Active Listing",
       value: statistics.mostExpensiveActiveListing
-        ? `${
-            statistics.mostExpensiveActiveListing.name
-          } ($${statistics.mostExpensiveActiveListing.startPrice.toFixed(2)})`
+        ? `${statistics.mostExpensiveActiveListing.name
+        } ($${statistics.mostExpensiveActiveListing.startPrice.toFixed(2)})`
         : "N/A",
     },
     {
