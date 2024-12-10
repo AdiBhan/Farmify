@@ -94,6 +94,8 @@ export default function TabsLayout() {
             <Tabs.Screen name="buyerSettings/updateContact" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updateAccountInfo" options={{ href: null }} />
             <Tabs.Screen name="buyerSettings/updatePaymentInfo" options={{ href: null }} />
+            <Tabs.Screen name="sellerSettings/updateAccountInfo" options={{ href: null }} />
+            <Tabs.Screen name="sellerSettings/updateBusinessInfo" options={{ href: null }} />
         </Tabs>
     );
 }
