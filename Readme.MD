@@ -249,10 +249,16 @@ npm install</code></pre>
 
 <h5>Frontend .env File</h5>
 <p>Create a <code>.env</code> file in the <code>client/</code> directory with the following configuration:</p>
-<pre><code>EXPO_PUBLIC_BACKEND_URL=http://localhost:4000
+<pre><code>
+
+EXPO_PUBLIC_BACKEND_URL=http://localhost:4000
 EXPO_PUBLIC_REACT_NATIVE_FRONTEND_URL=https://localhost
 EXPO_PUBLIC_SUPABASE_PROJECT_URL=https://allbizkxjccwarsftcrq.supabase.co
 EXPO_PUBLIC_SUPABASE_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbGJpemt4amNjd2Fyc2Z0Y3JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgwNTMzMTcsImV4cCI6MjA0MzYyOTMxN30.I-4Z7pZXQRYiaDeV8q5qFcP9WgEOX7L8gU4GAO1bKb4
+EXPO_PUBLIC_GOOGLE_CLIENT_ID=843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4.apps.googleusercontent.com
+EXPO_PUBLIC_GOOGLE_REDIRECT_URI_ANDROID=com.googleusercontent.apps.843265692538-4eaeqvtfmrj67jpf4jf46pmrpr2d54r4:/oauth2redirect
+EXPO_PUBLIC_GOOGLE_REDIRECT_URI_WEB=http://localhost:8081/oauth2redirect
 </code></pre>
 
 <h4>Backend Setup (C# .NET ASP.NET)</h4>
@@ -298,137 +304,9 @@ GOOGLE_CLIENT_ID=843265692538-rjf3cnn9ocva0tbu79n1dfhjd3g11nr3.apps.googleuserco
 
 
 
+## USAGE GUIDE:
 
-## Scrum Nov 12-19
+Paypal sandbox email: sb-y3bqs33463120@personal.example.com
+Paypal sandbox password: wyB22%*=
 
-
-## Simeon:
--Adjusted db schema including:
-  1. Merging Auction and Product tables
-  2. Adding start/end price+time to bid
-  3. Added imageURL col to Product table
-  4. FK from bid referencing new Product table
-  5. Trigger to decrement Product amount when a purchase is made
-
-
-# Adi:
-1. Added icons for navigation bar using vector-icons, and hid non-important tabs
-2. Added Contact Information, Payment, Account Info and Previous Purchases to settings (conditionally render based on Seller or Buyer)
-3. Used Supabase SDK to build out functionality where on submitting a new item, Primary and Gallery Photo's are automatically stored in Supabase's Storage Buckets  (AWS s3 instance)
-
-
--Adjusted models to fit new DB schema in backend
-
--Created bid & Product controller with endpoints for:
-   1. Viewing all past bids, past transactions by ID
-   2. Creating a bid
-   3. Viewing all products, products by ID
-   
-- Added new functionality to frontend including:
-  1. Replace hardcoded auction data with function to fetch products from backend
-  2. Added display of quantity remaining (was mising)
-  3. Added function to calculate Current price from the startPrice,EndPrice,StartTime,Endtime
-      (currprice = startPrice + (endPrice - startPrice) * progress)
-  4. Added function to display Time remaining for each auction
-  5. Added functionality to place a bid on a product and view it in your past transactions. 
-  6. Automated quantity decrementing products after a purchase is made
-
-
-## Scrum Nov 24-30
-
-# Adi
-
-1. Fixed OAuth Verification (Directly connmects from React Native frontend) to Google OAuth
-2. Redesigned pages to make it look more modern / sleak (new fonts, containers, dropshadows, icons)
-
-
-
-## Simeon
-
-1. integrated paypal api to require sandbox payment before placing a bid
-2. Adjudted details.tsx in frontend to make popup for payment and confirm/redirect after completed
-Plan this week:
-1. Finalize statistics page/controller
-2. Implement rating system for backend. 
-3. Add more information to details.tsx (address, map, option for delivery/pickup)
-4. Create more sellers in paypal&backend to test
-5. adjust cost display (create formatted string like " (4.99 * 5 = $24.95 ))
-  
-
-
-## Scrum Nov 31 - Dec 6
-
-# Adi 
-
-1. Added docker support to simplify setup process. To start run: 'docker compose up' in Farmify directory and both client and server will start up on port 8081 (client) and port 400 (server) respectively.
-2. Built PhotoUpload functionality to work on WebView when user uploads profile picture
-3. Re-designed header of auctions page to make profile pictures and header text larger and centered.
-4. Redesigned `Readme.md` to include more detailed instructions on how to setup, endpoint descriptions, scrum updates,  pictures of the app working
-5. Added currency formatting for startPrice and endPrice through use of new utility function in newlisting.tsx
-6. Added scrollbar on product detail  and checkout pages to scroll past long descriptions and have access to submit buttons
-7. Added Utility functions to format phone numbers, currency, startPrice, endPrice and prevent non numeric values for Quantity and Time inputs.
-8. Fixed issue with Google OAuth taking you to screen not found for 2-3 seconds before re-directing
-9. Formatted phone number input in details.tsx page (For updating phone numbers)
-10. Added clientID, webClientID & redirectURI to .env instead of hardcoding for security purposes
-11. Added sort by endDate button and logic for auction listings so users can find most recent auctions or browse ended auctions
-12. Re-designed checkout page
-13. Updated placeholder labels and color scheme
-
-
-##
- <br><br>
-  Whats left:
-
-  Document stubbing
-    - Written reviews for sellers
-    - Allowing sellers to rate buyers
-    - Allow for non-linear decrease of price in dutch auction (exponential, log, etc)
-    - Messaging buyers/sellers on status updates
-    - Update of delivery status
-    - Category selection
-
-
-
-  2. decide how doordash is going to be used in the project (DONE)
-
-  3. Store products/auctions in backend when listing is made (newlisting.tsx) (DONE)
-
-  4. Display photogallery in details.tsx (DONE)
-
-  5. display user profile picture (decide where) (DONE)
-
-  4. Error/Exception handling for all frontend functionality 
-      - Make sure only valid inputs for creating bid, auction, etc
-      - Shouldn't be able to set end price higher than start price
-      - Shouldn't be able to make end price same as start price (at least half value)
-      - Minimum duration of auctions
-
-  6. Replace hardcoded userData in frontend by tracking state of which user is logged in (DONE)
-    
-
-  7. Create trigger for updating seller rating when one of their products is rated (DONE)
-
-
-
-
-
-  9. Add amount remaining to details.tsx page (DONE)  
-
-
-New Auction needed fixes: (simeon)
-1. display and reference gallery images in details.tsx (DONE) - Simeon 
-2. Add input for quantity of products you can sell (DONE) - Tommy 
-3. add SellerID instead of userID to create auction args and user store (DONE) - simeon
-4. Fix timezone issues: (DONE) - Simeon 
-6. don't approve payment or bid if user cancels paypal window. (done)
-7. add automatic reload after creating acution (done)
-8. add actual buyer to checkout page (DONE)
-9. Stats page (Done)
-10. Display seller rating on details page (add endpoint to get stats for a specific seller) (DONE)
-
-display only transactions for that user add toggle (DONE)
-Add back buttons/navigation to setting pages
-Store payment/delivery status in backend when a bid is created (stub delivery tracking?)
-Category selection on newlisiting
-Hide buy now and place bid buttons if acccount is seller
-FIX UPDATECONTANTINFO!
+To run the app, run the command docker compose up and navigate to localhost:8081
