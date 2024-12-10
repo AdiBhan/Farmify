@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  View,
   Text,
   TextInput,
+  View,
   Pressable,
   Alert,
   StyleSheet,
   Platform,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { ThemedView } from "@/components/ThemedView";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import axios from "axios";
 import useUser from "@/stores/userStore";
 import styles from "@/app/stylesSettings";
@@ -100,7 +101,7 @@ export default function UpdateBusinessInfo() {
   };
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
@@ -155,6 +156,6 @@ export default function UpdateBusinessInfo() {
           </View>
         </View>
       </LinearGradient>
-    </View>
+    </ThemedView>
   );
 }

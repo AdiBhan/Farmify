@@ -14,43 +14,17 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import useUser from "@/stores/userStore";
 import styles from "@/app/stylesSettings";
-export default function UpdateBuyerContact() {
-  const router = useRouter();
-  const { email: currentEmail, sessionID } = useUser();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState(currentEmail || "");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
+export default function UpdateBuyerPayment() {
+  const router = useRouter();
+  const { sessionID } = useUser();
+
+  const [cardholderName, setCardholderName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get(
-          `${
-            process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:4000"
-          }/api/users/details`,
-          { headers: { sessionID } }
-        );
-        const userData = response.data.data;
-
-        setName(userData.name || "");
-        setEmail(userData.email || "");
-        setPhoneNumber(userData.phoneNumber || "");
-        setAddress(userData.address || "");
-      } catch (err) {
-        console.error("Failed to fetch user data:", err);
-        setError("Failed to load user data.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [sessionID]);
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
@@ -62,39 +36,43 @@ export default function UpdateBuyerContact() {
       const response = await axios.put(
         `${
           process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:4000"
-        }/api/users/update`,
-        { name, email, phoneNumber, address, sessionID },
+        }/api/users/update-payment`,
+        { cardholderName, cardNumber, expiryDate, cvv, sessionID },
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (response.data.message === "User updated successfully") {
-        Alert.alert("Success", "Your contact information has been updated.", [
+      if (response.data.message === "Payment information updated successfully") {
+        Alert.alert("Success", "Your payment information has been updated.", [
           { text: "OK", onPress: () => router.back() },
         ]);
       } else {
         throw new Error(
-          response.data.message || "Failed to update contact information."
+          response.data.message || "Failed to update payment information."
         );
       }
     } catch (err) {
       console.error("Update failed:", err);
-      setError("Failed to update contact information.");
+      setError("Failed to update payment information.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const validateForm = () => {
-    if (!name || !email || !phoneNumber || !address) {
+    if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
       setError("Please fill in all fields.");
       return false;
     }
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
+    if (!/^\d{16}$/.test(cardNumber)) {
+      setError("Please enter a valid 16-digit card number.");
       return false;
     }
-    if (phoneNumber.length < 10) {
-      setError("Please enter a valid phone number.");
+    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
+      setError("Please enter a valid expiry date (MM/YY).");
+      return false;
+    }
+    if (!/^\d{3,4}$/.test(cvv)) {
+      setError("Please enter a valid 3- or 4-digit CVV.");
       return false;
     }
     return true;
@@ -107,7 +85,7 @@ export default function UpdateBuyerContact() {
           <View style={styles.headerContainer}>
             <Text style={styles.header}>Update Payment Information</Text>
             <Text style={styles.subheader}>
-              Edit your Payment details below
+              Edit your payment details below
             </Text>
           </View>
 
@@ -115,39 +93,38 @@ export default function UpdateBuyerContact() {
 
           <View style={styles.buttonContainer}>
             <TextInput
-              onChangeText={setName}
+              onChangeText={setCardholderName}
               style={styles.input}
-              placeholder="Full Name"
+              placeholder="Cardholder Name"
               placeholderTextColor="#999"
-              value={name}
+              value={cardholderName}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setEmail}
+              onChangeText={setCardNumber}
               style={styles.input}
-              placeholder="Email Address"
+              placeholder="Card Number (16 digits)"
               placeholderTextColor="#999"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
+              keyboardType="numeric"
+              value={cardNumber}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={(text) => setPhoneNumber(formatPhoneNumber(text))}
+              onChangeText={setExpiryDate}
               style={styles.input}
-              placeholder="Phone Number (e.g., +1 123-456-7890)"
+              placeholder="Expiry Date (MM/YY)"
               placeholderTextColor="#999"
-              keyboardType="phone-pad"
-              value={phoneNumber}
+              keyboardType="numeric"
+              value={expiryDate}
               editable={!isLoading}
             />
             <TextInput
-              onChangeText={setAddress}
-              style={[styles.input, styles.textArea]}
-              placeholder="Delivery Address"
+              onChangeText={setCvv}
+              style={styles.input}
+              placeholder="CVV (3 or 4 digits)"
               placeholderTextColor="#999"
-              multiline
-              value={address}
+              keyboardType="numeric"
+              value={cvv}
               editable={!isLoading}
             />
 

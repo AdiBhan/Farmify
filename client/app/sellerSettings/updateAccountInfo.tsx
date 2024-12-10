@@ -14,6 +14,7 @@ import axios from "axios";
 import useUser from "@/stores/userStore";
 import styles from "@/app/stylesSettings";
 import { formatPhoneNumber } from "@/stores/utilities";
+import { ThemedView } from "@/components/ThemedView";
 export default function UpdateAccountInfo() {
   const router = useRouter();
   const { sessionID } = useUser();
@@ -107,7 +108,7 @@ export default function UpdateAccountInfo() {
   };
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <LinearGradient colors={["#f0f7f0", "#ffffff"]} style={styles.gradient}>
         <View style={styles.contentContainer}>
           <View style={styles.headerContainer}>
@@ -165,6 +166,6 @@ export default function UpdateAccountInfo() {
           </View>
         </View>
       </LinearGradient>
-    </View>
+    </ThemedView>
   );
 }
