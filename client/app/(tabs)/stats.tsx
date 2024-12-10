@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -12,28 +12,59 @@ import { BlurView } from "expo-blur";
 import detailStyles from "../stylesDetails";
 import * as Animatable from "react-native-animatable";
 import { commonStyles, COLORS } from "@/app/stylesPages";
+import { useFocusEffect } from "expo-router"; // For navigation
 
 export default function SitewideStatistics() {
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchStatistics = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/api/stats"); // Replace with your backend API URL
-        const data = await response.json();
-        console.log('data', data);
-        setStatistics(data);
-      } catch (err) {
-        setError("Failed to load statistics.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true; // To prevent state updates if the component is unmounted
 
-    fetchStatistics();
-  }, []);
+      const fetchStatistics = async () => {
+        try {
+          if (isActive && loading) {
+            setLoading(true); // Show loading indicator only during the initial fetch
+          }
+          const response = await fetch("http://localhost:4000/api/stats"); // Replace with your backend API URL
+          if (!response.ok) {
+            throw new Error(`Error fetching statistics: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log('data', data);
+          if (isActive) {
+            setStatistics(data);
+          }
+        } catch (err) {
+          console.error("Error fetching statistics:", err);
+          if (isActive) {
+            setError("Failed to load statistics.");
+          }
+        } finally {
+          if (isActive) {
+            setLoading(false);
+          }
+        }
+      };
+
+      // Initial fetch when the screen is focused
+      fetchStatistics();
+
+      // Set up interval for periodic updates (e.g., every 30 seconds)
+      const intervalId = setInterval(() => {
+        fetchStatistics();
+      }, 30000); // 30000 milliseconds = 30 seconds
+
+      // Cleanup function to clear the interval when the screen is unfocused
+      return () => {
+        isActive = false;
+        clearInterval(intervalId);
+      };
+    }, [loading])
+  );
+
 
   if (loading) {
     return (

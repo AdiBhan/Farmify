@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { router, useRouter, useLocalSearchParams } from "expo-router"; // For navigation
+import { router, useFocusEffect, useRouter, useLocalSearchParams } from "expo-router"; // For navigation
 import * as Progress from "react-native-progress"; // For the progress bar
 import styles from "../stylesDetails";
 import { StyleSheet } from "react-native";
@@ -68,62 +68,64 @@ export default function ProductDetails() {
   const router = useRouter(); // For navigation
 
 
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        const response = await fetch(`http://localhost:4000/api/products/${productId}`);
-        if (!response.ok) {
-          throw new Error(`Error fetching product details: ${response.status}`);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true; // To prevent state updates if the component is unmounted
+
+      const fetchProductDetails = async () => {
+        try {
+          const response = await fetch(`http://localhost:4000/api/products/${productId}`);
+          if (!response.ok) {
+            throw new Error(`Error fetching product details: ${response.status}`);
+          }
+          const data = await response.json();
+          console.log("Product details:", data);
+          if (isActive) {
+            setProduct(data);
+            setAmountLeft(data.quantity);
+            // Calculate initial values
+            const price = calculateCurrentPrice(
+              data.startPrice,
+              data.endPrice,
+              data.startTime,
+              data.endTime
+            );
+            setCurrentPrice(price);
+
+            const timeRemaining = calculateTimeLeft(data.endTime);
+            setTimeLeft(timeRemaining);
+          }
+        } catch (error) {
+          console.error("Error fetching product details:", error);
+          if (isActive) {
+            Alert.alert("Error", "Failed to load product details. Please try again.");
+          }
+        } finally {
+          if (isActive) {
+            setLoading(false);
+          }
         }
-        const data = await response.json();
-        console.log("Product details:", data);
-        setProduct(data);
-        setAmountLeft(data.quantity);
-        // Calculate initial values
-        const price = calculateCurrentPrice(
-          data.startPrice,
-          data.endPrice,
-          data.startTime,
-          data.endTime
-        );
-        setCurrentPrice(price);
+      };
 
-        const timeRemaining = calculateTimeLeft(data.endTime);
-        setTimeLeft(timeRemaining);
-      } catch (error) {
-        console.error("Error fetching product details:", error);
-        Alert.alert("Error", "Failed to load product details. Please try again.");
-      } finally {
-        setLoading(false);
+      // Initial fetch when the screen is focused
+      if (productId) {
+        fetchProductDetails();
       }
-    };
 
-    if (productId) {
-      fetchProductDetails();
-    }
-  }, [productId]);
+      // Set up interval for periodic updates (e.g., every 5 seconds)
+      const intervalId = setInterval(() => {
+        if (productId) {
+          fetchProductDetails();
+        }
+      }, 5000); // 5000 milliseconds = 5 seconds
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (product) {
-        // Update current price and time left at regular intervals
-        const updatedPrice = calculateCurrentPrice(
-          product.startPrice,
-          product.endPrice,
-          product.startTime,
-          product.endTime
-        );
-        setCurrentPrice(updatedPrice);
-
-        const updatedTimeLeft = calculateTimeLeft(product.endTime);
-        setTimeLeft(updatedTimeLeft);
-      }
-    }, 5000);
-
-
-
-    return () => clearInterval(interval);
-  }, [product]);
+      // Cleanup function to clear the interval when the screen is unfocused
+      return () => {
+        isActive = false;
+        clearInterval(intervalId);
+      };
+    }, [productId])
+  );
 
   const imageSource = useMemo(
     () => (product && product.imgUrl ? { uri: product.imgUrl } : null),
