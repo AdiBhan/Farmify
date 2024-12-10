@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useUser from "@/stores/userStore";
-import { formatCurrency,formatPhoneNumber } from "../../stores/utilities";
+import { formatCurrency,formatPhoneNumber, allowOnlyNumbers } from "../../stores/utilities";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Checkout() {
@@ -365,19 +365,21 @@ export default function Checkout() {
               placeholder="Phone Number"
               keyboardType="numeric"
               value={deliveryDetails.dropoff_phone_number}
-              onChangeText={(text) =>
-                setDeliveryDetails({
+              onChangeText={(text) => {
+                const formattedPhoneNumber = formatPhoneNumber(text); 
+                const updatedDetails = {
                   ...deliveryDetails,
-                  dropoff_phone_number: text,
-                })
-              }
+                  dropoff_phone_number: formattedPhoneNumber,
+                };
+                setDeliveryDetails(updatedDetails); 
+              }}
             />
             <TextInput
             style={styles.input}
             placeholder="Tip Amount (Optional)"
             keyboardType="numeric"
             value={tipAmount.toString()}
-            onChangeText={(text) => setTipAmount(text)}
+            onChangeText={(text) => setTipAmount(formatCurrency(allowOnlyNumbers(text)))}
             />
             <TextInput
               style={styles.input}

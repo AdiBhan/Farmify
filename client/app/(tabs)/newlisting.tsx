@@ -24,8 +24,7 @@ import useUser from "@/stores/userStore";
 
 import * as Animatable from "react-native-animatable";
 
-
-import {formatCurrency, allowOnlyNumbers} from "../../stores/utilities";
+import { formatCurrency, allowOnlyNumbers } from "../../stores/utilities";
 export default function CreateAuctionScreen() {
   const router = useRouter(); // Navigation object for routing between screens
 
@@ -45,7 +44,25 @@ export default function CreateAuctionScreen() {
   // Extract user data from custom user store
   const { username, id, accountType, buyerId, sellerId } = useUser();
 
+  const handlePriceInput = (text: string, setter: (value: string) => void) => {
+    // Remove any non-numeric characters except decimal point
+    const numericValue = text.replace(/[^0-9.]/g, "");
 
+    // Ensure only one decimal point
+    const parts = numericValue.split(".");
+    const formattedValue =
+      parts.length > 1 ? `${parts[0]}.${parts[1]}` : numericValue;
+
+    // Format as currency if there's a valid number
+    if (formattedValue) {
+      const number = parseFloat(formattedValue);
+      if (!isNaN(number)) {
+        setter(formatCurrency(number.toString()));
+      }
+    } else {
+      setter("");
+    }
+  };
 
   // Helper function to convert blobs to Base64
   function blobToBase64(blob) {
@@ -265,7 +282,6 @@ export default function CreateAuctionScreen() {
               numberOfLines={4}
             />
             <TextInput
-     
               onChangeText={(text) => setQuantity(allowOnlyNumbers(text))}
               keyboardType="numeric"
               value={quantity}
@@ -337,26 +353,29 @@ export default function CreateAuctionScreen() {
             <Text style={formStyles.inputLabel}>Pricing</Text>
             <View style={formStyles.row}>
               <TextInput
-                onChangeText={(text) => setStartingPrice(text)}
+                onChangeText={(text) =>
+                  handlePriceInput(text, setStartingPrice)
+                }
                 value={startingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Starting price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
-                onBlur={() => setStartingPrice(formatCurrency(startingPrice))}
               />
               <TextInput
-                onChangeText={(text) => setEndingPrice(text)}
+                onChangeText={(text) => handlePriceInput(text, setEndingPrice)}
                 value={endingPrice}
                 style={[formStyles.input, formStyles.halfInput]}
                 placeholder="Ending price"
                 placeholderTextColor={COLORS.textSecondary}
                 keyboardType="numeric"
-                onBlur={() => setEndingPrice(formatCurrency(endingPrice))}
               />
             </View>
             <TextInput
-              onChangeText={(text) => setDuration(allowOnlyNumbers(text))}
+              onChangeText={(text) => {
+                const numericOnly = text.replace(/[^0-9]/g, "");
+                setDuration(numericOnly);
+              }}
               value={duration}
               style={formStyles.input}
               keyboardType="numeric"
@@ -506,11 +525,12 @@ const formStyles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 18,
     fontWeight: "600",
-  },divider: {
+  },
+  divider: {
     marginTop: 12,
     marginBottom: 24,
     height: 1,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
     opacity: 0.6,
     alignSelf: "stretch", // Full width
   },
