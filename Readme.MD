@@ -310,3 +310,11 @@ Paypal sandbox email: sb-y3bqs33463120@personal.example.com
 Paypal sandbox password: wyB22%*=
 
 To run the app, run the command docker compose up and navigate to localhost:8081
+
+## DoorDash Credentials:
+        {"developer_id", "7714fb92-b125-44de-a0da-a5b7529e93a8"},
+        {"key_id", "758af6e3-049b-404a-8447-bc14a90c9c7a"},
+        {"signing_secret", "Wj2nZ_qTdTYW2R4KhjJ5FkuhU2Ggg6CBfHNW6cZ5ZHc"}
+To run the simulator after creating a Delivery please go to this page: 
+https://developer.doordash.com/portal/integration/drive/delivery_simulator
+

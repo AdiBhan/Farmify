@@ -40,7 +40,7 @@ export default function Checkout() {
   const [sellerAddress, setSellerAddress] = useState(""); // Store seller's address
   const [deliveryStatus,setDeliveryStatus] = useState("Order confirmed");
 
-  // Replace with actual buyer ID
+
   const { product: productId } = useLocalSearchParams(); // Retrieve product ID from search parameters
 
   useEffect(() => {
